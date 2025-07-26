@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import DashboardSidebar from "../../../components/DashboardSidebar";
 import { 
-    Box, Divider, Link, Typography, Container, Paper, Grid,
+    Box, Divider, Link, Typography, Container, Paper,
     useMediaQuery, useTheme, IconButton, Drawer , TextField, InputAdornment, Button
 } from "@mui/material";
 import { green, teal, grey } from "@mui/material/colors";
 import { HiOutlineMenu } from "react-icons/hi";
 import { FaSearch } from "react-icons/fa";
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -24,6 +26,35 @@ const News = () => {
 
     const [ticker, setTicker] = useState("");
     const [searchResults, setSearchResults] = useState([]);
+
+    const [newsStartIndex, setNewsStartIndex] = useState(0);
+    const [newsEndIndex, setNewsEndIndex] = useState(10);
+
+    const scrollToTop = () => {
+        const scrollableElement = document.querySelector('[data-scrollable="true"]');
+        if (scrollableElement) {
+            scrollableElement.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    const handleNext = () => {
+        setNewsStartIndex( prev => prev += 10);
+        setNewsEndIndex(prev => prev += 10);
+        scrollToTop();
+    }
+
+    const handleBack = () => {
+        if (newsEndIndex === 0) {
+            setNewsStartIndex(0);
+            setNewsEndIndex(10);
+        }
+        setNewsStartIndex( prev => prev -= 10);
+        setNewsEndIndex(prev => prev -= 10);
+        scrollToTop();
+    }
 
     const getStockNews = async (searchTerm) => {
         const url = `${API_URL}/tiingo/news?ticker=${searchTerm}`;
@@ -60,7 +91,7 @@ const News = () => {
                 }
 
                 console.log(response.status, response.statusText, result.message, result);
-                setMarketNews(result.data.slice(0, 100));
+                setMarketNews(result.data.slice(0, 200));
 
             } catch(error) {
                 console.log(error);
@@ -131,17 +162,19 @@ const News = () => {
             </Drawer>
             
             {/* Main Content */}
-            <Box sx={{ 
-                overflow: "auto",
-                height: "100vh",
-                width: "100%",
-                // Hide scrollbar but keep scroll functionality
-                '&::-webkit-scrollbar': { 
-                    display: 'none' // Chrome, Safari, and newer versions of Edge
-                },
-                scrollbarWidth: 'none', // Firefox
-                '-ms-overflow-style': 'none', // IE and Edge legacy
-            }}>
+            <Box 
+                data-scrollable="true"
+                sx={{ 
+                    overflow: "auto",
+                    height: "100vh",
+                    width: "100%",
+                    // Hide scrollbar but keep scroll functionality
+                    '&::-webkit-scrollbar': { 
+                        display: 'none' // Chrome, Safari, and newer versions of Edge
+                    },
+                    scrollbarWidth: 'none', // Firefox
+                    '-ms-overflow-style': 'none', // IE and Edge legacy
+                }}>
                 {/* Mobile nav toggle - only visible on mobile */}
                 {isSmallScreen && (
                     <Box px={2} pt={2}>
@@ -257,6 +290,40 @@ const News = () => {
                                 >
                                 Search
                             </Button>
+                        </Box>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginTop: 2,
+                            }}
+                        >
+                            <Button
+                                startIcon={<NavigateBeforeIcon />}
+                                onClick={handleBack}
+                                disabled={newsStartIndex < 1 ? true : false}
+                                sx={{
+                                    textTransform: "none",
+                                    fontWeight: "bold",
+                                    color: teal[400],
+                                }}
+                            >
+                            </Button>
+
+                        <Typography sx={{ color: teal[400], mt: 0.5, fontSize: "10pt"}}>
+                                {newsStartIndex} - {newsEndIndex}
+                        </Typography>
+
+                            <Button
+                                endIcon={<NavigateNextIcon />}
+                                onClick={handleNext}
+                                sx={{
+                                    textTransform: "none",
+                                    fontWeight: "bold",
+                                    color: teal[400]
+                                }}
+                            >
+                            </Button>
                         </Box>                           
                         <Divider sx={{ bgcolor: green[900], opacity: 0.5 }} />
                     </Box>
@@ -264,7 +331,7 @@ const News = () => {
                     {/* News Articles */}      
                     {searchResults && searchResults.length > 0 ? (
                         <Box sx={{ maxWidth: "100%", mx: "auto" }}>
-                            {searchResults.slice(0,20).map((news, index) => (
+                            {searchResults.slice(newsStartIndex, newsEndIndex).map((news, index) => (
                                 <Paper 
                                     key={news.id || index}
                                     elevation={0}
@@ -357,7 +424,7 @@ const News = () => {
                         </Box>
                     ) : marketNews && marketNews.length > 0 ? (
                         <Box sx={{ maxWidth: "100%", mx: "auto" }}>
-                            {marketNews.slice(0,20).map((news, index) => (
+                            {marketNews.slice(newsStartIndex, newsEndIndex).map((news, index) => (
                                 <Paper 
                                     key={news.id || index}
                                     elevation={0}
@@ -467,6 +534,42 @@ const News = () => {
                             </Typography>
                         </Box>
                     )}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginTop: 2,
+                        }}
+                    >
+                        <Button
+                            startIcon={<NavigateBeforeIcon />}
+                            onClick={handleBack}
+                            disabled={newsStartIndex < 1 ? true : false}
+                            sx={{
+                                 textTransform: "none",
+                                 fontWeight: "bold",
+                                 color: teal[400],
+                            }}
+                        >
+                            Back
+                        </Button>
+
+                       <Typography sx={{ color: teal[400], mt: 0.5, fontSize:"10pt" }}>
+                            {newsStartIndex} - {newsEndIndex}
+                       </Typography>
+
+                        <Button
+                            endIcon={<NavigateNextIcon />}
+                            onClick={handleNext}
+                            sx={{
+                                textTransform: "none",
+                                fontWeight: "bold",
+                                color: teal[400]
+                            }}
+                        >
+                            Next
+                        </Button>
+                    </Box>
                 </Container>
             </Box>
         </Box>
