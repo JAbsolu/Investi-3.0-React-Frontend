@@ -4,8 +4,7 @@ import {
   Divider, Link, InputAdornment, useMediaQuery, useTheme,
   IconButton, Drawer, Fab
 } from "@mui/material";
-import { FaSearch, FaRegCommentDots, FaChartLine, FaTimes, FaList } from "react-icons/fa";
-import { IoAnalyticsSharp } from "react-icons/io5";
+import { FaSearch, FaChartLine, FaTimes, FaList } from "react-icons/fa";
 import { HiOutlineMenu } from "react-icons/hi"; // Add this import for the hamburger icon
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebaseConfig";
@@ -661,7 +660,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                 color: white,
                 px: 3,
                 py: 1.6,
-                borderRadius: 0,
+                borderRadius: 4,
                 "&:hover": { 
                   backgroundColor: green[600],
                   transform: 'translateX(2px)'
