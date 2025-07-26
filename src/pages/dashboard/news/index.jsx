@@ -68,15 +68,12 @@ const News = () => {
         }
         getNews();
     },[]);
-    const [search, setSearch] = useState("");
-    // ------------------ Search Functionality ------------------
-    const handleSearch = () => {};
 
     //---------- hanle search on key down ----------
     const handleSearchOnEnter = (e) => {
         if (e.key === "Enter") {
         e.preventDefault(); 
-        //handleSearch(e.target.value); 
+        getStockNews(e.target.value); 
         }
     };
 
@@ -174,7 +171,7 @@ const News = () => {
                             fontWeight="bold" 
                             color={white} 
                             mb={1}
-                            px={3}
+                            px={1}
                             sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem' } }}
                         >
                             Market News
@@ -182,7 +179,7 @@ const News = () => {
                         <Typography 
                             variant="body1" 
                             color={grey[400]} 
-                            px={3}
+                            px={1}
                             mb={3}
                             sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
                         >
@@ -196,9 +193,8 @@ const News = () => {
                                 gap: 0.5, 
                                 mb: 2, 
                                 mt: 0,
-                                background: 'rgba(40, 60, 40, 0.8)',
                                 borderRadius: '10px',
-                                border: `2px solid ${green[500]}`,
+                                border: `1px solid ${green[500]}`,
                                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                                 width: '100%',
                                 alignSelf: 'flex-start',
@@ -211,7 +207,7 @@ const News = () => {
                                 placeholder="Search for a news..."
                                 value={ticker}
                                 onChange={(e) => setTicker(e.target.value)}
-                                //onKeyDown={(e) => handleSearchOnEnter(e)}
+                                onKeyDown={(e) => handleSearchOnEnter(e)}
                                 sx={{
                                     '& .MuiOutlinedInput-root': {
                                     borderRadius: 0,
@@ -220,13 +216,13 @@ const News = () => {
                                     '& .MuiInputBase-input': {
                                         color: white,
                                         fontSize: '1rem',
-                                        padding: '12px 16px',
+                                        padding: '4px 8px',
                                         '&::placeholder': {
                                             color: grey[300],
                                             opacity: 1
                                         }
                                     },
-                                    height: '100%',
+                                    height: '2em',
                                     backgroundColor: 'transparent'
                                 }}
                                 InputProps={{
@@ -243,11 +239,13 @@ const News = () => {
                             <Button
                                 variant="contained"
                                 sx={{
-                                    backgroundColor: green[700],
-                                    color: white,
-                                    px: 3,
+                                    backgroundColor: green[500],
+                                    color: "black",
+                                    px: 2.5,
                                     py: 1.6,
-                                    borderRadius: 2,
+                                    borderTopRightRadius: 4,
+                                    borderBottomRightRadius: 4,
+                                    // borderRadius: 2,
                                     "&:hover": { 
                                     backgroundColor: green[600],
                                     transform: 'translateX(2px)'
@@ -266,7 +264,7 @@ const News = () => {
                     {/* News Articles */}      
                     {searchResults && searchResults.length > 0 ? (
                         <Box sx={{ maxWidth: "100%", mx: "auto" }}>
-                            {searchResults.map((news, index) => (
+                            {searchResults.slice(0,20).map((news, index) => (
                                 <Paper 
                                     key={news.id || index}
                                     elevation={0}
@@ -359,7 +357,7 @@ const News = () => {
                         </Box>
                     ) : marketNews && marketNews.length > 0 ? (
                         <Box sx={{ maxWidth: "100%", mx: "auto" }}>
-                            {marketNews.map((news, index) => (
+                            {marketNews.slice(0,20).map((news, index) => (
                                 <Paper 
                                     key={news.id || index}
                                     elevation={0}
