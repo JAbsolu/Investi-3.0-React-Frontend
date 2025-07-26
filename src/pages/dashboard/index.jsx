@@ -660,7 +660,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                 color: white,
                 px: 3,
                 py: 1.6,
-                borderRadius: 4,
+                borderRadius: 2,
                 "&:hover": { 
                   backgroundColor: green[600],
                   transform: 'translateX(2px)'
