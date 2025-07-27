@@ -1,3 +1,4 @@
+import "./styles.css";
 import { useEffect, useState } from "react";
 import { 
   Box, Button, TextField, Typography, Grid, Paper, 
@@ -18,14 +19,43 @@ import StockChart from "../../components/stockChart";
 import StockAnalysisModal from "../../components/AnalysisModal";
 import { getCurrentDate, isStockMarketOpen } from "../../util/apis";
 import { AutoAwesome, List } from '@mui/icons-material';
+import SearchBar from "../../components/SearchBar";
 
 // ------------------ Color Variables ------------------
-const darkGray = "#121212";
 const white = "#ffffff";
 const darkBg = "#0d0d0d";
-const black = "#000000";
 const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
+const background = "#111111"
+
+const keyStatisticsArray = [
+  "Market Cap", 
+  "P/E Ratio",
+  "Average 10D volume",
+  "Volume",
+  "Today High",
+  "Today Low",
+  "Open Price",
+  "Market Price",
+  "Dividend Yield",
+  "52 Week High",
+  "52 Week Low",
+  "52 Week Range"
+]
+
+const statisticsNames = [
+  "Market cap",
+  "Dividend yield", 
+  "Average 10D volume",
+  "Volume",
+  "Today High",
+  "Today Low",
+  "Open Price",
+  "Market Price",
+  "52 Week low",
+  "52 Week high",
+  "52 Week range"
+]
 
 export default function DashboardPage() {
   const theme = useTheme();
@@ -57,6 +87,9 @@ export default function DashboardPage() {
   const [candleSticksData, setCandleSticksData] = useState([]);
   const [openAnalysisModal, setOpenAnalysisModal] = useState(false);
   const [aiAnalysis, setAiAnalysy] = useState([]);
+
+  const [keyStatisticsStartIndex, setKeyStatisticsStartIndex] = useState(0);
+  const [keyStatisticsEndIndex, setKeyStatisticsEndIndex] = useState(6);
 
   // ------------------ use navigate  ------------------
   const navigate = useNavigate();
@@ -452,7 +485,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
       height: "100vh",
       backgroundColor: darkBg, 
       color: "white", 
-      background: 'linear-gradient(to bottom, #121212, #0d0d0d)',
+      // background: 'linear-gradient(to bottom, #121212, #0d0d0d)',
       overflow: "hidden",
     }}>
 
@@ -461,7 +494,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
         <Box sx={{ 
           width: "240px", 
           flexShrink: 0,
-          borderRight: `1px solid ${green[900]}`,
+          // borderRight: `1px solid ${green[900]}`,
         }}>
           <DashboardSidebar />
         </Box>
@@ -482,7 +515,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             width: 240,
             boxSizing: 'border-box',
             background: darkGradient || 'linear-gradient(to bottom, #121212, #0d0d0d)',
-            borderRight: `1px solid ${green[900]}`,
+            // borderRight: `1px solid ${green[900]}`,
           },
         }}
       >
@@ -546,9 +579,9 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
               display: "flex", 
               flexGrow: 1,
               alignItems: "center",
-              background: 'rgba(20, 30, 20, 0.3)',
+              // background: 'rgba(20, 30, 20, 0.3)',
               borderRadius: '8px',
-              border: `1px solid ${grey[900]}`,
+              border: `1px solid ${teal[900]}`,
               overflow: 'hidden',
               height: '38px',
             }}>
@@ -575,103 +608,8 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   },
                   backgroundColor: 'transparent'
                 }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FaSearch style={{ color: teal[300], fontSize: '14px' }} />
-                    </InputAdornment>
-                  ),
-                }}
               />
-              <IconButton
-                size="small"
-                sx={{
-                  color: white,
-                  backgroundColor: green[700],
-                  borderRadius: 0,
-                  height: '100%',
-                  width: '38px',
-                  '&:hover': { backgroundColor: green[600] },
-                  padding: 0,
-                }}
-                onClick={() => handleSearch(stock)}
-              >
-                <FaSearch size={14} />
-              </IconButton>
             </Box>
-          </Box>
-        )}
-        
-        {/* Desktop search bar */}
-        {!isSmallScreen && (
-          <Box sx={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: 0.5, 
-            mb: 2, 
-            mt: 0,
-            background: 'rgba(40, 60, 40, 0.8)',
-            borderRadius: '10px',
-            border: `2px solid ${green[500]}`,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-            width: '100%',
-            alignSelf: 'flex-start',
-            height: '50px',
-            zIndex: 10,
-          }}>
-            <TextField
-              fullWidth
-              placeholder="Search for a stock (e.g., TSLA, AAPL)"
-              value={stock}
-              onChange={(e) => setStock(e.target.value?.trim())}
-              onKeyDown={(e) => handleSearchOnEnter(e)}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 0,
-                  '& fieldset': { border: 'none' }
-                },
-                '& .MuiInputBase-input': {
-                  color: white,
-                  fontSize: '1rem',
-                  padding: '12px 16px',
-                  '&::placeholder': {
-                    color: grey[300],
-                    opacity: 1
-                  }
-                },
-                height: '100%',
-                backgroundColor: 'transparent'
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <FaSearch style={{ 
-                      color: teal[300], 
-                      fontSize: '16px' 
-                    }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: green[700],
-                color: white,
-                px: 3,
-                py: 1.6,
-                borderRadius: 2,
-                "&:hover": { 
-                  backgroundColor: green[600],
-                  transform: 'translateX(2px)'
-                },
-                textTransform: "none",
-                transition: 'all 0.2s ease'
-              }}
-              onClick={() => handleSearch(stock)}
-            >
-              Search
-            </Button>
           </Box>
         )}
         
@@ -683,15 +621,16 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             width: '100%',
             maxWidth: '1200px',
             margin: '0 auto',
-            gap: 2
+            gap: 0
           }}>
 
             {/* Stock Chart */}
             <Box sx={{ width: '100%' }}>
               <Paper sx={{ 
-                py: 3, 
-                px: isSmallScreen ? 0.7 : 1.5, 
-                backgroundColor: 'rgba(20, 30, 20, 0.4)', 
+                py: 2, 
+                px: isSmallScreen ? 0.7 : 1, 
+                // backgroundColor: 'rgba(20, 30, 20, 0.4)', 
+                backgroundColor: 'inherit', 
                 minHeight: "26em", 
                 borderRadius: 2,
                 mb: 1,
@@ -702,19 +641,30 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   display: "flex", 
                   justifyContent: isSmallScreen ? "space-between" : "end",
                   gap: isSmallScreen ? 1 : 1.5, 
-                  mb: 2,
+                  mb: 1,
                   width: "100%", // Full width container
                 }}>
+                  {/* Desktop search bar */}
+                  {!isSmallScreen && (
+                    <SearchBar 
+                      handleSearchOnEnter={handleSearchOnEnter}
+                      ticker={stock}
+                      setTicker={setStock}
+                      placeholder="Search stock"
+                    />
+                  )}
                   <Button
                     variant="contained"
                     startIcon={<AutoAwesome />}
                     sx={{ 
                       color: 'white', 
+                      minWidth: "12em",
+                      maxHeight: "3em",
                       backgroundColor: teal[700],
                       textTransform: "none", 
                       borderRadius: '10px',
                       px: isSmallScreen ? 1.2 : 2.5, // Smaller padding on mobile
-                      fontSize: isSmallScreen ? '0.8rem' : 'inherit',
+                      fontSize: isSmallScreen ? '0.8rem' : '10pt',
                       flexGrow: isSmallScreen ? 1 : 0, // Take full width on mobile
                       transition: 'all 0.2s ease',
                       '&:hover': {
@@ -734,17 +684,18 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                     startIcon={<List/>}
                     variant="outlined"
                     sx={{ 
+                      minWidth: "12em",
+                      maxHeight: "3em",
                       color: grey[200], 
-                      borderColor: green[900], 
+                      borderColor: teal[500], 
                       borderRadius: '10px',
                       textTransform: "none",
                       px: isSmallScreen ? 1 : 2,
-                      fontSize: isSmallScreen ? '0.8rem' : 'inherit',
+                      fontSize: isSmallScreen ? '0.8rem' : '10pt',
                       flexGrow: isSmallScreen ? 1 : 0, // Take full width on mobile
                       transition: 'all 0.2s ease',
                       '&:hover': {
-                        borderColor: green[700],
-                        backgroundColor: 'rgba(0, 128, 0, 0.1)',
+                        backgroundColor: 'rgba(100, 100, 100, 0.1)',
                         transform: 'translateX(3px)'
                       }
                     }}
@@ -785,13 +736,13 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
 
             {/* Company Profile */}
             <Paper sx={{ 
-              px: 3, 
-              py: 3, 
-              backgroundColor: 'rgba(20, 30, 20, 0.4)',
+              px: 2, 
+              pt: 2, 
+              backgroundColor: background,
               maxWidth: '100%',
               minHeight: "26em", 
               borderRadius: 2,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+              // boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
             }}>
               <Typography color={teal[300]} fontWeight="bold" variant="h6" sx={{ mb: 1 }}>
                 Company Profile
@@ -815,26 +766,36 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   columnGap={6} 
                   rowGap={3}
                   sx={{
-                    background: 'rgba(0, 30, 0, 0.3)',
-                    p: 3,
+                    // background: 'rgba(0, 30, 0, 0.3)',
                     borderRadius: 2,
-                    border: `1px solid ${green[900]}`,
+                    // border: `1px solid ${green[900]}`,
                   }}
                 >
-                  <Typography variant="body2"><strong>Market cap</strong> <br/> {stockData?.marketCap ? formatNumber(stockData.marketCap) : "—"}</Typography>
-                  <Typography variant="body2"><strong>Dividend yield</strong> <br/> {stockData?.dividendYield ? `${stockData?.dividendYield}%` : "—"}</Typography>
-                  <Typography variant="body2"><strong>Average 10D volume</strong> <br/> {stockData?.averageDailyVolume10Day ? formatNumber(stockData.averageDailyVolume10Day) : "—" }</Typography>
-                  <Typography variant="body2"><strong>Volume</strong> <br/> {stockData?.regularMarketVolume ? formatNumber(stockData.regularMarketVolume) : "—" }</Typography>
-                  <Typography variant="body2"><strong>Today High</strong> <br/> {stockData?.regularMarketDayHigh ? stockData.regularMarketDayHigh.toFixed(2) : "—" }</Typography>
-                  <Typography variant="body2"><strong>Today Low</strong> <br/> {stockData?.regularMarketDayLow ? stockData.regularMarketDayLow.toFixed(2) : "—"}</Typography>
-                  <Typography variant="body2"><strong>Open Price</strong> <br/> {stockData?.regularMarketOpen || "—"}</Typography>
-                  <Typography variant="body2"><strong>Market Price</strong> <br/> {stockData?.regularMarketPrice || "—"}</Typography>
-                  <Typography variant="body2"><strong>52 Week low</strong> <br/> {stockData?.fiftyTwoWeekLow || "—"}</Typography>
-                  <Typography variant="body2"><strong>52 Week high</strong> <br/> {stockData?.fiftyTwoWeekHigh || "—"}</Typography>
-                  <Typography variant="body2"><strong>52 Week range</strong> <br/> {stockData?.fiftyTwoWeekRange || "—"}</Typography>
+                  {keyStatisticsArray.slice(keyStatisticsStartIndex, keyStatisticsEndIndex).map((statLabel, index) => {
+                    const statMap = {
+                      "Market Cap": stockData?.marketCap ? formatNumber(stockData.marketCap) : "—",
+                      "P/E Ratio": stockData?.peRatio ? stockData.peRatio : "—",
+                      "Dividend Yield": stockData?.dividendYield ? `${stockData.dividendYield}%` : "—",
+                      "52 Week High": stockData?.fiftyTwoWeekHigh ? stockData.fiftyTwoWeekHigh : "—",
+                      "52 Week Low": stockData?.fiftyTwoWeekLow ? stockData.fiftyTwoWeekLow : "—",
+                      "Average 10D volume": stockData?.averageDailyVolume10Day ? formatNumber(stockData.averageDailyVolume10Day) : "—",
+                      "Volume": stockData?.regularMarketVolume ? formatNumber(stockData.regularMarketVolume) : "—",
+                      "Today High": stockData?.regularMarketDayHigh ? stockData.regularMarketDayHigh.toFixed(2) : "—",
+                      "Today Low": stockData?.regularMarketDayLow ? stockData.regularMarketDayLow.toFixed(2) : "—",
+                      "Open Price": stockData?.regularMarketOpen || "—",
+                      "Market Price": stockData?.regularMarketPrice || "—",
+                      "52 Week low": stockData?.fiftyTwoWeekLow || "—",
+                      "52 Week high": stockData?.fiftyTwoWeekHigh || "—"
+                    }
+                    return (
+                      <Typography key={index} variant="body2">
+                        <strong>{statLabel}</strong> <br/> {statMap[statLabel]}
+                      </Typography>
+                    );
+                  })}
                 </Box>
 
-                <Box mt={5}>
+                <Box mt={4}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
                     <Typography variant="h6" fontWeight="bold" color={teal[300]}>
                       Recent News
@@ -843,29 +804,29 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                       size="small" 
                       variant="text" 
                       sx={{ 
-                        color: green[400], 
+                        color: teal[500], 
                         textTransform: 'none',
                         '&:hover': { 
-                          backgroundColor: 'rgba(0, 128, 0, 0.1)',
-                          color: green[300]
+                          color: teal[300]
                         }
                       }}
+                      onClick={() => navigate("/dashboard/news")}
                     >
                       View all news
                     </Button>
                   </Box>
                 
-                  <Divider sx={{ my: 2, bgcolor: green[900], opacity: 0.7 }} />
+                  <Divider sx={{ my: 2, bgcolor: teal[500], opacity: 0.7 }} />
                   
                   { stockNews?.length > 0 ? (
                     stockNews.slice(0,10).map((news, index) => (
                       <Link key={news.id} href={news?.url} target="_blank" underline="none" color={white}>
-                        <Box key={index} py={2.5} px={2.5} mb={0.5} 
+                        <Box key={index} py={2.5} px={0} mb={0.5} 
                         sx={{
-                          borderRadius: 2,
                           transition: 'all 0.2s ease',
                           "&:hover": {
-                            backgroundColor: 'rgba(0, 30, 0, 0.3)',
+                            px: 2,
+                            backgroundColor: '#0cac990d',
                             transform: 'translateX(5px)',
                           }
                         }}>
@@ -892,7 +853,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
         <Box sx={{ 
           width: "320px", 
           flexShrink: 0,
-          borderLeft: `1px solid ${green[900]}`,
+          // borderLeft: `1px solid ${green[900]}`,
           overflow: "auto",
           '&::-webkit-scrollbar': { display: 'none' },
           scrollbarWidth: 'none',
@@ -927,7 +888,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             maxWidth: '320px',
             boxSizing: 'border-box',
             background: darkGradient,
-            borderLeft: `1px solid ${green[900]}`,
+            // borderLeft: `1px solid ${green[900]}`,
           },
         }}
       >
@@ -942,7 +903,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             p: 2,
-            borderBottom: `1px solid ${green[900]}`,
+            borderBottom: `1px solid ${teal[500]}`,
             background: `linear-gradient(90deg, ${teal[900]}, ${green[900]})`,
           }}>
             <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>

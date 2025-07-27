@@ -2,14 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Button,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
   Container,
   Grid,
   Card,
@@ -18,19 +10,14 @@ import {
   Box,
   useMediaQuery,
   useTheme,
-  Divider,
 } from "@mui/material";
-import { FaChartLine, FaUserPlus, FaSignInAlt } from "react-icons/fa";
-import { HiOutlineMenu } from "react-icons/hi";
-import { FiArrowRight } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Footer from "../../components/Footer";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { green, teal, grey, red } from '@mui/material/colors';
-import DashboardSidebar from "../../components/DashboardSidebar";
+import FiArrowRight from "@mui/icons-material/ArrowRight";
 
-const rapidKey = process.env.REACT_APP_RAPID_API_KEY;
 const API_URL = process.env.REACT_APP_API_URL;
 
 // Constants for colors matching dashboard

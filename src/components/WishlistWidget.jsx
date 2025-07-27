@@ -8,7 +8,7 @@ import { IoBookmarkOutline, IoTrendingUp, IoTrendingDown } from "react-icons/io5
 const darkBg = "#0d0d0d";
 const white = "#ffffff";
 const cardBg = "rgba(20, 30, 20, 0.4)";
-const cardActiveBg = "rgba(0, 50, 30, 0.4)";
+const cardActiveBg = "#0cb09b1f";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const WishlistWIdget = ({ wishlist, removeFromWishlist, handleSearch, ticker: currentTicker, marketChange, isMobile = false }) => {
@@ -119,15 +119,15 @@ const WishlistWIdget = ({ wishlist, removeFromWishlist, handleSearch, ticker: cu
       sx={{
         width: '100%',
         height: isMobile ? 'auto' : '100vh',
-        padding: isMobile ? 0 : 2,
+        padding: isMobile ? 0 : "2em 0.5em",
         overflowY: "auto",
-        background: isMobile ? 'transparent' : 'rgba(20, 30, 20, 0.2)',
-        borderLeft: isMobile ? 'none' : `1px solid ${green[900]}`,
+        background: isMobile ? 'transparent' : 'inherit',
+        // borderLeft: isMobile ? 'none' : `1px solid ${teal[500]}`,
       }}
     >
       {!isMobile && (
-        <Typography variant="h6" fontWeight="bold" color={teal[400]} sx={{ mb: 2 }}>
-          My Watchlist
+        <Typography variant="h6" fontWeight="bold" color={teal[400]} sx={{ mb: 2, fontSize: "1.2rem", fontWeight: 600 }}>
+          Watchlist
         </Typography>
       )}
       
@@ -136,18 +136,18 @@ const WishlistWIdget = ({ wishlist, removeFromWishlist, handleSearch, ticker: cu
           <Paper 
             key={index} 
             sx={{
-              backgroundColor: currentTicker === stockTicker ? cardActiveBg : cardBg,
+              backgroundColor: currentTicker === stockTicker ? cardActiveBg : '#0cac990d',
               borderRadius: 2,
-              p: isMobile ? 1.5 : 2,
-              mb: isMobile ? 1 : 2,
-              maxWidth: isMobile ? '90%' : "80%",
+              p: isMobile ? 1.5 : 1,
+              mb: isMobile ? 1 : 1.5,
+              maxWidth: isMobile ? '90%' : "100%",
               cursor: "pointer",
-              border: currentTicker === stockTicker ? `1px solid ${green[700]}` : `1px solid transparent`, 
+              border: currentTicker === stockTicker ? `1px solid #0cac990d` : `1px solid transparent`, 
               '&:hover': {
                 transform: 'translateY(-3px)',
-                backgroundColor: 'rgba(30, 40, 30, 0.5)',
+                backgroundColor: '#0cac990d',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                borderColor: green[900]
+                borderColor: teal[500]
               },
               transition: 'all 0.2s ease',
             }}
@@ -161,7 +161,7 @@ const WishlistWIdget = ({ wishlist, removeFromWishlist, handleSearch, ticker: cu
               borderBottom: `1px solid ${grey[900]}`
             }}>
               <Typography 
-                variant="h6" 
+                variant="body1" 
                 fontWeight="600"
                 sx={{ color: grey[100] }}
               >

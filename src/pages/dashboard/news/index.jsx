@@ -9,6 +9,7 @@ import { HiOutlineMenu } from "react-icons/hi";
 import { FaSearch } from "react-icons/fa";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import SearchBar from "../../../components/SearchBar";
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -219,78 +220,12 @@ const News = () => {
                             Stay updated with the latest financial news and insights
                         </Typography> 
                         {/* Search Bar */}
-                        <Box
-                            component="form"
-                            sx={{ display: "flex", 
-                                alignItems: "center", 
-                                gap: 0.5, 
-                                mb: 2, 
-                                mt: 0,
-                                borderRadius: '10px',
-                                border: `1px solid ${green[500]}`,
-                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                                width: '100%',
-                                alignSelf: 'flex-start',
-                                height: '50px',
-                                zIndex: 10, }}
-                            noValidate
-                            autoComplete="off"
-                            >
-                            <TextField fullWidth
-                                placeholder="Search for a news..."
-                                value={ticker}
-                                onChange={(e) => setTicker(e.target.value)}
-                                onKeyDown={(e) => handleSearchOnEnter(e)}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                    borderRadius: 0,
-                                    '& fieldset': { border: 'none' }
-                                    },
-                                    '& .MuiInputBase-input': {
-                                        color: white,
-                                        fontSize: '1rem',
-                                        padding: '4px 8px',
-                                        '&::placeholder': {
-                                            color: grey[300],
-                                            opacity: 1
-                                        }
-                                    },
-                                    height: '2em',
-                                    backgroundColor: 'transparent'
-                                }}
-                                InputProps={{
-                                    startAdornment: (
-                                    <InputAdornment position="start">
-                                        <FaSearch style={{ 
-                                            color: teal[300], 
-                                            fontSize: '16px' 
-                                        }} />
-                                    </InputAdornment>
-                                    ),
-                                }}
-                            />
-                            <Button
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: green[500],
-                                    color: "black",
-                                    px: 2.5,
-                                    py: 1.6,
-                                    borderTopRightRadius: 4,
-                                    borderBottomRightRadius: 4,
-                                    // borderRadius: 2,
-                                    "&:hover": { 
-                                    backgroundColor: green[600],
-                                    transform: 'translateX(2px)'
-                                    },
-                                    textTransform: "none",
-                                    transition: 'all 0.2s ease'
-                                }}
-                                onClick={() => getStockNews(ticker)} // Example search term
-                                >
-                                Search
-                            </Button>
-                        </Box>
+                        <SearchBar 
+                            ticker={ticker}
+                            handleSearchOnEnter={handleSearchOnEnter}
+                            setTicker={setTicker}
+                            placeholder="Search for news"
+                        />
                         <Box
                             sx={{
                                 display: "flex",

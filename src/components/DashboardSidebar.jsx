@@ -156,7 +156,7 @@ function DashboardSidebar({ onClose }) {
               startIcon={<IoChatbubbleEllipsesOutline size={20} />}
               sx={getButtonStyle("/dashboard/chat")}
             >
-              AI Chat
+              Chat
             </Button>
           </Tooltip>
 
