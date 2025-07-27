@@ -44,20 +44,6 @@ const keyStatisticsArray = [
   "52 Week Range"
 ]
 
-const statisticsNames = [
-  "Market cap",
-  "Dividend yield", 
-  "Average 10D volume",
-  "Volume",
-  "Today High",
-  "Today Low",
-  "Open Price",
-  "Market Price",
-  "52 Week low",
-  "52 Week high",
-  "52 Week range"
-]
-
 export default function DashboardPage() {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));
@@ -106,8 +92,8 @@ export default function DashboardPage() {
     };
 
    const handleNext = () => {
-        setNewsStartIndex( prev => prev += 10);
-        setNewsEndIndex(prev => prev += 10);
+        setNewsStartIndex( prev => prev += 5);
+        setNewsEndIndex(prev => prev += 5);
         scrollToTop();
     }
 
@@ -116,8 +102,8 @@ export default function DashboardPage() {
             setNewsStartIndex(0);
             setNewsEndIndex(10);
         }
-        setNewsStartIndex( prev => prev -= 10);
-        setNewsEndIndex(prev => prev -= 10);
+        setNewsStartIndex( prev => prev -= 5);
+        setNewsEndIndex(prev => prev -= 5);
         scrollToTop();
     }
 
