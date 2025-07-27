@@ -10,6 +10,7 @@ import { FaSearch } from "react-icons/fa";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import SearchBar from "../../../components/SearchBar";
+import SearchPagination from "../../../components/SearchPagination";
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -225,231 +226,27 @@ const News = () => {
                             handleSearchOnEnter={handleSearchOnEnter}
                             setTicker={setTicker}
                             placeholder="Search for news"
-                        />
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginTop: 2,
-                            }}
-                        >
-                            <Button
-                                startIcon={<NavigateBeforeIcon />}
-                                onClick={handleBack}
-                                disabled={newsStartIndex < 1 ? true : false}
-                                sx={{
-                                    textTransform: "none",
-                                    fontWeight: "bold",
-                                    color: teal[400],
-                                }}
-                            >
-                            </Button>
-
-                        <Typography sx={{ color: teal[400], mt: 0.5, fontSize: "10pt"}}>
-                                {newsStartIndex} - {newsEndIndex}
-                        </Typography>
-
-                            <Button
-                                endIcon={<NavigateNextIcon />}
-                                onClick={handleNext}
-                                sx={{
-                                    textTransform: "none",
-                                    fontWeight: "bold",
-                                    color: teal[400]
-                                }}
-                            >
-                            </Button>
-                        </Box>                           
+                        />                     
                         <Divider sx={{ bgcolor: green[900], opacity: 0.5 }} />
                     </Box>
                     
                     {/* News Articles */}      
                     {searchResults && searchResults.length > 0 ? (
-                        <Box sx={{ maxWidth: "100%", mx: "auto" }}>
-                            {searchResults.slice(newsStartIndex, newsEndIndex).map((news, index) => (
-                                <Paper 
-                                    key={news.id || index}
-                                    elevation={0}
-                                    sx={{
-                                        backgroundColor: 'transparent',
-                                        borderBottom: `1px solid ${grey[900]}`,
-                                        borderRadius: 0,
-                                        transition: 'all 0.2s ease',
-                                        width: "100%", // Full fixed width
-                                        maxWidth: "100%", // Ensure it doesn't overflow container
-                                        marginBottom: 0,
-                                        '&:hover': {
-                                            backgroundColor: 'rgba(20, 35, 20, 0.3)',
-                                            '& .news-title': {
-                                                color: teal[300],
-                                            }
-                                        }
-                                    }}
-                                >
-                                    <Link 
-                                        href={news?.url} 
-                                        target="_blank" 
-                                        underline="none" 
-                                        color={white}
-                                        sx={{ 
-                                            display: 'block',
-                                            width: "100%"
-                                        }}
-                                    >
-                                        <Box 
-                                            py={3} 
-                                            px={{ xs: 2, sm: 3 }}
-                                            sx={{
-                                                width: "100%",
-                                                boxSizing: "border-box"
-                                            }}
-                                        >
-                                            <Box display="flex" justifyContent="space-between" mb={1} flexWrap="wrap">
-                                                <Typography 
-                                                    fontSize={{ xs: '0.75rem', sm: '0.85rem' }} 
-                                                    sx={{ 
-                                                        color: teal[400],
-                                                        fontWeight: 500,
-                                                        mb: 0.5
-                                                    }}
-                                                >
-                                                    {news?.source ? (news.source.charAt(0).toUpperCase() + news.source.slice(1)) : 'News Source'}
-                                                </Typography>
-                                                
-                                                {news?.publishedDate && (
-                                                    <Typography 
-                                                        fontSize={{ xs: '0.7rem', sm: '0.75rem' }} 
-                                                        color={grey[500]}
-                                                    >
-                                                        {formatDate(news.publishedDate)}
-                                                    </Typography>
-                                                )}
-                                            </Box>
-                                            
-                                            <Typography 
-                                                className="news-title"
-                                                fontWeight="bold" 
-                                                color={white}
-                                                mb={1}
-                                                sx={{ 
-                                                    fontSize: { xs: '0.95rem', sm: '1.1rem' },
-                                                    transition: 'color 0.2s ease'
-                                                }}
-                                            >
-                                                {news?.title}
-                                            </Typography>
-                                            
-                                            <Typography 
-                                                fontSize={{ xs: '0.8rem', sm: '0.9rem' }} 
-                                                color={grey[400]}
-                                                sx={{
-                                                    lineHeight: 1.5,
-                                                    display: '-webkit-box',
-                                                    WebkitLineClamp: 2,
-                                                    WebkitBoxOrient: 'vertical',
-                                                    overflow: 'hidden',
-                                                }}
-                                            >
-                                                {news?.description}
-                                            </Typography>
-                                        </Box>
-                                    </Link>
-                                </Paper>
-                            ))}
-                        </Box>
+                        <SearchPagination
+                            searchResults={searchResults}
+                            startingIndex={newsStartIndex}
+                            endingIndex={newsEndIndex}
+                            handleBack={handleBack}
+                            handleNext={handleNext}
+                        />
                     ) : marketNews && marketNews.length > 0 ? (
-                        <Box sx={{ maxWidth: "100%", mx: "auto" }}>
-                            {marketNews.slice(newsStartIndex, newsEndIndex).map((news, index) => (
-                                <Paper 
-                                    key={news.id || index}
-                                    elevation={0}
-                                    sx={{
-                                        backgroundColor: 'transparent',
-                                        borderBottom: `1px solid ${grey[900]}`,
-                                        borderRadius: 0,
-                                        transition: 'all 0.2s ease',
-                                        width: "100%", // Full fixed width
-                                        maxWidth: "100%", // Ensure it doesn't overflow container
-                                        marginBottom: 0,
-                                        '&:hover': {
-                                            backgroundColor: 'rgba(20, 35, 20, 0.3)',
-                                            '& .news-title': {
-                                                color: teal[300],
-                                            }
-                                        }
-                                    }}
-                                >
-                                    <Link 
-                                        href={news?.url} 
-                                        target="_blank" 
-                                        underline="none" 
-                                        color={white}
-                                        sx={{ 
-                                            display: 'block',
-                                            width: "100%"
-                                        }}
-                                    >
-                                        <Box 
-                                            py={3} 
-                                            px={{ xs: 2, sm: 3 }}
-                                            sx={{
-                                                width: "100%",
-                                                boxSizing: "border-box"
-                                            }}
-                                        >
-                                            <Box display="flex" justifyContent="space-between" mb={1} flexWrap="wrap">
-                                                <Typography 
-                                                    fontSize={{ xs: '0.75rem', sm: '0.85rem' }} 
-                                                    sx={{ 
-                                                        color: teal[400],
-                                                        fontWeight: 500,
-                                                        mb: 0.5
-                                                    }}
-                                                >
-                                                    {news?.source ? (news.source.charAt(0).toUpperCase() + news.source.slice(1)) : 'News Source'}
-                                                </Typography>
-                                                
-                                                {news?.publishedDate && (
-                                                    <Typography 
-                                                        fontSize={{ xs: '0.7rem', sm: '0.75rem' }} 
-                                                        color={grey[500]}
-                                                    >
-                                                        {formatDate(news.publishedDate)}
-                                                    </Typography>
-                                                )}
-                                            </Box>
-                                            
-                                            <Typography 
-                                                className="news-title"
-                                                fontWeight="bold" 
-                                                color={white}
-                                                mb={1}
-                                                sx={{ 
-                                                    fontSize: { xs: '0.95rem', sm: '1.1rem' },
-                                                    transition: 'color 0.2s ease'
-                                                }}
-                                            >
-                                                {news?.title}
-                                            </Typography>
-                                            
-                                            <Typography 
-                                                fontSize={{ xs: '0.8rem', sm: '0.9rem' }} 
-                                                color={grey[400]}
-                                                sx={{
-                                                    lineHeight: 1.5,
-                                                    display: '-webkit-box',
-                                                    WebkitLineClamp: 2,
-                                                    WebkitBoxOrient: 'vertical',
-                                                    overflow: 'hidden',
-                                                }}
-                                            >
-                                                {news?.description}
-                                            </Typography>
-                                        </Box>
-                                    </Link>
-                                </Paper>
-                            ))}
-                        </Box>
+                        <SearchPagination
+                            searchResults={marketNews}
+                            startingIndex={newsStartIndex}
+                            endingIndex={newsEndIndex}
+                            handleBack={handleBack}
+                            handleNext={handleNext}
+                        />
                     ) : (
                         <Box 
                             display="flex" 
@@ -469,42 +266,6 @@ const News = () => {
                             </Typography>
                         </Box>
                     )}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            marginTop: 2,
-                        }}
-                    >
-                        <Button
-                            startIcon={<NavigateBeforeIcon />}
-                            onClick={handleBack}
-                            disabled={newsStartIndex < 1 ? true : false}
-                            sx={{
-                                 textTransform: "none",
-                                 fontWeight: "bold",
-                                 color: teal[400],
-                            }}
-                        >
-                            Back
-                        </Button>
-
-                       <Typography sx={{ color: teal[400], mt: 0.5, fontSize:"10pt" }}>
-                            {newsStartIndex} - {newsEndIndex}
-                       </Typography>
-
-                        <Button
-                            endIcon={<NavigateNextIcon />}
-                            onClick={handleNext}
-                            sx={{
-                                textTransform: "none",
-                                fontWeight: "bold",
-                                color: teal[400]
-                            }}
-                        >
-                            Next
-                        </Button>
-                    </Box>
                 </Container>
             </Box>
         </Box>

@@ -20,6 +20,7 @@ import StockAnalysisModal from "../../components/AnalysisModal";
 import { getCurrentDate, isStockMarketOpen } from "../../util/apis";
 import { AutoAwesome, List } from '@mui/icons-material';
 import SearchBar from "../../components/SearchBar";
+import SearchPagination from "../../components/SearchPagination";
 
 // ------------------ Color Variables ------------------
 const white = "#ffffff";
@@ -90,6 +91,36 @@ export default function DashboardPage() {
 
   const [keyStatisticsStartIndex, setKeyStatisticsStartIndex] = useState(0);
   const [keyStatisticsEndIndex, setKeyStatisticsEndIndex] = useState(6);
+
+  const [newsStartIndex, setNewsStartIndex] = useState(0);
+  const [newsEndIndex, setNewsEndIndex] = useState(5);
+
+  const scrollToTop = () => {
+        const scrollableElement = document.querySelector('[data-scrollable="true"]');
+        if (scrollableElement) {
+            scrollableElement.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+   const handleNext = () => {
+        setNewsStartIndex( prev => prev += 10);
+        setNewsEndIndex(prev => prev += 10);
+        scrollToTop();
+    }
+
+    const handleBack = () => {
+        if (newsEndIndex === 0) {
+            setNewsStartIndex(0);
+            setNewsEndIndex(10);
+        }
+        setNewsStartIndex( prev => prev -= 10);
+        setNewsEndIndex(prev => prev -= 10);
+        scrollToTop();
+    }
+
 
   // ------------------ use navigate  ------------------
   const navigate = useNavigate();
@@ -819,23 +850,30 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   <Divider sx={{ my: 2, bgcolor: teal[500], opacity: 0.7 }} />
                   
                   { stockNews?.length > 0 ? (
-                    stockNews.slice(0,10).map((news, index) => (
-                      <Link key={news.id} href={news?.url} target="_blank" underline="none" color={white}>
-                        <Box key={index} py={2.5} px={0} mb={0.5} 
-                        sx={{
-                          transition: 'all 0.2s ease',
-                          "&:hover": {
-                            px: 2,
-                            backgroundColor: '#0cac990d',
-                            transform: 'translateX(5px)',
-                          }
-                        }}>
-                          <Typography fontSize="11pt" color={teal[400]}>{news?.source.charAt(0).toUpperCase() + news?.source.slice(1)}</Typography>
-                          <Typography fontWeight="bold" color={grey[100]} sx={{ my: 0.5 }}>{news?.title}</Typography>
-                          <Typography fontSize="10pt" color={grey[500]} sx={{ opacity: 0.9 }}>{news?.description}</Typography>
-                        </Box>
-                      </Link>
-                    ))
+                    <SearchPagination
+                        searchResults={stockNews}
+                        startingIndex={newsStartIndex}
+                        endingIndex={newsEndIndex}
+                        handleBack={handleBack}
+                        handleNext={handleNext}
+                    />
+                    // stockNews.slice(0,10).map((news, index) => (
+                    //   <Link key={news.id} href={news?.url} target="_blank" underline="none" color={white}>
+                    //     <Box key={index} py={2.5} px={0} mb={0.5} 
+                    //     sx={{
+                    //       transition: 'all 0.2s ease',
+                    //       "&:hover": {
+                    //         px: 2,
+                    //         backgroundColor: '#0cac990d',
+                    //         transform: 'translateX(5px)',
+                    //       }
+                    //     }}>
+                    //       <Typography fontSize="11pt" color={teal[400]}>{news?.source.charAt(0).toUpperCase() + news?.source.slice(1)}</Typography>
+                    //       <Typography fontWeight="bold" color={grey[100]} sx={{ my: 0.5 }}>{news?.title}</Typography>
+                    //       <Typography fontSize="10pt" color={grey[500]} sx={{ opacity: 0.9 }}>{news?.description}</Typography>
+                    //     </Box>
+                    //   </Link>
+                    // ))
                   ) : (
                     <Box sx={{ textAlign: 'center', py: 6 }}>
                       <Typography color={grey[500]} sx={{ fontStyle: 'italic' }}>No news available for this stock</Typography>
