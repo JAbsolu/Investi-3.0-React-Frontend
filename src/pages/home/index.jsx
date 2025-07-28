@@ -2,27 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Navbar from "../../components/Navbar"
 import Footer from "../../components/Footer";
+import { green, grey, teal } from "@mui/material/colors";
 
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
 const white = "#ffffff";
-const teal = {
-  300: '#5eead4',
-  400: '#2dd4bf',
-  500: '#14b8a6',
-  600: '#0d9488',
-  700: '#0f766e',
-  800: '#115e59',
-  900: '#134e4a'
-};
-const grey = {
-  300: '#d1d5db',
-  400: '#9ca3af',
-  500: '#6b7280',
-  900: '#111827'
-};
 
 const featureCards = [
   {
@@ -367,7 +353,7 @@ export default function Home() {
               textAlign: "center",
               marginBottom: isMobile ? '1em' : '1em',
               color: white,
-              fontSize: isMobile ? '2rem' : '3rem',
+              fontSize: isMobile ? '2rem' : '2.5rem',
             }}>
               Gen AI-Powered Insights for{" "}
               <span style={{ color: teal[400]}}>
@@ -382,25 +368,26 @@ export default function Home() {
           position: 'relative',
           overflow: 'hidden',
           width: '100%',
-          height: '420px'
+          height: isMobile ? 'auto' : '420px'
         }}>
           <motion.div
             animate={{
-              x: [0, -50 + '%']
+              x: !isMobile ? [0, -50 + '%'] : ""
             }}
             transition={{
-              x: {
+              x: !isMobile ? {
                 repeat: Infinity,
                 repeatType: "loop",
                 duration: 20,
                 ease: "linear",
-              },
+              } : "",
             }}
             style={{
-              display: 'flex',
+              display: isMobile ? 'block' : 'flex',
               gap: '24px',
-              paddingLeft: '24px',
-              width: `${200}%`
+              paddingLeft: isMobile ? '0' : '24px',
+              padding: isMobile ? '0 1em' : '',
+              width: isMobile ? '100%' : `${200}%`
             }}
           >
             {/* Render cards twice for seamless loop */}
@@ -416,12 +403,13 @@ export default function Home() {
                   border: `1px solid ${teal[800]}40`,
                   borderRadius: '16px',
                   padding: '24px',
-                  width: '340px',
-                  height: '380px',
+                  width: isMobile ? '100%' : '340px',
+                  height: 'auto',
                   display: 'flex',
                   flexDirection: 'column',
                   flexShrink: 0,
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
+                  marginBottom: isMobile ? '20px' : '0',
                 }}
                 whileHover={{
                   y: -8,
