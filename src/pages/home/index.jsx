@@ -223,12 +223,32 @@ const testimonials = [
 export default function Home() {
   const isSignedIn = false;
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
+  const testimonialsPerPage = isMobile ? 1 : 3;
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      setCurrentTestimonialIndex(0); // Reset to first page on resize
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const nextTestimonials = () => {
+    const maxIndex = Math.ceil(testimonials.length / testimonialsPerPage) - 1;
+    setCurrentTestimonialIndex(prev => prev < maxIndex ? prev + 1 : 0);
+  };
+
+  const prevTestimonials = () => {
+    const maxIndex = Math.ceil(testimonials.length / testimonialsPerPage) - 1;
+    setCurrentTestimonialIndex(prev => prev > 0 ? prev - 1 : maxIndex);
+  };
+
+  const getCurrentTestimonials = () => {
+    const startIndex = currentTestimonialIndex * testimonialsPerPage;
+    return testimonials.slice(startIndex, startIndex + testimonialsPerPage);
+  };
 
   return (
     <div style={{ 
@@ -330,9 +350,10 @@ export default function Home() {
       {/* AI Powered Insights Section */}
       <div style={{ 
         background: darkGradient,
-        padding: isMobile ? '1em 0' : '1.5em 0',
+        padding: isMobile ? '1em 0' : '1.5em 2em',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        width: '100%',
       }}>
         <div style={{ 
           maxWidth: "100%",
@@ -452,17 +473,16 @@ export default function Home() {
 
       {/* Testimonials Section */}
       <div style={{ 
-        background: darkGradient,
-        padding: isMobile ? '48px 0' : '96px 0',
+        background: `linear-gradient(135deg, ${teal[900]}cc, ${teal[800]}99, ${darkBg})`,
+        padding: isMobile ? '32px 24px' : '64px 48px',
         position: 'relative',
-        overflow: 'hidden'
+        width: '100%',
       }}>
         <div style={{ 
-          maxWidth: "100%",
+          maxWidth: "1200px",
           margin: '0 auto',
           position: 'relative',
           zIndex: 1,
-          textAlign: "center",
         }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -473,7 +493,7 @@ export default function Home() {
             <h2 style={{ 
               fontWeight: "bold", 
               textAlign: "center",
-              marginBottom: isMobile ? '48px' : '64px',
+              marginBottom: isMobile ? '32px' : '48px',
               color: white,
               fontSize: isMobile ? '1.8rem' : '2.5rem'
             }}>
@@ -483,57 +503,37 @@ export default function Home() {
               </span>
             </h2>
           </motion.div>
-        </div>
 
-        {/* Scrolling Testimonials Container */}
-        <div style={{ 
-          position: 'relative',
-          overflow: 'hidden',
-          width: '100%',
-          height: '320px'
-        }}>
-          <motion.div
-            animate={{
-              x: [0, -50 + '%']
-            }}
-            transition={{
-              x: {
-                repeat: Infinity,
-                repeatType: "loop",
-                duration: 25,
-                ease: "linear",
-              },
-            }}
-            style={{
-              display: 'flex',
-              gap: '24px',
-              paddingLeft: '24px',
-              width: `${200}%`
-            }}
-          >
-            {/* Render testimonials twice for seamless loop */}
-            {[...testimonials, ...testimonials].map((testimonial, index) => (
+          {/* Testimonials Grid with Pagination */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile 
+              ? '1fr' 
+              : 'repeat(auto-fit, minmax(350px, 1fr))',
+            gap: isMobile ? '24px' : '32px',
+            maxWidth: '100%',
+            minHeight: '240px'
+          }}>
+            {getCurrentTestimonials().map((testimonial, index) => (
               <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: (index % testimonials.length) * 0.1 }}
-                viewport={{ once: true }}
+                key={`${currentTestimonialIndex}-${index}`}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
                 whileHover={{
                   y: -8,
-                  boxShadow: `0 16px 40px ${teal[900]}40`,
+                  boxShadow: `0 16px 40px ${teal[900]}60`,
                 }}
                 style={{ 
-                  background: 'rgba(10, 20, 15, 0.9)',
-                  border: `1px solid ${teal[800]}40`,
+                  background: `rgba(${parseInt(teal[900].slice(1, 3), 16)}, ${parseInt(teal[900].slice(3, 5), 16)}, ${parseInt(teal[900].slice(5, 7), 16)}, 0.4)`,
+                  border: `1px solid ${teal[700]}40`,
                   borderRadius: '16px',
                   padding: '32px',
-                  width: '350px',
-                  height: '280px',
                   display: 'flex',
                   flexDirection: 'column',
-                  flexShrink: 0,
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
+                  minHeight: '200px'
                 }}
               >
                 <p style={{ 
@@ -572,7 +572,81 @@ export default function Home() {
                 </div>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
+
+          {/* Pagination Controls */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: '32px',
+            gap: '16px'
+          }}>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={prevTestimonials}
+              style={{
+                padding: '10px',
+                background: `rgba(${parseInt(teal[700].slice(1, 3), 16)}, ${parseInt(teal[700].slice(3, 5), 16)}, ${parseInt(teal[700].slice(5, 7), 16)}, 0.8)`,
+                border: `1px solid ${teal[600]}`,
+                borderRadius: '50%',
+                color: white,
+                cursor: 'pointer',
+                fontSize: '1.2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s ease',
+                width: '40px',
+                height: '40px'
+              }}
+            >
+              ‹
+            </motion.button>
+
+            {/* Pagination Dots */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              {Array.from({ length: Math.ceil(testimonials.length / testimonialsPerPage) }, (_, index) => (
+                <motion.div
+                  key={index}
+                  whileHover={{ scale: 1.2 }}
+                  onClick={() => setCurrentTestimonialIndex(index)}
+                  style={{
+                    width: '10px',
+                    height: '10px',
+                    borderRadius: '50%',
+                    background: currentTestimonialIndex === index ? teal[400] : `${teal[600]}60`,
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                />
+              ))}
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={nextTestimonials}
+              style={{
+                padding: '10px',
+                background: `rgba(${parseInt(teal[700].slice(1, 3), 16)}, ${parseInt(teal[700].slice(3, 5), 16)}, ${parseInt(teal[700].slice(5, 7), 16)}, 0.8)`,
+                border: `1px solid ${teal[600]}`,
+                borderRadius: '50%',
+                color: white,
+                cursor: 'pointer',
+                fontSize: '1.2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s ease',
+                width: '40px',
+                height: '40px'
+              }}
+            >
+              ›
+            </motion.button>
+          </div>
         </div>
       </div>
 
