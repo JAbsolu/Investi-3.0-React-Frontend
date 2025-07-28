@@ -617,7 +617,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   },
                   '& .MuiInputBase-input': {
                     color: grey[100],
-                    fontSize: '0.85rem',
+                    fontSize: '16px', // Changed from '0.85rem' to '16px' to prevent mobile zoom
                     padding: '6px 8px',
                     height: '18px',
                     '&::placeholder': {
