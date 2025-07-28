@@ -563,9 +563,9 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
           <Box sx={{ 
             display: 'flex', 
             alignItems: 'center',
-            gap: 1,
+            gap: 0.5,
             mb: 1.5,
-            px: 1 // Small horizontal padding to prevent edge touching
+            px: 0 // Small horizontal padding to prevent edge touching
           }}>
             <IconButton
               color="inherit"
@@ -634,11 +634,11 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             {/* Stock Chart */}
             <Box sx={{ width: '100%' }}>
               <Paper sx={{ 
-                py: 2, 
-                px: isSmallScreen ? 0.7 : 1,  
+                py: isSmallScreen ? 1 : 2, 
+                px: isSmallScreen ? 0 : 1,  
                 backgroundColor: 'inherit', 
                 borderRadius: 2,
-                mb: 1.5,
+                mb: isSmallScreen ? 0 : 1.5,
                 boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
               }}>
                 {/* Action buttons - Full width container on mobile */}
@@ -646,7 +646,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   display: "flex", 
                   justifyContent: isSmallScreen ? "space-between" : "end",
                   gap: isSmallScreen ? 1 : 1.5, 
-                  mb: 1,
+                  mb: isSmallScreen ? 0 : 1,
                   width: "100%", // Full width container
                 }}>
                   {/* Desktop search bar */}
@@ -711,19 +711,19 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                 </Box>
                 
                 {stockData?.regularMarketPrice !== undefined && stockData?.regularMarketChange !== undefined && stockData?.regularMarketChangePercent !== undefined ? (
-                  <Box sx={{ height: "13em", width: '100%', mb: 2 }}> {/* Full width container for chart */}
-                    <span className="flex">
-                      <h1 style={{ color: white}} className="text-xl font-bold ms-6 me-2">
+                  <Box sx={{ height: "13em", width: '100%', mb: isSmallScreen ? 0 : 2, mt: isSmallScreen ? 2.5 : 0 }}> {/* Full width container for chart */}
+                    <div className="flex mb-2">
+                      <h1 style={{ color: white}} className={"text-xl font-bold ms-6 me-2" + (isSmallScreen ? " ms-0" : "")}>
                         {`${currentStock.toUpperCase()}`} 
                       </h1>
                       <p className="mb-4">
-                        <span className="ms-2" style={{ color: white, fontSize: "1.1rem"}}>{stockData?.regularMarketPrice?.toFixed(2)} usd</span> 
+                        <span className={isSmallScreen ? "ms-0" : "ms-2" }style={{ color: white, fontSize: "1.1rem"}}>{stockData?.regularMarketPrice?.toFixed(2)} usd</span> 
                         <span style={{ fontSize: "1.1rem", color: stockData?.regularMarketChange?.toFixed(2) > 0 ? green[500] : red[500] }}>
-                        <span className="ms-2">{stockData?.regularMarketChange?.toFixed(2) > 0 ? '  ▲' : '  ▼'}</span>
+                        <span className={isSmallScreen ? "ms-0" : "ms-2"}>{stockData?.regularMarketChange?.toFixed(2) > 0 ? '  ▲' : '  ▼'}</span>
                           {`${stockData?.regularMarketChange?.toFixed(2)}`}
                         </span> 
                       </p>
-                    </span>
+                    </div>
                     <AreaChartComponent currentStock={currentStock} />
                   </Box>
                 ) : null

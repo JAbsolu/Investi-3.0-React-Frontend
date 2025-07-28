@@ -1,12 +1,15 @@
-import React, { PureComponent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { formatDateToMMDDYY, formatTimeToHHMMAMPM, getStartDay } from '../util';
 import { green, teal } from '@mui/material/colors';
+import { useMediaQuery, useTheme } from '@mui/material';
 
 const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
 
 const AreaChartComponent = ({currentStock}) => {
   const [candleSticksData, setCandleSticksData] = useState([]);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   /*  get candlesticks */
   const getCandleSticks = async(ticker, startDate) => {
@@ -42,7 +45,7 @@ const AreaChartComponent = ({currentStock}) => {
   }, [currentStock]);
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height={isSmallScreen ? "70%" : "100%"}>
         {candleSticksData.length > 0 ? (
           <AreaChart
             // width={600}
