@@ -1,8 +1,9 @@
-import { Box, InputAdornment, TextField } from "@mui/material"
+import { Box, InputAdornment, TextField, useMediaQuery } from "@mui/material"
 import { green, grey, teal } from "@mui/material/colors";
 import { FaSearch } from "react-icons/fa";
 
 const SearchBar = ({ handleSearchOnEnter, ticker, setTicker, placeholder }) => {
+    const isMobile = useMediaQuery("(max-width:600px)");
 
     return (
         <Box
@@ -36,7 +37,7 @@ const SearchBar = ({ handleSearchOnEnter, ticker, setTicker, placeholder }) => {
                     },
                     '& .MuiInputBase-input': {
                         color: "#ffffff",
-                        fontSize: '10pt',
+                        fontSize: isMobile ? '16px' : '10pt',
                         padding: '4px 8px',
                         '&::placeholder': {
                             color: grey[200],
