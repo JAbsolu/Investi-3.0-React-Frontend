@@ -129,7 +129,7 @@ const WishlistWIdget = ({ wishlist, removeFromWishlist, handleSearch, ticker: cu
         <h2 className="font-semibold text-base mb-2"
           style={{ color: teal[300] }}
         >                      
-            Recent News
+            Watchlist
         </h2>
       )}
       

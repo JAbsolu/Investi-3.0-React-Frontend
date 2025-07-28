@@ -1,219 +1,207 @@
-import { AppBar, Box, Button, Drawer, IconButton, List, ListItem, ListItemText, Toolbar, Typography, Divider } from "@mui/material"
-import { useState, useRef, useEffect } from "react"
-import { FaChartLine, FaUserPlus, FaSignInAlt } from "react-icons/fa"
-import { HiOutlineMenu } from "react-icons/hi"
-import { Link } from "react-router-dom"
-import { green, teal, grey } from '@mui/material/colors';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-// Constants for colors matching home page
-const darkBg = "#0d0d0d";
+// Constants for colors
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
 const white = "#ffffff";
+const teal = {
+  400: '#2dd4bf',
+  700: '#0f766e',
+  800: '#115e59'
+};
+const grey = {
+  100: '#f3f4f6',
+  900: '#111827'
+};
 
-const Navbar = () => { 
+const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const drawerRef = useRef(null);
+  const [isMobileNav, setIsMobileNav] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobileNav(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   const toggleDrawer = (open) => () => {
     setMenuOpen(open);
   };
 
-  // Handle clicks outside the drawer to close it
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (drawerRef.current && !drawerRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-    
+  const navigate = useNavigate();
+
   return (
-    <Box>
+    <div>
       {/* Navbar */}
-      <AppBar 
-        position="static" 
-        elevation={0}
-        sx={{ 
-          background: darkGradient,
-          borderBottom: `1px solid ${grey[900]}`,
-          zIndex: 10,
-        }}
-      >
-        <Toolbar
-          sx={{
-            justifyContent: "space-between",
-            mx: "auto",
-            width: "98%",
-          }}
-        >
-          {/* Logo - Make it clickable to home page */}
-          <Box 
-            component={Link} 
-            to="/"
-            display="flex" 
-            alignItems="center" 
-            gap={1}
-            sx={{ textDecoration: 'none' }}
-          >
-            <FaChartLine style={{ color: teal[400], fontSize: "24px" }} />
-            <Typography variant="h6" sx={{ fontWeight: "bold", color: white }}>
+      <div style={{ 
+        background: darkGradient,
+        borderBottom: `1px solid ${grey[900]}`,
+        zIndex: 10,
+        position: 'relative'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          margin: '0 auto',
+          width: '98%',
+          height: '64px',
+          padding: '0 16px'
+        }}>
+          {/* Logo */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            textDecoration: 'none'
+          }}>
+            <span style={{ fontWeight: 'bold', color: white, fontSize: '1.25rem' }}>
               Investi
-            </Typography>
-          </Box>
+            </span>
+          </div>
 
-          {/* Empty space where navigation used to be */}
-          <Box sx={{ flexGrow: 1 }} />
-
-          {/* Auth Buttons */}
-          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
-            <Button 
-              variant="outlined" 
-              component={Link} 
-              to="/signin"
-              startIcon={<FaSignInAlt />}
-              sx={{
+          {/* Auth Buttons - Desktop */}
+          <div style={{ 
+            display: isMobileNav ? 'none' : 'flex', 
+            gap: '16px',
+            alignItems: 'center'
+          }}>
+            <button 
+                onClick={() => navigate('/signin')}
+                style={{
                 color: grey[100],
-                borderColor: green[900],
-                borderRadius: '10px',
-                textTransform: 'none',
-                '&:hover': {
-                  borderColor: green[700],
-                  backgroundColor: 'rgba(0, 128, 0, 0.1)',
-                },
-                position: 'relative',
-                zIndex: 20
+                border: `1px solid ${teal[800]}`,
+                borderRadius: '8px',
+                background: 'transparent',
+                padding: '8px 20px',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                transition: 'all 0.2s ease'
               }}
             >
               Sign in
-            </Button>
-            <Button
-              variant="contained"
-              component={Link}
-              to="/signup"
-              startIcon={<FaUserPlus />}
-              sx={{ 
-                backgroundColor: green[700],
+            </button>
+            <button style={{
+              backgroundColor: teal[700],
+              color: white,
+              border: 'none',
+              borderRadius: '8px',
+              padding: '8px 20px',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: '500',
+              transition: 'all 0.2s ease'
+            }}>
+              Sign up
+            </button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button style={{
+            display: isMobileNav ? 'block' : 'none',
+            color: teal[400],
+            background: 'transparent',
+            border: 'none',
+            fontSize: '24px',
+            cursor: 'pointer',
+            padding: '8px'
+          }}
+          onClick={toggleDrawer(true)}>
+            ☰
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer Menu */}
+      {menuOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: '250px',
+          height: '100vh',
+          background: darkGradient,
+          borderLeft: `1px solid ${grey[900]}`,
+          zIndex: 1000,
+          padding: '24px'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <span style={{ fontWeight: 'bold', color: teal[400], fontSize: '1.25rem' }}>
+                Investi
+              </span>
+            </div>
+            <button 
+              onClick={toggleDrawer(false)}
+              style={{
+                background: 'transparent',
+                border: 'none',
                 color: white,
-                borderRadius: '10px',
-                textTransform: 'none',
-                '&:hover': {
-                  backgroundColor: green[600],
-                },
-                position: 'relative',
-                zIndex: 20
+                fontSize: '20px',
+                cursor: 'pointer'
               }}
             >
-              Sign up
-            </Button>
-          </Box>
-
-          {/* Mobile Menu Button - Now only for auth options */}
-          <IconButton 
-            sx={{ 
-              display: { md: "none" }, 
-              color: teal[400],
-              '&:hover': {
-                backgroundColor: 'rgba(0, 128, 128, 0.1)',
-              },
-              position: 'relative',
-              zIndex: 20
-            }} 
-            onClick={toggleDrawer(true)}
-          >
-            <HiOutlineMenu />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-
-      {/* Mobile Drawer Menu - Now only shows auth buttons */}
-      <Drawer 
-        anchor="right" 
-        open={menuOpen} 
-        onClose={toggleDrawer(false)}
-      >
-        <Box 
-          ref={drawerRef}
-          sx={{ 
-            width: 250, 
-            background: darkGradient, 
-            height: "100%",
-            borderLeft: `1px solid ${grey[900]}`,
-            position: 'relative',
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '1px',
-              height: '100%',
-              background: `linear-gradient(to bottom, transparent, ${green[900]}, transparent)`,
-              opacity: 0.6,
-            },
-          }}
-        >
-          <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <FaChartLine style={{ color: teal[400] }} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold', color: teal[300] }}>
-              Investi
-            </Typography>
-          </Box>
+              ✕
+            </button>
+          </div>
           
-          <Divider sx={{ bgcolor: green[900], opacity: 0.5 }} />
+          <div style={{ borderTop: `1px solid ${teal[800]}`, opacity: 0.5, margin: '16px 0' }} />
           
           {/* Mobile Auth Buttons */}
-          <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <Button
-              component={Link}
-              to="/signin"
-              variant="outlined"
-              startIcon={<FaSignInAlt />}
-              fullWidth
-              onClick={toggleDrawer(false)} // Close drawer when clicked
-              sx={{
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
+            <button 
+              onClick={() => navigate('/signin')}
+              style={{
                 color: grey[100],
-                borderColor: green[900],
-                borderRadius: '10px',
-                textTransform: 'none',
-                py: 1,
-                '&:hover': {
-                  borderColor: green[700],
-                  backgroundColor: 'rgba(0, 128, 0, 0.1)',
-                }
-              }}
-            >
+                border: `1px solid ${teal[800]}`,
+                borderRadius: '8px',
+                background: 'transparent',
+                padding: '12px 16px',
+              cursor: 'pointer',
+              width: '100%',
+              fontWeight: '500',
+              fontSize: '0.9rem'
+            }}>
               Sign In
-            </Button>
+            </button>
             
-            <Button
-              component={Link}
-              to="/signup"
-              variant="contained"
-              startIcon={<FaUserPlus />}
-              fullWidth
-              onClick={toggleDrawer(false)} // Close drawer when clicked
-              sx={{
-                backgroundColor: green[700],
-                color: white,
-                borderRadius: '10px',
-                textTransform: 'none',
-                py: 1,
-                '&:hover': {
-                  backgroundColor: green[600],
-                }
-              }}
-            >
+            <button style={{
+              backgroundColor: teal[700],
+              color: white,
+              border: 'none',
+              borderRadius: '8px',
+              padding: '12px 16px',
+              cursor: 'pointer',
+              width: '100%',
+              fontWeight: '500',
+              fontSize: '0.9rem'
+            }}>
               Sign Up
-            </Button>
-          </Box>
-        </Box>
-      </Drawer>
-    </Box>
-  )
-}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Overlay for mobile menu */}
+      {menuOpen && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 999
+          }}
+          onClick={toggleDrawer(false)}
+        />
+      )}
+    </div>
+  );
+};
 
 export default Navbar;
