@@ -711,7 +711,19 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                 </Box>
                 
                 {stockData?.regularMarketPrice !== undefined && stockData?.regularMarketChange !== undefined && stockData?.regularMarketChangePercent !== undefined ? (
-                  <Box sx={{ height: "15em", width: '100%' }}> {/* Full width container for chart */}
+                  <Box sx={{ height: "13em", width: '100%', mb: 2 }}> {/* Full width container for chart */}
+                    <span className="flex">
+                      <h1 style={{ color: white}} className="text-xl font-bold ms-6 me-2">
+                        {`${currentStock.toUpperCase()}`} 
+                      </h1>
+                      <p className="mb-4">
+                        <span className="ms-2" style={{ color: white, fontSize: "1.1rem"}}>{stockData?.regularMarketPrice?.toFixed(2)} usd</span> 
+                        <span style={{ fontSize: "1.1rem", color: stockData?.regularMarketChange?.toFixed(2) > 0 ? green[500] : red[500] }}>
+                        <span className="ms-2">{stockData?.regularMarketChange?.toFixed(2) > 0 ? '  ▲' : '  ▼'}</span>
+                          {`${stockData?.regularMarketChange?.toFixed(2)}`}
+                        </span> 
+                      </p>
+                    </span>
                     <AreaChartComponent currentStock={currentStock} />
                   </Box>
                 ) : null

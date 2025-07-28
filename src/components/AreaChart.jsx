@@ -45,8 +45,8 @@ const AreaChartComponent = ({currentStock}) => {
     <ResponsiveContainer width="100%" height="100%">
         {candleSticksData.length > 0 ? (
           <AreaChart
-            width={500}
-            height={400}
+            // width={600}
+            // height={400}
             data={candleSticksData}
             margin={{
               top: 10,
