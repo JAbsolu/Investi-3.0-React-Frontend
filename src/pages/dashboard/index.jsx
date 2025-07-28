@@ -741,7 +741,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             }}>
             
               {/* Stock key statistics */}
-              <Box container spacing={1} mt={0} color={white}>
+              <Box container spacing={1} mt={2.5} color={white}>
                 <h2 className="font-semibold text-base mb-2"
                   style={{ color: teal[300] }}
                 >
