@@ -126,9 +126,11 @@ const WishlistWIdget = ({ wishlist, removeFromWishlist, handleSearch, ticker: cu
       }}
     >
       {!isMobile && (
-        <Typography variant="h6" fontWeight="bold" color={teal[400]} sx={{ mb: 2, fontSize: "1.2rem", fontWeight: 600 }}>
-          Watchlist
-        </Typography>
+        <h2 className="font-semibold text-base mb-2"
+          style={{ color: teal[300] }}
+        >                      
+            Recent News
+        </h2>
       )}
       
       {wishlist && wishlist.length > 0 ? (

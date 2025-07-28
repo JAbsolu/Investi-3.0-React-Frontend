@@ -20,7 +20,7 @@ const SearchPagination = ({ searchResults, startingIndex, endingIndex, handleBac
 
     return (
         <>
-            <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
+            {/* <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 1 }}>
                 <Button
                     startIcon={<NavigateBeforeIcon />}
                     onClick={handleBack}
@@ -45,7 +45,7 @@ const SearchPagination = ({ searchResults, startingIndex, endingIndex, handleBac
                     }}
                 >
                 </Button>
-            </Box>     
+            </Box>      */}
             <Box sx={{ maxWidth: "100%", mx: "auto" }}>
                 {searchResults.slice(startingIndex, endingIndex).map((news, index) => (
                     <Paper 
@@ -146,7 +146,7 @@ const SearchPagination = ({ searchResults, startingIndex, endingIndex, handleBac
                 sx={{
                     display: "flex",
                     justifyContent: "space-between",
-                    marginTop: 2,
+                    marginTop: 1,
                 }}
             >
                 <Button
@@ -155,14 +155,14 @@ const SearchPagination = ({ searchResults, startingIndex, endingIndex, handleBac
                     disabled={startingIndex < 1 ? true : false}
                     sx={{
                         textTransform: "none",
-                        fontWeight: "bold",
+                        fontWeight: 500,
                         color: teal[400],
                     }}
                 >
                     Back
                 </Button>
             <Typography sx={{ color: teal[400], mt: 0.5, fontSize:"10pt" }}>
-                    {startingIndex + 1} - {endingIndex}
+                    {startingIndex + 1}-{endingIndex}
             </Typography>
                 <Button
                     endIcon={<NavigateNextIcon />}

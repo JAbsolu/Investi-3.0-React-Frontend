@@ -21,17 +21,17 @@ import { getCurrentDate, isStockMarketOpen } from "../../util/apis";
 import { AutoAwesome, List } from '@mui/icons-material';
 import SearchBar from "../../components/SearchBar";
 import SearchPagination from "../../components/SearchPagination";
+import Pagination from "../../components/Pagination";
 
 // ------------------ Color Variables ------------------
 const white = "#ffffff";
 const darkBg = "#0d0d0d";
 const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
-const background = "#111111"
+const [background, tealcustom] = ["#111111", "#4db6ac"];
 
 const keyStatisticsArray = [
   "Market Cap", 
-  "P/E Ratio",
   "Average 10D volume",
   "Volume",
   "Today High",
@@ -41,7 +41,8 @@ const keyStatisticsArray = [
   "Dividend Yield",
   "52 Week High",
   "52 Week Low",
-  "52 Week Range"
+  "52 Week Range",
+  "P/E Ratio",
 ]
 
 export default function DashboardPage() {
@@ -76,7 +77,7 @@ export default function DashboardPage() {
   const [aiAnalysis, setAiAnalysy] = useState([]);
 
   const [keyStatisticsStartIndex, setKeyStatisticsStartIndex] = useState(0);
-  const [keyStatisticsEndIndex, setKeyStatisticsEndIndex] = useState(6);
+  const [keyStatisticsEndIndex, setKeyStatisticsEndIndex] = useState(5);
 
   const [newsStartIndex, setNewsStartIndex] = useState(0);
   const [newsEndIndex, setNewsEndIndex] = useState(5);
@@ -92,6 +93,7 @@ export default function DashboardPage() {
     };
 
    const handleNext = () => {
+        if (newsEndIndex >= stockNews.length) return;
         setNewsStartIndex( prev => prev += 5);
         setNewsEndIndex(prev => prev += 5);
         scrollToTop();
@@ -761,63 +763,52 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
               borderRadius: 2,
               // boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
             }}>
-              <Typography color={teal[300]} fontWeight="bold" variant="h6" sx={{ mb: 1 }}>
-                Company Profile
-              </Typography>
-
-              {companyMetadata?.description ? (
-                <Typography mt={1} variant="body2" color={grey[300]} sx={{ lineHeight: 1.7, letterSpacing: 0.3 }}>
-                  {companyMetadata.description}
-                </Typography>
-              ) : (
-                <Typography variant="body2" color={grey[500]} sx={{ fontStyle: 'italic' }}>
-                  Search a stock to get company profile
-                </Typography>
-              )}
             
               {/* Stock key statistics */}
-              <Box container spacing={2} mt={3} color={grey[300]}>
-                <Box 
-                  display="flex" 
-                  flexWrap="wrap" 
-                  columnGap={6} 
-                  rowGap={3}
-                  sx={{
-                    // background: 'rgba(0, 30, 0, 0.3)',
-                    borderRadius: 2,
-                    // border: `1px solid ${green[900]}`,
-                  }}
+              <Box container spacing={2} mt={0} color={grey[300]}>
+                <h2 className="font-semibold text-base mb-2"
+                  style={{ color: teal[300] }}
                 >
-                  {keyStatisticsArray.slice(keyStatisticsStartIndex, keyStatisticsEndIndex).map((statLabel, index) => {
-                    const statMap = {
-                      "Market Cap": stockData?.marketCap ? formatNumber(stockData.marketCap) : "—",
-                      "P/E Ratio": stockData?.peRatio ? stockData.peRatio : "—",
-                      "Dividend Yield": stockData?.dividendYield ? `${stockData.dividendYield}%` : "—",
-                      "52 Week High": stockData?.fiftyTwoWeekHigh ? stockData.fiftyTwoWeekHigh : "—",
-                      "52 Week Low": stockData?.fiftyTwoWeekLow ? stockData.fiftyTwoWeekLow : "—",
-                      "Average 10D volume": stockData?.averageDailyVolume10Day ? formatNumber(stockData.averageDailyVolume10Day) : "—",
-                      "Volume": stockData?.regularMarketVolume ? formatNumber(stockData.regularMarketVolume) : "—",
-                      "Today High": stockData?.regularMarketDayHigh ? stockData.regularMarketDayHigh.toFixed(2) : "—",
-                      "Today Low": stockData?.regularMarketDayLow ? stockData.regularMarketDayLow.toFixed(2) : "—",
-                      "Open Price": stockData?.regularMarketOpen || "—",
-                      "Market Price": stockData?.regularMarketPrice || "—",
-                      "52 Week low": stockData?.fiftyTwoWeekLow || "—",
-                      "52 Week high": stockData?.fiftyTwoWeekHigh || "—"
+                  Key Statistics
+                </h2>
+                  <Pagination startingIndex={keyStatisticsStartIndex} endingIndex={keyStatisticsEndIndex}
+                    setNewStartIndex={setKeyStatisticsStartIndex}
+                    setNewEndIndex={setKeyStatisticsEndIndex}
+                    data={keyStatisticsArray}
+                    children={
+                      keyStatisticsArray.slice(keyStatisticsStartIndex, keyStatisticsEndIndex).map((statLabel, index) => {
+                        const statMap = {
+                          "Market Cap": stockData?.marketCap ? formatNumber(stockData.marketCap) : "—",
+                          "P/E Ratio": stockData?.peRatio ? stockData.peRatio : "—",
+                          "Dividend Yield": stockData?.dividendYield ? `${stockData.dividendYield}%` : "—",
+                          "52 Week High": stockData?.fiftyTwoWeekHigh ? stockData.fiftyTwoWeekHigh : "—",
+                          "52 Week Low": stockData?.fiftyTwoWeekLow ? stockData.fiftyTwoWeekLow : "—",
+                          "Average 10D volume": stockData?.averageDailyVolume10Day ? formatNumber(stockData.averageDailyVolume10Day) : "—",
+                          "Volume": stockData?.regularMarketVolume ? formatNumber(stockData.regularMarketVolume) : "—",
+                          "Today High": stockData?.regularMarketDayHigh ? stockData.regularMarketDayHigh.toFixed(2) : "—",
+                          "Today Low": stockData?.regularMarketDayLow ? stockData.regularMarketDayLow.toFixed(2) : "—",
+                          "Open Price": stockData?.regularMarketOpen || "—",
+                          "Market Price": stockData?.regularMarketPrice || "—",
+                          "52 Week low": stockData?.fiftyTwoWeekLow || "—",
+                          "52 Week high": stockData?.fiftyTwoWeekHigh || "—"
+                        }
+                        return (
+                          <Typography key={index} variant="body2">
+                            <strong className="font-semibold">{statLabel}</strong> <br/> {statMap[statLabel]}
+                          </Typography>
+                        );
+                      })
                     }
-                    return (
-                      <Typography key={index} variant="body2">
-                        <strong>{statLabel}</strong> <br/> {statMap[statLabel]}
-                      </Typography>
-                    );
-                  })}
-                </Box>
-
+                  >
+                  </Pagination>
                 <Box mt={4}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6" fontWeight="bold" color={teal[300]}>
+                  <h2 className="font-semibold text-base mb-0"
+                    style={{ color: teal[300] }}
+                  >                      
                       Recent News
-                    </Typography>
-                    <Button 
+                    </h2>
+                    <Button   
                       size="small" 
                       variant="text" 
                       sx={{ 
@@ -833,7 +824,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                     </Button>
                   </Box>
                 
-                  <Divider sx={{ my: 2, bgcolor: teal[500], opacity: 0.7 }} />
+                  <Divider sx={{ my: 1, bgcolor: teal[500], opacity: 0.7 }} />
                   
                   { stockNews?.length > 0 ? (
                     <SearchPagination
