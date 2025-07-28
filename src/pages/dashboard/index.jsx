@@ -17,11 +17,13 @@ import { onAuthStateChanged } from "firebase/auth";
 import WishlistWIdget from "../../components/WishlistWidget";
 import StockChart from "../../components/stockChart";
 import StockAnalysisModal from "../../components/AnalysisModal";
-import { getCurrentDate, isStockMarketOpen } from "../../util/apis";
+import { isStockMarketOpen } from "../../util/apis";
 import { AutoAwesome, List } from '@mui/icons-material';
 import SearchBar from "../../components/SearchBar";
 import SearchPagination from "../../components/SearchPagination";
 import Pagination from "../../components/Pagination";
+import AreaChartComponent from "../../components/AreaChart";
+import { getStartDay } from "../../util";
 
 // ------------------ Color Variables ------------------
 const white = "#ffffff";
@@ -113,21 +115,7 @@ export default function DashboardPage() {
   // ------------------ use navigate  ------------------
   const navigate = useNavigate();
   
-  //-------- get date from 1 year ago -------------
-  const getDate365DaysAgo = () => {
-    const today = new Date();
-    const pastDate = new Date();
-    pastDate.setDate(today.getDate() - 365);
-  
-    // Format to YYYY-MM-DD
-    const year = pastDate.getFullYear();
-    const month = String(pastDate.getMonth() + 1).padStart(2, '0');
-    const day = String(pastDate.getDate()).padStart(2, '0');
-  
-    return `${year}-${month}-${day}`;
-  };
-  
-  //-------------- get candlesticks -------------
+  /* -------------- get candlesticks ------------- */
   const getCandleSticks = async(ticker, startDate) => {
     const url = `${API_URL}/tiingo/candlestics?ticker=${ticker}&startDate=${startDate}`;
     const response = await fetch(url);
@@ -154,7 +142,7 @@ export default function DashboardPage() {
      * call get stock data, if we get stock data
      */
     getStockData(ticker); 
-    getCandleSticks(ticker, getDate365DaysAgo());
+    getCandleSticks(ticker, getStartDay());
     getCompanyMetadata(ticker);
     getNews(ticker)
     setCurrentStock(ticker);
@@ -423,7 +411,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
   //get candlesticks live
   useEffect(() => {
 
-    const startDate = getDate365DaysAgo();
+    const startDate = getStartDay();
 
     // Fetch immediately if market is open
     if (isStockMarketOpen()) {
@@ -452,7 +440,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
   }, []);
 
   useEffect(() => {
-    const startDate = getDate365DaysAgo();
+    const startDate = getStartDay();
 
     const fetchLastSearch = async () => {
       if (!userId) return;
@@ -560,8 +548,8 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
           {/* Central Content Area */}
           <Box sx={{ 
             flex: 1,
-            px: { xs: 1, sm: 2, md: 3 }, 
-            py: { xs: 1, sm: 2, md: 2 },  
+            px: 1, 
+            py: 1,  
             overflow: "auto",
             display: "flex",
             flexDirection: "column",
@@ -647,12 +635,10 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             <Box sx={{ width: '100%' }}>
               <Paper sx={{ 
                 py: 2, 
-                px: isSmallScreen ? 0.7 : 1, 
-                // backgroundColor: 'rgba(20, 30, 20, 0.4)', 
+                px: isSmallScreen ? 0.7 : 1,  
                 backgroundColor: 'inherit', 
-                minHeight: "26em", 
                 borderRadius: 2,
-                mb: 1,
+                mb: 1.5,
                 boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
               }}>
                 {/* Action buttons - Full width container on mobile */}
@@ -725,47 +711,25 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                 </Box>
                 
                 {stockData?.regularMarketPrice !== undefined && stockData?.regularMarketChange !== undefined && stockData?.regularMarketChangePercent !== undefined ? (
-                  <Box sx={{ width: '100%' }}> {/* Full width container for chart */}
-                    <StockChart 
-                      data={candleSticksData} 
-                      companyName={stockData?.shortName} 
-                      exchangeCode={companyMetadata?.exchangeCode} 
-                      price={stockData?.regularMarketPrice}
-                      marketPriceChange={`${stockData.regularMarketChange.toFixed(2)} (${stockData.regularMarketChangePercent.toFixed(2)}%) Today`}
-                    />
+                  <Box sx={{ height: "15em", width: '100%' }}> {/* Full width container for chart */}
+                    <AreaChartComponent currentStock={currentStock} />
                   </Box>
-                ) : (
-                  <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    height: '300px',
-                    flexDirection: 'column',
-                    gap: 2,
-                    width: '100%'
-                  }}>
-                    <FaChartLine size={40} style={{ color: teal[400], opacity: 0.7 }} />
-                    <Typography variant="body1" color={grey[400]} sx={{ fontStyle: 'italic' }}>
-                      Search for a stock to view its chart
-                    </Typography>
-                  </Box>
-                )}
+                ) : null
+              }
               </Paper>
             </Box>
 
             {/* Company Profile */}
             <Paper sx={{ 
-              px: 2, 
-              pt: 2, 
-              backgroundColor: background,
+              px: 0, 
+              pt: 0, 
+              backgroundColor: "inherit",
               maxWidth: '100%',
-              minHeight: "26em", 
-              borderRadius: 2,
-              // boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+              borderRadius: 2
             }}>
             
               {/* Stock key statistics */}
-              <Box container spacing={2} mt={0} color={grey[300]}>
+              <Box container spacing={1} mt={0} color={white}>
                 <h2 className="font-semibold text-base mb-2"
                   style={{ color: teal[300] }}
                 >
