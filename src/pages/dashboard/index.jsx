@@ -14,8 +14,7 @@ import { ref, set, get, child } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import DashboardSidebar from "../../components/DashboardSidebar";
 import { onAuthStateChanged } from "firebase/auth";
-import WishlistWIdget from "../../components/WishlistWidget";
-import StockChart from "../../components/stockChart";
+import StockChart from "../../components/StockChart";
 import StockAnalysisModal from "../../components/AnalysisModal";
 import { isStockMarketOpen } from "../../util/apis";
 import { AutoAwesome, List } from '@mui/icons-material';
@@ -24,6 +23,7 @@ import SearchPagination from "../../components/SearchPagination";
 import Pagination from "../../components/Pagination";
 import AreaChartComponent from "../../components/AreaChart";
 import { getStartDay } from "../../util";
+import WatchlistWidget from "../../components/WatchlistWidget";
 
 // ------------------ Color Variables ------------------
 const white = "#ffffff";
@@ -634,11 +634,11 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             {/* Stock Chart */}
             <Box sx={{ width: '100%' }}>
               <Paper sx={{ 
-                py: isSmallScreen ? 1 : 2, 
+                py: 1, 
                 px: isSmallScreen ? 0 : 1,  
                 backgroundColor: 'inherit', 
                 borderRadius: 2,
-                mb: isSmallScreen ? 0 : 1.5,
+                mb: 0,
                 boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
               }}>
                 {/* Action buttons - Full width container on mobile */}
@@ -646,7 +646,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   display: "flex", 
                   justifyContent: isSmallScreen ? "space-between" : "end",
                   gap: isSmallScreen ? 1 : 1.5, 
-                  mb: isSmallScreen ? 0 : 1,
+                  mb: 0,
                   width: "100%", // Full width container
                 }}>
                   {/* Desktop search bar */}
@@ -711,20 +711,8 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                 </Box>
                 
                 {stockData?.regularMarketPrice !== undefined && stockData?.regularMarketChange !== undefined && stockData?.regularMarketChangePercent !== undefined ? (
-                  <Box sx={{ height: "13em", width: '100%', mb: isSmallScreen ? 0 : 2, mt: isSmallScreen ? 2.5 : 0 }}> {/* Full width container for chart */}
-                    <div className="flex mb-2">
-                      <h1 style={{ color: white}} className={"text-xl font-bold ms-6 me-2" + (isSmallScreen ? " ms-0" : "")}>
-                        {`${currentStock.toUpperCase()}`} 
-                      </h1>
-                      <p className="mb-4">
-                        <span className={isSmallScreen ? "ms-0" : "ms-2" }style={{ color: white, fontSize: "1.1rem"}}>{stockData?.regularMarketPrice?.toFixed(2)} usd</span> 
-                        <span style={{ fontSize: "1.1rem", color: stockData?.regularMarketChange?.toFixed(2) > 0 ? green[500] : red[500] }}>
-                        <span className={isSmallScreen ? "ms-0" : "ms-2"}>{stockData?.regularMarketChange?.toFixed(2) > 0 ? '  ▲' : '  ▼'}</span>
-                          {`${stockData?.regularMarketChange?.toFixed(2)}`}
-                        </span> 
-                      </p>
-                    </div>
-                    <AreaChartComponent currentStock={currentStock} />
+                  <Box sx={{ height: "auto", width: '100%', mb: 0, mt: isSmallScreen ? 2.5 : 0 }}> {/* Full width container for chart */}
+                    <StockChart companyName={stockMetaData?.name}  ticker={stock || currentStock} price={stockData?.regularMarketPrice?.toFixed(2)} marketPriceChange={stockData?.regularMarketChange} />
                   </Box>
                 ) : null
               }
@@ -850,7 +838,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
           scrollbarWidth: 'none',
           '-ms-overflow-style': 'none',
         }}>
-          <WishlistWIdget 
+          <WatchlistWidget 
             wishlist={wishlist} 
             removeFromWishlist={removeFromWishlist} 
             handleSearch={handleSearch} 
@@ -909,7 +897,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
           </Box>
           
           <Box sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
-            <WishlistWIdget 
+            <WatchlistWidget 
               wishlist={wishlist} 
               removeFromWishlist={removeFromWishlist} 
               handleSearch={(ticker) => {

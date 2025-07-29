@@ -11,7 +11,7 @@ const cardBg = "rgba(20, 30, 20, 0.4)";
 const cardActiveBg = "#0cb09b1f";
 const API_URL = process.env.REACT_APP_API_URL;
 
-const WishlistWIdget = ({ wishlist, removeFromWishlist, handleSearch, ticker: currentTicker, marketChange, isMobile = false }) => {
+const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: currentTicker, marketChange, isMobile = false }) => {
   const [stockData, setStockData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -231,4 +231,4 @@ const WishlistWIdget = ({ wishlist, removeFromWishlist, handleSearch, ticker: cu
   );
 };
 
-export default WishlistWIdget;
+export default WatchlistWidget;
