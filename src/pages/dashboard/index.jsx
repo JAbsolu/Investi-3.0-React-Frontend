@@ -14,14 +14,13 @@ import { ref, set, get, child } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import DashboardSidebar from "../../components/DashboardSidebar";
 import { onAuthStateChanged } from "firebase/auth";
-import StockChart from "../../components/StockChart";
+import StockChart from "../../components/stockChart";
 import StockAnalysisModal from "../../components/AnalysisModal";
 import { isStockMarketOpen } from "../../util/apis";
 import { AutoAwesome, List } from '@mui/icons-material';
 import SearchBar from "../../components/SearchBar";
 import SearchPagination from "../../components/SearchPagination";
 import Pagination from "../../components/Pagination";
-import AreaChartComponent from "../../components/AreaChart";
 import { getStartDay } from "../../util";
 import WatchlistWidget from "../../components/WatchlistWidget";
 
@@ -250,10 +249,9 @@ export default function DashboardPage() {
         window.location.reload();
         return;
       }
-
-      console.log("Status:", response.status, response.statusText, result.message);
+      // console.log("Status:", response.status, response.statusText, result.message);
       setCompanyMetadata(result.data);
-
+      console.log("Company metadata loaded:", result.data);
     } catch (error) {
       console.log("Fetch error:", error);
     }
@@ -712,7 +710,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                 
                 {stockData?.regularMarketPrice !== undefined && stockData?.regularMarketChange !== undefined && stockData?.regularMarketChangePercent !== undefined ? (
                   <Box sx={{ height: "auto", width: '100%', mb: 0, mt: isSmallScreen ? 2.5 : 0 }}> {/* Full width container for chart */}
-                    <StockChart companyName={stockMetaData?.name}  ticker={stock || currentStock} price={stockData?.regularMarketPrice?.toFixed(2)} marketPriceChange={stockData?.regularMarketChange} />
+                    <StockChart companyName={companyMetadata?.name}  ticker={stock || currentStock} price={stockData?.regularMarketPrice?.toFixed(2)} marketPriceChange={stockData?.regularMarketChange} />
                   </Box>
                 ) : null
               }
