@@ -432,7 +432,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
         )}
         
         {/* Chart Type Controls */}
-        <div className="flex rounded-lg p-0.5 sm:p-1 border shadow-inner" style={{
+        <div className="flex justify-between sm:justify-start rounded-lg p-0.5 sm:p-1 border shadow-inner" style={{
           borderColor: `${teal[500]}40`,
           background: `${teal[500]}20`
         }}>
@@ -464,15 +464,14 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
               }}
             >
               <span>{icon}</span>
-              <span className="hidden sm:inline">{label}</span>
-              <span className="sm:hidden">{label.charAt(0)}</span>
+              <span>{label}</span>
             </button>
           ))}
         </div>
       </div>
 
       {/* Chart Container */}
-      <div className="relative p-6" style={{
+      <div className="relative p-2 sm:p-6" style={{
         background: `rgba(5, 10, 7, 0.8)`
       }}>
         {loading ? (
