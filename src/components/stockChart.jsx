@@ -356,6 +356,8 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
     }
   }, [ticker]);
 
+
+
   const handleChartTypeChange = (type) => {
     setChartType(type);
   };
