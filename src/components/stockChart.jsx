@@ -391,18 +391,18 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
       backdropFilter: 'blur(10px)'
     }}>
       {/* Header */}
-      <div className="flex justify-between items-center px-6 py-4 border-b" style={{
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-3 sm:px-6 py-3 sm:py-4 border-b space-y-3 sm:space-y-0" style={{
         borderBottomColor: `${teal[200]}40`,
         background: `linear-gradient(135deg, ${teal[400]}20, transparent)`
       }}>
         {(companyName || price || marketPriceChange) && (
-          <div className="space-y-2">
-            <div className="flex items-center space-x-3">
-              <h3 className="text-white text-lg font-semibold">
+          <div className="space-y-1 sm:space-y-2">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <h3 className="text-white text-sm sm:text-lg font-semibold truncate max-w-32 sm:max-w-none">
                 {companyName || ""}
               </h3>
               {ticker && (
-                <span className="text-white text-sm px-2 py-1 rounded" style={{
+                <span className="text-white text-xs sm:text-sm px-1.5 sm:px-2 py-0.5 sm:py-1 rounded" style={{
                   background: `${teal[900]}20`,
                   border: `1px solid ${teal[800]}40`
                 }}>
@@ -410,17 +410,17 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
                 </span>
               )}
             </div>
-            <div className="flex items-baseline space-x-3">
-              <div className="text-white text-2xl font-bold">
+            <div className="flex items-baseline space-x-2 sm:space-x-3">
+              <div className="text-white text-lg sm:text-2xl font-bold">
                 ${typeof price === 'string' ? price : 'Loading...'}
               </div>
-              <div className={`text-sm font-semibold px-2 py-1 rounded flex items-center ${
+              <div className={`text-xs sm:text-sm font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded flex items-center ${
                 typeof marketPriceChange === 'string' && marketPriceChange.startsWith('-')
                   ? 'text-red-300 bg-red-900/30'
                   : 'text-green-500 bg-teal-900/20 border border-teal-800/40'
               }`}>
                 <span style={{ 
-                  fontSize: "1.1rem", 
+                  fontSize: "0.9rem", 
                   color: typeof marketPriceChange === 'string' && marketPriceChange.startsWith('-') ? '#ef4444' : '#10b981'
                 }}>
                   {typeof marketPriceChange === 'string' && marketPriceChange.startsWith('-') ? '▼' : '▲'}
@@ -432,7 +432,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
         )}
         
         {/* Chart Type Controls */}
-        <div className="flex rounded-lg p-1 border shadow-inner" style={{
+        <div className="flex rounded-lg p-0.5 sm:p-1 border shadow-inner" style={{
           borderColor: `${teal[500]}40`,
           background: `${teal[500]}20`
         }}>
@@ -444,7 +444,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
             <button
               key={key}
               onClick={() => handleChartTypeChange(key)}
-              className={`flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-md transition-all duration-300 ${
+              className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md transition-all duration-300 ${
                 chartType === key
                   ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-lg transform scale-105'
                   : 'text-teal-300 hover:text-teal-200 hover:scale-102'
@@ -464,7 +464,8 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
               }}
             >
               <span>{icon}</span>
-              <span>{label}</span>
+              <span className="hidden sm:inline">{label}</span>
+              <span className="sm:hidden">{label.charAt(0)}</span>
             </button>
           ))}
         </div>
