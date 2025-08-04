@@ -15,7 +15,6 @@ import { database } from "../../firebaseConfig";
 import DashboardSidebar from "../../components/DashboardSidebar";
 import { onAuthStateChanged } from "firebase/auth";
 import StockChart from "../../components/stockChart";
-import StockAnalysisModal from "../../components/AnalysisModal";
 import { isStockMarketOpen } from "../../util/apis";
 import { AutoAwesome, List } from '@mui/icons-material';
 import SearchBar from "../../components/SearchBar";
@@ -23,7 +22,9 @@ import SearchPagination from "../../components/SearchPagination";
 import Pagination from "../../components/Pagination";
 import { getStartDay } from "../../util";
 import WatchlistWidget from "../../components/WatchlistWidget";
-
+import Analysis from "../../components/Analysis";
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 // ------------------ Color Variables ------------------
 const white = "#ffffff";
 const darkBg = "#0d0d0d";
@@ -74,8 +75,9 @@ export default function DashboardPage() {
   const [userId, setUserId] = useState("");
   const [wishlist, setWishlist] = useState(null);
   const [candleSticksData, setCandleSticksData] = useState([]);
-  const [openAnalysisModal, setOpenAnalysisModal] = useState(false);
-  const [aiAnalysis, setAiAnalysy] = useState([]);
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState([]);
+  const [currentView, setCurrentView] = useState('chart'); // 'chart' or 'analysis'
 
   const [keyStatisticsStartIndex, setKeyStatisticsStartIndex] = useState(0);
   const [keyStatisticsEndIndex, setKeyStatisticsEndIndex] = useState(5);
@@ -328,7 +330,8 @@ export default function DashboardPage() {
 const getAiAnalysis = async (ticker) => {
   if (!ticker) return;
   
-  setOpenAnalysisModal(true);
+  setShowAnalysis(true);
+  setCurrentView('analysis');
   
   try {
     // Standardize ticker to uppercase for consistent keys
@@ -353,7 +356,7 @@ const getAiAnalysis = async (ticker) => {
         console.log(`Using cached analysis for ${standardizedTicker} from ${analysisDate.toLocaleString()} (${diffDays} days old)`);
         
         // Set the cached analysis data to state
-        setAiAnalysy(cachedAnalysis.analysis);
+        setAiAnalysis(cachedAnalysis.analysis);
         return;
       } else {
         console.log(`Cached analysis for ${standardizedTicker} is ${diffDays} days old. Getting fresh analysis.`);
@@ -376,7 +379,7 @@ const getAiAnalysis = async (ticker) => {
     
     // Get analysis data from API response
     const analysisData = result.data;
-    setAiAnalysy(analysisData);
+    setAiAnalysis(analysisData);
     
     // Save new analysis to Firebase
     await saveAnalysisToCache(standardizedTicker, analysisData);
@@ -677,7 +680,8 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                       }
                     }}
                     onClick={() => {
-                      setOpenAnalysisModal(true);
+                      setShowAnalysis(true);
+                      setCurrentView('analysis');
                       getAiAnalysis(currentStock)
                     }}
                   >
@@ -707,13 +711,94 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                     Add to List
                   </Button>
                 </Box>
-                
+
+                {/* Content Area - Toggle between Chart and Analysis */}
                 {stockData?.regularMarketPrice !== undefined && stockData?.regularMarketChange !== undefined && stockData?.regularMarketChangePercent !== undefined ? (
-                  <Box sx={{ height: "auto", width: '100%', mb: 0, mt: isSmallScreen ? 2.5 : 0 }}> {/* Full width container for chart */}
-                    <StockChart companyName={companyMetadata?.name}  ticker={stock || currentStock} price={stockData?.regularMarketPrice?.toFixed(2)} marketPriceChange={stockData?.regularMarketChange} />
+                  <Box sx={{ 
+                    position: 'relative',
+                    width: '100%',
+                    minHeight: showAnalysis ? '400px' : 'auto',
+                    mt: isSmallScreen ? 2.5 : 0,
+                    overflow: 'hidden'
+                  }}>
+                    {/* Stock Chart View */}
+                    {(!showAnalysis || currentView === 'chart') && (
+                      <Box sx={{ 
+                        width: '100%',
+                        opacity: currentView === 'chart' ? 1 : 0,
+                        transform: currentView === 'chart' ? 'translateX(0)' : 'translateX(-20px)',
+                        transition: 'all 0.3s ease-in-out'
+                      }}>
+                        <StockChart 
+                          companyName={companyMetadata?.name}  
+                          ticker={stock || currentStock} 
+                          price={stockData?.regularMarketPrice?.toFixed(2)} 
+                          marketPriceChange={stockData?.regularMarketChange} 
+                        />
+                      </Box>
+                    )}
+
+                    {/* AI Analysis View */}
+                    {showAnalysis && currentView === 'analysis' && (
+                      <Box sx={{ 
+                        width: '100%',
+                        opacity: currentView === 'analysis' ? 1 : 0,
+                        transform: currentView === 'analysis' ? 'translateX(0)' : 'translateX(20px)',
+                        transition: 'all 0.3s ease-in-out'
+                      }}>
+                        <Analysis result={aiAnalysis} ticker={currentStock}/>
+                      </Box>
+                    )}
                   </Box>
-                ) : null
-              }
+                ) : null}
+
+                {/* Toggle Navigation Controls - Show when analysis is available */}
+                {showAnalysis && (
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'space-between',
+                    borderRadius: '8px',
+                    mt: 1,
+                  }}>
+                    <Button
+                      startIcon={<NavigateBeforeIcon />}
+                      onClick={() => setCurrentView('chart')}
+                      variant={currentView === 'chart' ? 'contained' : 'outlined'}
+                      size="small"
+                      sx={{
+                        backgroundColor: currentView === 'chart' ? teal[600] : 'transparent',
+                        borderColor: teal[500],
+                        color: currentView === 'chart' ? 'white' : teal[400],
+                        textTransform: 'none',
+                        minWidth: '20px',
+                        '&:hover': {
+                          backgroundColor: currentView === 'chart' ? teal[700] : 'rgba(0, 150, 136, 0.1)',
+                        }
+                      }}
+                    >
+                    </Button>
+                    
+                    <Button
+                      endIcon={<NavigateNextIcon />}
+                      onClick={() => setCurrentView('analysis')}
+                      variant={currentView === 'analysis' ? 'contained' : 'outlined'}
+                      size="small"
+                      sx={{
+                        backgroundColor: currentView === 'analysis' ? teal[600] : 'transparent',
+                        borderColor: teal[500],
+                        color: currentView === 'analysis' ? 'white' : teal[400],
+                        textTransform: 'none',
+                        minWidth: '20px',
+                        '&:hover': {
+                          backgroundColor: currentView === 'analysis' ? teal[700] : 'rgba(0, 150, 136, 0.1)',
+                        }
+                      }}
+                    >
+                    </Button>
+                  </Box>
+                )}
+
               </Paper>
             </Box>
 
@@ -930,8 +1015,6 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
           <FaList />
         </Fab>
       )}
-
-      <StockAnalysisModal open={openAnalysisModal} handleClose={() => setOpenAnalysisModal(false)} result={aiAnalysis} stock={currentStock}/>
     </Box>
   );
 }
