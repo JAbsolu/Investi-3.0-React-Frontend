@@ -11,7 +11,7 @@ const cardBg = "rgba(20, 30, 20, 0.4)";
 const cardActiveBg = "#0cb09b1f";
 const API_URL = process.env.REACT_APP_API_URL;
 
-const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: currentTicker, marketChange, isMobile = false }) => {
+const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: currentTicker, marketChange, isMobile = false, setCurrentView }) => {
   const [stockData, setStockData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -153,7 +153,10 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
               },
               transition: 'all 0.2s ease',
             }}
-            onClick={() => handleSearch(stockTicker)}
+            onClick={() => {
+              handleSearch(stockTicker);
+              setCurrentView("chart");
+            }}
           >
             <Box sx={{ 
               display: "flex", 
