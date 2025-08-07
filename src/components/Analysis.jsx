@@ -13,18 +13,98 @@ import { database, auth } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
 // Stock analysis chat component with modern chat design
-const Analysis = ({ result, ticker }) => {
+const Analysis = ({ ticker, showAnalysis }) => {
     const [analysisDate, setAnalysisDate] = useState(null);
     const [isFromCache, setIsFromCache] = useState(false);
     const [initialAnalysis, setInitialAnalysis] = useState('');
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isWaitingForAnalysis, setIsWaitingForAnalysis] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
     const [conversationId, setConversationId] = useState(null);
+    const [analysisResult, setAnalysisResult] = useState(null);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
     const contentRef = useRef(null);
+
+    const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
+    
+    // Save analysis to Firebase cache
+    const saveAnalysisToCache = async (ticker, analysisData) => {
+        try {
+            const cacheData = {
+                analysis: analysisData,
+                timestamp: Date.now()
+            };
+            await set(ref(database, `stockAnalyses/${ticker}`), cacheData);
+        } catch (error) {
+            console.error("Error saving analysis to cache:", error);
+        }
+    };
+
+    const getAiAnalysis = async (ticker) => {
+          if (!ticker) return;
+          
+          setIsWaitingForAnalysis(true);
+          setMessages([]); // Clear any previous messages
+          setAnalysisResult(null);
+          
+          try {
+            // Standardize ticker to uppercase for consistent keys
+            const standardizedTicker = ticker.toUpperCase();
+            
+            const dbRef = ref(database);
+            const snapshot = await get(child(dbRef, `stockAnalyses/${standardizedTicker}`));
+            
+            if (snapshot.exists()) {
+              const cachedAnalysis = snapshot.val();
+              const analysisDate = new Date(cachedAnalysis.timestamp);
+              const now = new Date();
+              
+              // Calculate difference in days
+              const diffTime = Math.abs(now - analysisDate);
+              const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+              
+              // If analysis is less than 3 days old, use it
+              if (diffDays < 3) {            
+                // Set the cached analysis data to state
+                setAnalysisResult(cachedAnalysis.analysis);
+                setAnalysisDate(analysisDate);
+                setIsFromCache(true);
+                setIsWaitingForAnalysis(false);
+                return;
+              }
+            }
+            
+            // If we got here, we need a fresh analysis
+            const openAiURL = `${API_URL}/analysis?ticker=${standardizedTicker}`;
+            
+            const response = await fetch(openAiURL);
+            const result = await response.json();
+            
+            if (!response.ok) {
+              console.log(response.status, result.message);
+              setIsWaitingForAnalysis(false);
+              return;
+            }
+            
+            // Get analysis data from API response
+            const analysisData = result.data;
+            setAnalysisResult(analysisData);
+            setAnalysisDate(new Date());
+            setIsFromCache(false);
+            setIsWaitingForAnalysis(false);
+            
+            // Save new analysis to Firebase
+            await saveAnalysisToCache(standardizedTicker, analysisData);
+            
+            console.log(`Fresh analysis for ${standardizedTicker} completed and cached.`);
+          } catch (error) {
+            console.log("Error in AI Analysis:", error.message || "");
+            setIsWaitingForAnalysis(false);
+          }
+        };
     
     // OpenAI client configuration
     const ORG_ID = process.env.REACT_APP_OPENAI_ORG_ID;
@@ -38,14 +118,28 @@ const Analysis = ({ result, ticker }) => {
       dangerouslyAllowBrowser: true
     });
 
-    // Auto-scroll to bottom as messages are added
+    // Auto-scroll to bottom as messages are added - but not during streaming
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (contentRef.current) {
+            contentRef.current.scrollTop = contentRef.current.scrollHeight;
+        }
     };
 
+    // Track previous message count to detect new messages vs content updates
+    const [prevMessageCount, setPrevMessageCount] = useState(0);
+
     useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+        const hasNewMessage = messages.length > prevMessageCount;
+        const isInitialAnalysisStreaming = messages.length <= 2 && messages.some(msg => msg.isStreaming && msg.role === 'assistant');
+        
+        if (hasNewMessage && !isInitialAnalysisStreaming && messages.length > 2) {
+            setTimeout(() => {
+                scrollToBottom();
+            }, 100);
+        }
+        
+        setPrevMessageCount(messages.length);
+    }, [messages.length, prevMessageCount]); // Only depend on message count, not content changes
 
     // Monitor auth state
     useEffect(() => {
@@ -54,6 +148,23 @@ const Analysis = ({ result, ticker }) => {
         });
         return () => unsubscribe();
     }, []);
+
+    // Track when we're waiting for analysis
+    useEffect(() => {
+        if (ticker && !analysisResult) {
+            setIsWaitingForAnalysis(true);
+            setMessages([]); // Clear any previous messages
+        } else if (analysisResult) {
+            setIsWaitingForAnalysis(false);
+        }
+    }, [ticker, analysisResult]);
+
+    // Trigger analysis when ticker changes
+    useEffect(() => {
+        if (ticker) {
+            getAiAnalysis(ticker);
+        }
+    }, [ticker]);
 
     // Save conversation to Firebase
     const saveConversationToFirebase = async (newMessages) => {
@@ -99,6 +210,11 @@ const Analysis = ({ result, ticker }) => {
         setInputText('');
         setIsLoading(true);
 
+        // Manually scroll to show the user's message
+        setTimeout(() => {
+            scrollToBottom();
+        }, 100);
+
         try {
             // Prepare messages for API
             const apiMessages = updatedMessages.filter(msg => msg.role !== 'system' || msg.content.includes('financial analyst'));
@@ -121,6 +237,11 @@ const Analysis = ({ result, ticker }) => {
 
             let finalMessages = [...updatedMessages, assistantMessage];
             setMessages(finalMessages);
+
+            // Scroll to show the assistant is responding
+            setTimeout(() => {
+                scrollToBottom();
+            }, 100);
 
             // Stream the response
             let accumulatedContent = '';
@@ -176,50 +297,85 @@ const Analysis = ({ result, ticker }) => {
         return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
-    // Initialize chat with analysis when result changes
+    // Initialize chat with analysis when analysisResult changes - with streaming
     useEffect(() => {
-        if (result && ticker) {
+        if (analysisResult && ticker) {
+            // Set initial messages with system prompt first
+            const systemMessage = {
+                id: '1',
+                role: 'system',
+                content: `You are a financial analyst assistant analyzing ${ticker}. Use the following context from the previous analysis to maintain consistency and answer follow-up questions thoroughly. Remember key metrics, technical indicators, fundamental data, and your recommendation.`,
+                timestamp: new Date()
+            };
+
+            // Create streaming assistant message
+            const assistantMessage = {
+                id: '2',
+                role: 'assistant',
+                content: '',
+                timestamp: new Date(),
+                isStreaming: true
+            };
+
+            const initialMessages = [systemMessage, assistantMessage];
+            setMessages(initialMessages);
+
+            // Start streaming the result
             let analysisText = '';
-            
-            if (typeof result === 'string') {
-                analysisText = result;
-            } else if (result && result.analysis) {
-                analysisText = result.analysis;
-            } else if (result) {
+            if (typeof analysisResult === 'string') {
+                analysisText = analysisResult;
+            } else if (analysisResult && analysisResult.analysis) {
+                analysisText = analysisResult.analysis;
+            } else if (analysisResult) {
                 analysisText = [
-                    `Decision: ${result.decision || ''}`,
-                    `Technical Analysis: ${result.technical_analysis || ''}`,
-                    `Fundamental Analysis: ${result.fundamental_analysis || ''}`
+                    `Decision: ${analysisResult.decision || ''}`,
+                    `Technical Analysis: ${analysisResult.technical_analysis || ''}`,
+                    `Fundamental Analysis: ${analysisResult.fundamental_analysis || ''}`
                 ].join('\n\n');
             }
-            
-            setInitialAnalysis(analysisText);
-            
-            // Set initial messages with system prompt and analysis
-            const initialMessages = [
-                {
-                    id: '1',
-                    role: 'system',
-                    content: `You are a financial analyst assistant analyzing ${ticker}. Use the following context from the previous analysis to maintain consistency and answer follow-up questions thoroughly. Remember key metrics, technical indicators, fundamental data, and your recommendation.`,
-                    timestamp: new Date()
-                },
-                {
-                    id: '2',
-                    role: 'assistant',
-                    content: analysisText,
-                    timestamp: new Date()
+
+            // Simulate streaming by adding characters progressively
+            let currentIndex = 0;
+            const streamInterval = setInterval(() => {
+                if (currentIndex < analysisText.length) {
+                    const chunk = analysisText.slice(0, currentIndex + 3); // Add 3 characters at a time
+                    currentIndex += 3;
+
+                    setMessages(prev => {
+                        const updated = [...prev];
+                        const lastMessage = updated[updated.length - 1];
+                        if (lastMessage && lastMessage.role === 'assistant') {
+                            lastMessage.content = chunk;
+                            lastMessage.isStreaming = currentIndex < analysisText.length;
+                        }
+                        return updated;
+                    });
+                } else {
+                    // Streaming complete
+                    clearInterval(streamInterval);
+                    setMessages(prev => {
+                        const updated = [...prev];
+                        const lastMessage = updated[updated.length - 1];
+                        if (lastMessage && lastMessage.role === 'assistant') {
+                            lastMessage.content = analysisText;
+                            lastMessage.isStreaming = false;
+                        }
+                        return updated;
+                    });
+                    setInitialAnalysis(analysisText);
                 }
-            ];
-            
-            setMessages(initialMessages);
+            }, 50); // Stream at 50ms intervals for smooth effect
             
             // Create new conversation ID for this analysis
             if (currentUser) {
                 const newConversationRef = push(ref(database, 'conversations'));
                 setConversationId(newConversationRef.key);
             }
+
+            // Cleanup interval on unmount or when effect reruns
+            return () => clearInterval(streamInterval);
         }
-    }, [result, ticker, currentUser]);
+    }, [analysisResult, ticker, currentUser]);
 
     // Format message content for display
     const formatMessageContent = (content) => {
@@ -238,7 +394,7 @@ const Analysis = ({ result, ticker }) => {
 
     // Add timestamp indicator component
     useEffect(() => {
-      if (result && ticker) {
+      if (analysisResult && ticker) {
         // Check if there's cached data and get its timestamp
         const checkCacheTimestamp = async () => {
           try {
@@ -265,7 +421,7 @@ const Analysis = ({ result, ticker }) => {
         
         checkCacheTimestamp();
       }
-    }, [result, ticker]);
+    }, [analysisResult, ticker]);
 
     return (
         <Card 
@@ -280,6 +436,7 @@ const Analysis = ({ result, ticker }) => {
                 boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                 overflow: 'hidden',
                 display: 'flex',
+                visibility: showAnalysis ? 'visible' : 'hidden',
                 flexDirection: 'column'
             }}
         >
@@ -329,7 +486,12 @@ const Analysis = ({ result, ticker }) => {
                                 fontSize: '14px'
                             }}
                         >
-                            {ticker ? `Analyzing ${ticker.toUpperCase()}` : 'Ready to analyze'}
+                            {isWaitingForAnalysis 
+                                ? 'Analyzing market data...' 
+                                : ticker 
+                                    ? `Analyzing ${ticker.toUpperCase()}` 
+                                    : 'Ready to analyze'
+                            }
                         </Typography>
                     </Box>
                 </Box>
@@ -369,7 +531,99 @@ const Analysis = ({ result, ticker }) => {
                     }
                 }}
             >
-                {messages.length === 0 ? (
+                {isWaitingForAnalysis ? (
+                    <Box 
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '400px',
+                            textAlign: 'center'
+                        }}
+                    >
+                        <Box 
+                            sx={{
+                                position: 'relative',
+                                mb: 3
+                            }}
+                        >
+                            <Box 
+                                sx={{
+                                    width: 60,
+                                    height: 60,
+                                    borderRadius: '50%',
+                                    background: `linear-gradient(135deg, ${teal[100]}, ${teal[200]})`,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <Loader className="w-6 h-6 animate-spin" style={{ color: teal[600] }} />
+                            </Box>
+                            <Box
+                                sx={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    width: 60,
+                                    height: 60,
+                                    borderRadius: '50%',
+                                    border: `2px dashed ${teal[300]}`,
+                                    animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+                                    '@keyframes ping': {
+                                        '75%, 100%': {
+                                            transform: 'scale(2)',
+                                            opacity: 0
+                                        }
+                                    }
+                                }}
+                            />
+                        </Box>
+                        <Typography 
+                            variant="h6"
+                            sx={{ 
+                                color: '#1e293b',
+                                fontWeight: 600,
+                                mb: 1
+                            }}
+                        >
+                            Analyzing {ticker?.toUpperCase()}...
+                        </Typography>
+                        <Typography 
+                            variant="body2"
+                            sx={{ 
+                                color: '#64748b',
+                                maxWidth: '400px',
+                                mb: 3
+                            }}
+                        >
+                            Our AI is processing market data, technical indicators, and fundamental analysis. This may take a few moments.
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            {[0, 1, 2].map((i) => (
+                                <Box
+                                    key={i}
+                                    sx={{
+                                        width: 8,
+                                        height: 8,
+                                        borderRadius: '50%',
+                                        backgroundColor: teal[400],
+                                        animation: 'pulse 1.5s ease-in-out infinite',
+                                        animationDelay: `${i * 0.2}s`,
+                                        '@keyframes pulse': {
+                                            '0%, 100%': {
+                                                opacity: 0.4
+                                            },
+                                            '50%': {
+                                                opacity: 1
+                                            }
+                                        }
+                                    }}
+                                />
+                            ))}
+                        </Box>
+                    </Box>
+                ) : messages.length === 0 ? (
                     <Box 
                         sx={{
                             display: 'flex',
@@ -508,6 +762,22 @@ const Analysis = ({ result, ticker }) => {
                                                     />
                                                 )}
                                                 
+                                                {/* Show streaming indicator */}
+                                                {message.isStreaming && (
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                                                        <Loader className="w-3 h-3 animate-spin" style={{ color: teal[500], marginRight: '8px' }} />
+                                                        <Typography 
+                                                            sx={{ 
+                                                                color: teal[600],
+                                                                fontSize: '12px',
+                                                                fontStyle: 'italic'
+                                                            }}
+                                                        >
+                                                            Streaming...
+                                                        </Typography>
+                                                    </Box>
+                                                )}
+                                                
                                                 {/* Timestamp */}
                                                 <Typography 
                                                     variant="caption"
@@ -530,7 +800,7 @@ const Analysis = ({ result, ticker }) => {
                         })}
                         
                         {/* Typing Indicator */}
-                        {isLoading && (
+                        {isLoading && !messages.some(msg => msg.isStreaming) && (
                             <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                                 <Box 
                                     sx={{
@@ -574,7 +844,7 @@ const Analysis = ({ result, ticker }) => {
                         )}
                         
                         {/* Analysis Metadata */}
-                        {initialAnalysis && (
+                        {initialAnalysis && !messages.some(msg => msg.isStreaming) && (
                             <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid #e2e8f0' }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                                     <Typography 
@@ -657,11 +927,11 @@ const Analysis = ({ result, ticker }) => {
                         fullWidth
                         multiline
                         maxRows={4}
-                        placeholder="Ask a follow-up question about the analysis..."
+                        placeholder={isWaitingForAnalysis ? "Waiting for analysis to complete..." : "Ask a follow-up question about the analysis..."}
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        disabled={isLoading}
+                        disabled={isLoading || isWaitingForAnalysis}
                         variant="outlined"
                         sx={{
                             '& .MuiInputBase-root': {
@@ -691,7 +961,7 @@ const Analysis = ({ result, ticker }) => {
                     
                     <IconButton
                         type="submit"
-                        disabled={!inputText.trim() || isLoading}
+                        disabled={!inputText.trim() || isLoading || isWaitingForAnalysis}
                         sx={{
                             width: 48,
                             height: 48,
@@ -723,7 +993,10 @@ const Analysis = ({ result, ticker }) => {
                 {/* Input Footer */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
                     <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '12px' }}>
-                        Press Enter to send, Shift+Enter for new line
+                        {isWaitingForAnalysis 
+                            ? "Analysis in progress - chat will be available once complete" 
+                            : "Press Enter to send, Shift+Enter for new line"
+                        }
                     </Typography>
                     <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '12px' }}>
                         {inputText.length}/2000
