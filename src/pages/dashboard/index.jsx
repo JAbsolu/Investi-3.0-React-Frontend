@@ -76,7 +76,6 @@ export default function DashboardPage() {
   const [wishlist, setWishlist] = useState(null);
   const [candleSticksData, setCandleSticksData] = useState([]);
   const [showAnalysis, setShowAnalysis] = useState(false);
-  const [aiAnalysis, setAiAnalysis] = useState([]);
   const [currentView, setCurrentView] = useState('chart'); // 'chart' or 'analysis'
 
   const [keyStatisticsStartIndex, setKeyStatisticsStartIndex] = useState(0);
@@ -133,15 +132,11 @@ export default function DashboardPage() {
 
   // ------------------ Search ------------------
   const handleSearch = async (ticker) => {
-    //write save last searched stock
     if (!ticker) {
       console.log("no user id found");
       return;
-    }
-    
-    /**
-     * call get stock data, if we get stock data
-     */
+    }    
+
     getStockData(ticker); 
     getCandleSticks(ticker, getStartDay());
     getCompanyMetadata(ticker);
@@ -155,6 +150,7 @@ export default function DashboardPage() {
     if (e.key === "Enter") {
       e.preventDefault(); // optional: prevents default form submission
       handleSearch(e.target.value); 
+      setCurrentView('chart'); // Reset to chart view on new search
     }
   };
   
@@ -325,87 +321,6 @@ export default function DashboardPage() {
       console.log(error);
     }
   }
-
-  //----------------- perform analysis with global cache ----------------
-const getAiAnalysis = async (ticker) => {
-  if (!ticker) return;
-  
-  setShowAnalysis(true);
-  setCurrentView('analysis');
-  
-  try {
-    // Standardize ticker to uppercase for consistent keys
-    const standardizedTicker = ticker.toUpperCase();
-    
-    // Check Firebase for cached analysis
-    console.log(`Checking global cache for ${standardizedTicker} analysis...`);
-    const dbRef = ref(database);
-    const snapshot = await get(child(dbRef, `stockAnalyses/${standardizedTicker}`));
-    
-    if (snapshot.exists()) {
-      const cachedAnalysis = snapshot.val();
-      const analysisDate = new Date(cachedAnalysis.timestamp);
-      const now = new Date();
-      
-      // Calculate difference in days
-      const diffTime = Math.abs(now - analysisDate);
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      
-      // If analysis is less than 3 days old, use it
-      if (diffDays < 3) {
-        console.log(`Using cached analysis for ${standardizedTicker} from ${analysisDate.toLocaleString()} (${diffDays} days old)`);
-        
-        // Set the cached analysis data to state
-        setAiAnalysis(cachedAnalysis.analysis);
-        return;
-      } else {
-        console.log(`Cached analysis for ${standardizedTicker} is ${diffDays} days old. Getting fresh analysis.`);
-      }
-    } else {
-      console.log(`No cached analysis found for ${standardizedTicker}. Performing new analysis.`);
-    }
-    
-    // If we got here, we need a fresh analysis
-    const deepSeekUrl = `${API_URL}/deepseek-analysis?ticker=${standardizedTicker}`;
-    const openAiURL = `${API_URL}/analysis?ticker=${standardizedTicker}`;
-    
-    const response = await fetch(openAiURL);
-    const result = await response.json();
-    
-    if (!response.ok) {
-      console.log(response.status, result.message);
-      return;
-    }
-    
-    // Get analysis data from API response
-    const analysisData = result.data;
-    setAiAnalysis(analysisData);
-    
-    // Save new analysis to Firebase
-    await saveAnalysisToCache(standardizedTicker, analysisData);
-    
-    console.log(`Fresh analysis for ${standardizedTicker} completed and cached.`);
-  } catch (error) {
-    console.log("Error in AI Analysis:", error.message || "");
-  }
-};
-
-// Helper function to save analysis to Firebase cache
-const saveAnalysisToCache = async (ticker, analysisData) => {
-  try {
-    const dbRef = ref(database, `stockAnalyses/${ticker}`);
-    await set(dbRef, {
-      analysis: analysisData,
-      timestamp: new Date().toISOString(),
-      ticker: ticker
-    });
-    console.log(`Analysis for ${ticker} saved to global cache!`);
-    return true;
-  } catch (error) {
-    console.log("Error saving analysis to Firebase:", error.message || "");
-    return false;
-  }
-};
 
 //----------------- useEffects ------------------
 
@@ -654,6 +569,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   {!isSmallScreen && (
                     <SearchBar 
                       handleSearchOnEnter={handleSearchOnEnter}
+                      onChange={(e) => setStock(e.target.value?.trim())}
                       ticker={stock}
                       setTicker={setStock}
                       placeholder="Search stock"
@@ -682,7 +598,6 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                     onClick={() => {
                       setShowAnalysis(true);
                       setCurrentView('analysis');
-                      getAiAnalysis(currentStock)
                     }}
                   >
                     AI Analysis 
@@ -746,7 +661,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                         transform: currentView === 'analysis' ? 'translateX(0)' : 'translateX(20px)',
                         transition: 'all 0.3s ease-in-out'
                       }}>
-                        <Analysis result={aiAnalysis} ticker={currentStock}/>
+                        <Analysis ticker={currentStock} showAnalysis={showAnalysis} />
                       </Box>
                     )}
                   </Box>
@@ -927,6 +842,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             handleSearch={handleSearch} 
             ticker={currentStock} 
             marketChange={stockData?.regularMarketChange}
+            setCurrentView={setCurrentView}
           />
         </Box>
       )}
