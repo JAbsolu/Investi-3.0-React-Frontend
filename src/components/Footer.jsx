@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Container, Grid, Typography, Link as MuiLink, IconButton, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FaTwitter, FaFacebook, FaLinkedin, FaGithub, FaChartLine } from 'react-icons/fa';
-import { green, teal, grey } from '@mui/material/colors';
+import { teal, grey } from '@mui/material/colors';
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -13,7 +13,7 @@ const Footer = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Main Navigation (Added from Navbar) */}
       <Box 
         sx={{ 
@@ -23,7 +23,7 @@ const Footer = () => {
           gap: { xs: 2, sm: 4 },
           mb: 4,
           pb: 3,
-          borderBottom: `1px solid ${green[900]}`,
+          borderBottom: `1px solid ${teal[900]}`,
         }}
       >
         {['Features', 'Solutions', 'About Us', 'Help', 'Contact'].map((item, i) => (
@@ -83,7 +83,7 @@ const Footer = () => {
                   color: grey[400],
                   '&:hover': { 
                     color: teal[300],
-                    backgroundColor: 'rgba(0, 128, 128, 0.1)',
+                    backgroundColor: `${teal[900]}30`,
                   }
                 }}
               >
@@ -117,7 +117,7 @@ const Footer = () => {
                     sx={{ 
                       color: grey[400], 
                       fontSize: { xs: '0.8rem', sm: '0.9rem' },
-                      '&:hover': { color: green[400] } 
+                      '&:hover': { color: teal[400] } 
                     }}
                   >
                     {item}
@@ -152,7 +152,7 @@ const Footer = () => {
                     sx={{ 
                       color: grey[400], 
                       fontSize: { xs: '0.8rem', sm: '0.9rem' },
-                      '&:hover': { color: green[400] } 
+                      '&:hover': { color: teal[400] } 
                     }}
                   >
                     {item}
@@ -187,7 +187,7 @@ const Footer = () => {
                     sx={{ 
                       color: grey[400], 
                       fontSize: { xs: '0.8rem', sm: '0.9rem' },
-                      '&:hover': { color: green[400] } 
+                      '&:hover': { color: teal[400] } 
                     }}
                   >
                     {item}
@@ -222,7 +222,7 @@ const Footer = () => {
                     sx={{ 
                       color: grey[400], 
                       fontSize: { xs: '0.8rem', sm: '0.9rem' },
-                      '&:hover': { color: green[400] } 
+                      '&:hover': { color: teal[400] } 
                     }}
                   >
                     {item}
@@ -234,7 +234,7 @@ const Footer = () => {
         </Grid>
       </Grid>
 
-      <Divider sx={{ my: 4, bgcolor: green[900], opacity: 0.5 }} />
+      <Divider sx={{ my: 4, bgcolor: teal[900], opacity: 0.5 }} />
 
       <Box 
         sx={{

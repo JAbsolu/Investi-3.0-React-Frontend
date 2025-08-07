@@ -1,3 +1,4 @@
+import "./styles.css";
 import { useEffect, useState } from "react";
 import { 
   Box, Button, TextField, Typography, Grid, Paper, 
@@ -13,19 +14,38 @@ import { ref, set, get, child } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import DashboardSidebar from "../../components/DashboardSidebar";
 import { onAuthStateChanged } from "firebase/auth";
-import WishlistWIdget from "../../components/WishlistWidget";
 import StockChart from "../../components/stockChart";
-import StockAnalysisModal from "../../components/AnalysisModal";
-import { getCurrentDate, isStockMarketOpen } from "../../util/apis";
+import { isStockMarketOpen } from "../../util/apis";
 import { AutoAwesome, List } from '@mui/icons-material';
-
+import SearchBar from "../../components/SearchBar";
+import SearchPagination from "../../components/SearchPagination";
+import Pagination from "../../components/Pagination";
+import { getStartDay } from "../../util";
+import WatchlistWidget from "../../components/WatchlistWidget";
+import Analysis from "../../components/Analysis";
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 // ------------------ Color Variables ------------------
-const darkGray = "#121212";
 const white = "#ffffff";
 const darkBg = "#0d0d0d";
-const black = "#000000";
 const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
+const [background, tealcustom] = ["#111111", "#4db6ac"];
+
+const keyStatisticsArray = [
+  "Market Cap", 
+  "Average 10D volume",
+  "Volume",
+  "Today High",
+  "Today Low",
+  "Open Price",
+  "Market Price",
+  "Dividend Yield",
+  "52 Week High",
+  "52 Week Low",
+  "52 Week Range",
+  "P/E Ratio",
+]
 
 export default function DashboardPage() {
   const theme = useTheme();
@@ -55,27 +75,48 @@ export default function DashboardPage() {
   const [userId, setUserId] = useState("");
   const [wishlist, setWishlist] = useState(null);
   const [candleSticksData, setCandleSticksData] = useState([]);
-  const [openAnalysisModal, setOpenAnalysisModal] = useState(false);
-  const [aiAnalysis, setAiAnalysy] = useState([]);
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState([]);
+  const [currentView, setCurrentView] = useState('chart'); // 'chart' or 'analysis'
+
+  const [keyStatisticsStartIndex, setKeyStatisticsStartIndex] = useState(0);
+  const [keyStatisticsEndIndex, setKeyStatisticsEndIndex] = useState(5);
+
+  const [newsStartIndex, setNewsStartIndex] = useState(0);
+  const [newsEndIndex, setNewsEndIndex] = useState(5);
+
+  const scrollToTop = () => {
+        const scrollableElement = document.querySelector('[data-scrollable="true"]');
+        if (scrollableElement) {
+            scrollableElement.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+   const handleNext = () => {
+        if (newsEndIndex >= stockNews.length) return;
+        setNewsStartIndex( prev => prev += 5);
+        setNewsEndIndex(prev => prev += 5);
+        scrollToTop();
+    }
+
+    const handleBack = () => {
+        if (newsEndIndex === 0) {
+            setNewsStartIndex(0);
+            setNewsEndIndex(10);
+        }
+        setNewsStartIndex( prev => prev -= 5);
+        setNewsEndIndex(prev => prev -= 5);
+        scrollToTop();
+    }
+
 
   // ------------------ use navigate  ------------------
   const navigate = useNavigate();
   
-  //-------- get date from 1 year ago -------------
-  const getDate365DaysAgo = () => {
-    const today = new Date();
-    const pastDate = new Date();
-    pastDate.setDate(today.getDate() - 365);
-  
-    // Format to YYYY-MM-DD
-    const year = pastDate.getFullYear();
-    const month = String(pastDate.getMonth() + 1).padStart(2, '0');
-    const day = String(pastDate.getDate()).padStart(2, '0');
-  
-    return `${year}-${month}-${day}`;
-  };
-  
-  //-------------- get candlesticks -------------
+  /* -------------- get candlesticks ------------- */
   const getCandleSticks = async(ticker, startDate) => {
     const url = `${API_URL}/tiingo/candlestics?ticker=${ticker}&startDate=${startDate}`;
     const response = await fetch(url);
@@ -102,7 +143,7 @@ export default function DashboardPage() {
      * call get stock data, if we get stock data
      */
     getStockData(ticker); 
-    getCandleSticks(ticker, getDate365DaysAgo());
+    getCandleSticks(ticker, getStartDay());
     getCompanyMetadata(ticker);
     getNews(ticker)
     setCurrentStock(ticker);
@@ -210,10 +251,9 @@ export default function DashboardPage() {
         window.location.reload();
         return;
       }
-
-      console.log("Status:", response.status, response.statusText, result.message);
+      // console.log("Status:", response.status, response.statusText, result.message);
       setCompanyMetadata(result.data);
-
+      console.log("Company metadata loaded:", result.data);
     } catch (error) {
       console.log("Fetch error:", error);
     }
@@ -290,7 +330,8 @@ export default function DashboardPage() {
 const getAiAnalysis = async (ticker) => {
   if (!ticker) return;
   
-  setOpenAnalysisModal(true);
+  setShowAnalysis(true);
+  setCurrentView('analysis');
   
   try {
     // Standardize ticker to uppercase for consistent keys
@@ -315,7 +356,7 @@ const getAiAnalysis = async (ticker) => {
         console.log(`Using cached analysis for ${standardizedTicker} from ${analysisDate.toLocaleString()} (${diffDays} days old)`);
         
         // Set the cached analysis data to state
-        setAiAnalysy(cachedAnalysis.analysis);
+        setAiAnalysis(cachedAnalysis.analysis);
         return;
       } else {
         console.log(`Cached analysis for ${standardizedTicker} is ${diffDays} days old. Getting fresh analysis.`);
@@ -338,7 +379,7 @@ const getAiAnalysis = async (ticker) => {
     
     // Get analysis data from API response
     const analysisData = result.data;
-    setAiAnalysy(analysisData);
+    setAiAnalysis(analysisData);
     
     // Save new analysis to Firebase
     await saveAnalysisToCache(standardizedTicker, analysisData);
@@ -371,7 +412,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
   //get candlesticks live
   useEffect(() => {
 
-    const startDate = getDate365DaysAgo();
+    const startDate = getStartDay();
 
     // Fetch immediately if market is open
     if (isStockMarketOpen()) {
@@ -400,7 +441,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
   }, []);
 
   useEffect(() => {
-    const startDate = getDate365DaysAgo();
+    const startDate = getStartDay();
 
     const fetchLastSearch = async () => {
       if (!userId) return;
@@ -452,7 +493,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
       height: "100vh",
       backgroundColor: darkBg, 
       color: "white", 
-      background: 'linear-gradient(to bottom, #121212, #0d0d0d)',
+      // background: 'linear-gradient(to bottom, #121212, #0d0d0d)',
       overflow: "hidden",
     }}>
 
@@ -461,7 +502,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
         <Box sx={{ 
           width: "240px", 
           flexShrink: 0,
-          borderRight: `1px solid ${green[900]}`,
+          // borderRight: `1px solid ${green[900]}`,
         }}>
           <DashboardSidebar />
         </Box>
@@ -482,7 +523,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             width: 240,
             boxSizing: 'border-box',
             background: darkGradient || 'linear-gradient(to bottom, #121212, #0d0d0d)',
-            borderRight: `1px solid ${green[900]}`,
+            // borderRight: `1px solid ${green[900]}`,
           },
         }}
       >
@@ -508,8 +549,8 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
           {/* Central Content Area */}
           <Box sx={{ 
             flex: 1,
-            px: { xs: 1, sm: 2, md: 3 }, 
-            py: { xs: 1, sm: 2, md: 2 },  
+            px: 1, 
+            py: 1,  
             overflow: "auto",
             display: "flex",
             flexDirection: "column",
@@ -523,9 +564,9 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
           <Box sx={{ 
             display: 'flex', 
             alignItems: 'center',
-            gap: 1,
+            gap: 0.5,
             mb: 1.5,
-            px: 1 // Small horizontal padding to prevent edge touching
+            px: 0 // Small horizontal padding to prevent edge touching
           }}>
             <IconButton
               color="inherit"
@@ -546,9 +587,9 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
               display: "flex", 
               flexGrow: 1,
               alignItems: "center",
-              background: 'rgba(20, 30, 20, 0.3)',
+              // background: 'rgba(20, 30, 20, 0.3)',
               borderRadius: '8px',
-              border: `1px solid ${grey[900]}`,
+              border: `1px solid ${teal[900]}`,
               overflow: 'hidden',
               height: '38px',
             }}>
@@ -565,7 +606,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   },
                   '& .MuiInputBase-input': {
                     color: grey[100],
-                    fontSize: '0.85rem',
+                    fontSize: '16px', // Changed from '0.85rem' to '16px' to prevent mobile zoom
                     padding: '6px 8px',
                     height: '18px',
                     '&::placeholder': {
@@ -575,103 +616,8 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   },
                   backgroundColor: 'transparent'
                 }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FaSearch style={{ color: teal[300], fontSize: '14px' }} />
-                    </InputAdornment>
-                  ),
-                }}
               />
-              <IconButton
-                size="small"
-                sx={{
-                  color: white,
-                  backgroundColor: green[700],
-                  borderRadius: 0,
-                  height: '100%',
-                  width: '38px',
-                  '&:hover': { backgroundColor: green[600] },
-                  padding: 0,
-                }}
-                onClick={() => handleSearch(stock)}
-              >
-                <FaSearch size={14} />
-              </IconButton>
             </Box>
-          </Box>
-        )}
-        
-        {/* Desktop search bar */}
-        {!isSmallScreen && (
-          <Box sx={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: 0.5, 
-            mb: 2, 
-            mt: 0,
-            background: 'rgba(40, 60, 40, 0.8)',
-            borderRadius: '10px',
-            border: `2px solid ${green[500]}`,
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-            width: '100%',
-            alignSelf: 'flex-start',
-            height: '50px',
-            zIndex: 10,
-          }}>
-            <TextField
-              fullWidth
-              placeholder="Search for a stock (e.g., TSLA, AAPL)"
-              value={stock}
-              onChange={(e) => setStock(e.target.value?.trim())}
-              onKeyDown={(e) => handleSearchOnEnter(e)}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 0,
-                  '& fieldset': { border: 'none' }
-                },
-                '& .MuiInputBase-input': {
-                  color: white,
-                  fontSize: '1rem',
-                  padding: '12px 16px',
-                  '&::placeholder': {
-                    color: grey[300],
-                    opacity: 1
-                  }
-                },
-                height: '100%',
-                backgroundColor: 'transparent'
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <FaSearch style={{ 
-                      color: teal[300], 
-                      fontSize: '16px' 
-                    }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: green[700],
-                color: white,
-                px: 3,
-                py: 1.6,
-                borderRadius: 2,
-                "&:hover": { 
-                  backgroundColor: green[600],
-                  transform: 'translateX(2px)'
-                },
-                textTransform: "none",
-                transition: 'all 0.2s ease'
-              }}
-              onClick={() => handleSearch(stock)}
-            >
-              Search
-            </Button>
           </Box>
         )}
         
@@ -683,18 +629,17 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             width: '100%',
             maxWidth: '1200px',
             margin: '0 auto',
-            gap: 2
+            gap: 0
           }}>
 
             {/* Stock Chart */}
             <Box sx={{ width: '100%' }}>
               <Paper sx={{ 
-                py: 3, 
-                px: isSmallScreen ? 0.7 : 1.5, 
-                backgroundColor: 'rgba(20, 30, 20, 0.4)', 
-                minHeight: "26em", 
+                py: 1, 
+                px: isSmallScreen ? 0 : 1,  
+                backgroundColor: 'inherit', 
                 borderRadius: 2,
-                mb: 1,
+                mb: 0,
                 boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
               }}>
                 {/* Action buttons - Full width container on mobile */}
@@ -702,19 +647,30 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                   display: "flex", 
                   justifyContent: isSmallScreen ? "space-between" : "end",
                   gap: isSmallScreen ? 1 : 1.5, 
-                  mb: 2,
+                  mb: 0,
                   width: "100%", // Full width container
                 }}>
+                  {/* Desktop search bar */}
+                  {!isSmallScreen && (
+                    <SearchBar 
+                      handleSearchOnEnter={handleSearchOnEnter}
+                      ticker={stock}
+                      setTicker={setStock}
+                      placeholder="Search stock"
+                    />
+                  )}
                   <Button
                     variant="contained"
                     startIcon={<AutoAwesome />}
                     sx={{ 
                       color: 'white', 
+                      minWidth: "12em",
+                      maxHeight: "3em",
                       backgroundColor: teal[700],
                       textTransform: "none", 
                       borderRadius: '10px',
                       px: isSmallScreen ? 1.2 : 2.5, // Smaller padding on mobile
-                      fontSize: isSmallScreen ? '0.8rem' : 'inherit',
+                      fontSize: isSmallScreen ? '0.8rem' : '10pt',
                       flexGrow: isSmallScreen ? 1 : 0, // Take full width on mobile
                       transition: 'all 0.2s ease',
                       '&:hover': {
@@ -724,7 +680,8 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                       }
                     }}
                     onClick={() => {
-                      setOpenAnalysisModal(true);
+                      setShowAnalysis(true);
+                      setCurrentView('analysis');
                       getAiAnalysis(currentStock)
                     }}
                   >
@@ -734,17 +691,18 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                     startIcon={<List/>}
                     variant="outlined"
                     sx={{ 
+                      minWidth: "12em",
+                      maxHeight: "3em",
                       color: grey[200], 
-                      borderColor: green[900], 
+                      borderColor: teal[500], 
                       borderRadius: '10px',
                       textTransform: "none",
                       px: isSmallScreen ? 1 : 2,
-                      fontSize: isSmallScreen ? '0.8rem' : 'inherit',
+                      fontSize: isSmallScreen ? '0.8rem' : '10pt',
                       flexGrow: isSmallScreen ? 1 : 0, // Take full width on mobile
                       transition: 'all 0.2s ease',
                       '&:hover': {
-                        borderColor: green[700],
-                        backgroundColor: 'rgba(0, 128, 0, 0.1)',
+                        backgroundColor: 'rgba(100, 100, 100, 0.1)',
                         transform: 'translateX(3px)'
                       }
                     }}
@@ -753,128 +711,193 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
                     Add to List
                   </Button>
                 </Box>
-                
+
+                {/* Content Area - Toggle between Chart and Analysis */}
                 {stockData?.regularMarketPrice !== undefined && stockData?.regularMarketChange !== undefined && stockData?.regularMarketChangePercent !== undefined ? (
-                  <Box sx={{ width: '100%' }}> {/* Full width container for chart */}
-                    <StockChart 
-                      data={candleSticksData} 
-                      companyName={stockData?.shortName} 
-                      exchangeCode={companyMetadata?.exchangeCode} 
-                      price={stockData?.regularMarketPrice}
-                      marketPriceChange={`${stockData.regularMarketChange.toFixed(2)} (${stockData.regularMarketChangePercent.toFixed(2)}%) Today`}
-                    />
-                  </Box>
-                ) : (
                   <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center', 
-                    height: '300px',
-                    flexDirection: 'column',
-                    gap: 2,
-                    width: '100%'
+                    position: 'relative',
+                    width: '100%',
+                    minHeight: showAnalysis ? '400px' : 'auto',
+                    mt: isSmallScreen ? 2.5 : 0,
+                    overflow: 'hidden'
                   }}>
-                    <FaChartLine size={40} style={{ color: teal[400], opacity: 0.7 }} />
-                    <Typography variant="body1" color={grey[400]} sx={{ fontStyle: 'italic' }}>
-                      Search for a stock to view its chart
-                    </Typography>
+                    {/* Stock Chart View */}
+                    {(!showAnalysis || currentView === 'chart') && (
+                      <Box sx={{ 
+                        width: '100%',
+                        opacity: currentView === 'chart' ? 1 : 0,
+                        transform: currentView === 'chart' ? 'translateX(0)' : 'translateX(-20px)',
+                        transition: 'all 0.3s ease-in-out'
+                      }}>
+                        <StockChart 
+                          companyName={companyMetadata?.name}  
+                          ticker={stock || currentStock} 
+                          price={stockData?.regularMarketPrice?.toFixed(2)} 
+                          marketPriceChange={stockData?.regularMarketChange} 
+                        />
+                      </Box>
+                    )}
+
+                    {/* AI Analysis View */}
+                    {showAnalysis && currentView === 'analysis' && (
+                      <Box sx={{ 
+                        width: '100%',
+                        opacity: currentView === 'analysis' ? 1 : 0,
+                        transform: currentView === 'analysis' ? 'translateX(0)' : 'translateX(20px)',
+                        transition: 'all 0.3s ease-in-out'
+                      }}>
+                        <Analysis result={aiAnalysis} ticker={currentStock}/>
+                      </Box>
+                    )}
+                  </Box>
+                ) : null}
+
+                {/* Toggle Navigation Controls - Show when analysis is available */}
+                {showAnalysis && (
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'space-between',
+                    borderRadius: '8px',
+                    mt: 1,
+                  }}>
+                    <Button
+                      startIcon={<NavigateBeforeIcon />}
+                      onClick={() => setCurrentView('chart')}
+                      variant={currentView === 'chart' ? 'contained' : 'outlined'}
+                      size="small"
+                      sx={{
+                        backgroundColor: currentView === 'chart' ? teal[600] : 'transparent',
+                        borderColor: teal[500],
+                        color: currentView === 'chart' ? 'white' : teal[400],
+                        textTransform: 'none',
+                        minWidth: '20px',
+                        '&:hover': {
+                          backgroundColor: currentView === 'chart' ? teal[700] : 'rgba(0, 150, 136, 0.1)',
+                        }
+                      }}
+                    >
+                    </Button>
+                    
+                    <Button
+                      endIcon={<NavigateNextIcon />}
+                      onClick={() => setCurrentView('analysis')}
+                      variant={currentView === 'analysis' ? 'contained' : 'outlined'}
+                      size="small"
+                      sx={{
+                        backgroundColor: currentView === 'analysis' ? teal[600] : 'transparent',
+                        borderColor: teal[500],
+                        color: currentView === 'analysis' ? 'white' : teal[400],
+                        textTransform: 'none',
+                        minWidth: '20px',
+                        '&:hover': {
+                          backgroundColor: currentView === 'analysis' ? teal[700] : 'rgba(0, 150, 136, 0.1)',
+                        }
+                      }}
+                    >
+                    </Button>
                   </Box>
                 )}
+
               </Paper>
             </Box>
 
             {/* Company Profile */}
             <Paper sx={{ 
-              px: 3, 
-              py: 3, 
-              backgroundColor: 'rgba(20, 30, 20, 0.4)',
+              px: 0, 
+              pt: 0, 
+              backgroundColor: "inherit",
               maxWidth: '100%',
-              minHeight: "26em", 
-              borderRadius: 2,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+              borderRadius: 2
             }}>
-              <Typography color={teal[300]} fontWeight="bold" variant="h6" sx={{ mb: 1 }}>
-                Company Profile
-              </Typography>
-
-              {companyMetadata?.description ? (
-                <Typography mt={1} variant="body2" color={grey[300]} sx={{ lineHeight: 1.7, letterSpacing: 0.3 }}>
-                  {companyMetadata.description}
-                </Typography>
-              ) : (
-                <Typography variant="body2" color={grey[500]} sx={{ fontStyle: 'italic' }}>
-                  Search a stock to get company profile
-                </Typography>
-              )}
             
               {/* Stock key statistics */}
-              <Box container spacing={2} mt={3} color={grey[300]}>
-                <Box 
-                  display="flex" 
-                  flexWrap="wrap" 
-                  columnGap={6} 
-                  rowGap={3}
-                  sx={{
-                    background: 'rgba(0, 30, 0, 0.3)',
-                    p: 3,
-                    borderRadius: 2,
-                    border: `1px solid ${green[900]}`,
-                  }}
+              <Box container spacing={1} mt={2.5} color={white}>
+                <h2 className="font-semibold text-base mb-2"
+                  style={{ color: teal[300] }}
                 >
-                  <Typography variant="body2"><strong>Market cap</strong> <br/> {stockData?.marketCap ? formatNumber(stockData.marketCap) : "—"}</Typography>
-                  <Typography variant="body2"><strong>Dividend yield</strong> <br/> {stockData?.dividendYield ? `${stockData?.dividendYield}%` : "—"}</Typography>
-                  <Typography variant="body2"><strong>Average 10D volume</strong> <br/> {stockData?.averageDailyVolume10Day ? formatNumber(stockData.averageDailyVolume10Day) : "—" }</Typography>
-                  <Typography variant="body2"><strong>Volume</strong> <br/> {stockData?.regularMarketVolume ? formatNumber(stockData.regularMarketVolume) : "—" }</Typography>
-                  <Typography variant="body2"><strong>Today High</strong> <br/> {stockData?.regularMarketDayHigh ? stockData.regularMarketDayHigh.toFixed(2) : "—" }</Typography>
-                  <Typography variant="body2"><strong>Today Low</strong> <br/> {stockData?.regularMarketDayLow ? stockData.regularMarketDayLow.toFixed(2) : "—"}</Typography>
-                  <Typography variant="body2"><strong>Open Price</strong> <br/> {stockData?.regularMarketOpen || "—"}</Typography>
-                  <Typography variant="body2"><strong>Market Price</strong> <br/> {stockData?.regularMarketPrice || "—"}</Typography>
-                  <Typography variant="body2"><strong>52 Week low</strong> <br/> {stockData?.fiftyTwoWeekLow || "—"}</Typography>
-                  <Typography variant="body2"><strong>52 Week high</strong> <br/> {stockData?.fiftyTwoWeekHigh || "—"}</Typography>
-                  <Typography variant="body2"><strong>52 Week range</strong> <br/> {stockData?.fiftyTwoWeekRange || "—"}</Typography>
-                </Box>
-
-                <Box mt={5}>
+                  Key Statistics
+                </h2>
+                  <Pagination startingIndex={keyStatisticsStartIndex} endingIndex={keyStatisticsEndIndex}
+                    setNewStartIndex={setKeyStatisticsStartIndex}
+                    setNewEndIndex={setKeyStatisticsEndIndex}
+                    data={keyStatisticsArray}
+                    children={
+                      keyStatisticsArray.slice(keyStatisticsStartIndex, keyStatisticsEndIndex).map((statLabel, index) => {
+                        const statMap = {
+                          "Market Cap": stockData?.marketCap ? formatNumber(stockData.marketCap) : "—",
+                          "P/E Ratio": stockData?.peRatio ? stockData.peRatio : "—",
+                          "Dividend Yield": stockData?.dividendYield ? `${stockData.dividendYield}%` : "—",
+                          "52 Week High": stockData?.fiftyTwoWeekHigh ? stockData.fiftyTwoWeekHigh : "—",
+                          "52 Week Low": stockData?.fiftyTwoWeekLow ? stockData.fiftyTwoWeekLow : "—",
+                          "Average 10D volume": stockData?.averageDailyVolume10Day ? formatNumber(stockData.averageDailyVolume10Day) : "—",
+                          "Volume": stockData?.regularMarketVolume ? formatNumber(stockData.regularMarketVolume) : "—",
+                          "Today High": stockData?.regularMarketDayHigh ? stockData.regularMarketDayHigh.toFixed(2) : "—",
+                          "Today Low": stockData?.regularMarketDayLow ? stockData.regularMarketDayLow.toFixed(2) : "—",
+                          "Open Price": stockData?.regularMarketOpen || "—",
+                          "Market Price": stockData?.regularMarketPrice || "—",
+                          "52 Week low": stockData?.fiftyTwoWeekLow || "—",
+                          "52 Week high": stockData?.fiftyTwoWeekHigh || "—"
+                        }
+                        return (
+                          <Typography key={index} variant="body2">
+                            <strong className="font-semibold">{statLabel}</strong> <br/> {statMap[statLabel]}
+                          </Typography>
+                        );
+                      })
+                    }
+                  >
+                  </Pagination>
+                <Box mt={4}>
                   <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6" fontWeight="bold" color={teal[300]}>
+                  <h2 className="font-semibold text-base mb-0"
+                    style={{ color: teal[300] }}
+                  >                      
                       Recent News
-                    </Typography>
-                    <Button 
+                    </h2>
+                    <Button   
                       size="small" 
                       variant="text" 
                       sx={{ 
-                        color: green[400], 
+                        color: teal[500], 
                         textTransform: 'none',
                         '&:hover': { 
-                          backgroundColor: 'rgba(0, 128, 0, 0.1)',
-                          color: green[300]
+                          color: teal[300]
                         }
                       }}
+                      onClick={() => navigate("/dashboard/news")}
                     >
                       View all news
                     </Button>
                   </Box>
                 
-                  <Divider sx={{ my: 2, bgcolor: green[900], opacity: 0.7 }} />
+                  <Divider sx={{ my: 1, bgcolor: teal[500], opacity: 0.7 }} />
                   
                   { stockNews?.length > 0 ? (
-                    stockNews.slice(0,10).map((news, index) => (
-                      <Link key={news.id} href={news?.url} target="_blank" underline="none" color={white}>
-                        <Box key={index} py={2.5} px={2.5} mb={0.5} 
-                        sx={{
-                          borderRadius: 2,
-                          transition: 'all 0.2s ease',
-                          "&:hover": {
-                            backgroundColor: 'rgba(0, 30, 0, 0.3)',
-                            transform: 'translateX(5px)',
-                          }
-                        }}>
-                          <Typography fontSize="11pt" color={teal[400]}>{news?.source.charAt(0).toUpperCase() + news?.source.slice(1)}</Typography>
-                          <Typography fontWeight="bold" color={grey[100]} sx={{ my: 0.5 }}>{news?.title}</Typography>
-                          <Typography fontSize="10pt" color={grey[500]} sx={{ opacity: 0.9 }}>{news?.description}</Typography>
-                        </Box>
-                      </Link>
-                    ))
+                    <SearchPagination
+                        searchResults={stockNews}
+                        startingIndex={newsStartIndex}
+                        endingIndex={newsEndIndex}
+                        handleBack={handleBack}
+                        handleNext={handleNext}
+                    />
+                    // stockNews.slice(0,10).map((news, index) => (
+                    //   <Link key={news.id} href={news?.url} target="_blank" underline="none" color={white}>
+                    //     <Box key={index} py={2.5} px={0} mb={0.5} 
+                    //     sx={{
+                    //       transition: 'all 0.2s ease',
+                    //       "&:hover": {
+                    //         px: 2,
+                    //         backgroundColor: '#0cac990d',
+                    //         transform: 'translateX(5px)',
+                    //       }
+                    //     }}>
+                    //       <Typography fontSize="11pt" color={teal[400]}>{news?.source.charAt(0).toUpperCase() + news?.source.slice(1)}</Typography>
+                    //       <Typography fontWeight="bold" color={grey[100]} sx={{ my: 0.5 }}>{news?.title}</Typography>
+                    //       <Typography fontSize="10pt" color={grey[500]} sx={{ opacity: 0.9 }}>{news?.description}</Typography>
+                    //     </Box>
+                    //   </Link>
+                    // ))
                   ) : (
                     <Box sx={{ textAlign: 'center', py: 6 }}>
                       <Typography color={grey[500]} sx={{ fontStyle: 'italic' }}>No news available for this stock</Typography>
@@ -892,13 +915,13 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
         <Box sx={{ 
           width: "320px", 
           flexShrink: 0,
-          borderLeft: `1px solid ${green[900]}`,
+          // borderLeft: `1px solid ${green[900]}`,
           overflow: "auto",
           '&::-webkit-scrollbar': { display: 'none' },
           scrollbarWidth: 'none',
           '-ms-overflow-style': 'none',
         }}>
-          <WishlistWIdget 
+          <WatchlistWidget 
             wishlist={wishlist} 
             removeFromWishlist={removeFromWishlist} 
             handleSearch={handleSearch} 
@@ -927,7 +950,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             maxWidth: '320px',
             boxSizing: 'border-box',
             background: darkGradient,
-            borderLeft: `1px solid ${green[900]}`,
+            // borderLeft: `1px solid ${green[900]}`,
           },
         }}
       >
@@ -942,7 +965,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             p: 2,
-            borderBottom: `1px solid ${green[900]}`,
+            borderBottom: `1px solid ${teal[500]}`,
             background: `linear-gradient(90deg, ${teal[900]}, ${green[900]})`,
           }}>
             <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
@@ -957,7 +980,7 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
           </Box>
           
           <Box sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
-            <WishlistWIdget 
+            <WatchlistWidget 
               wishlist={wishlist} 
               removeFromWishlist={removeFromWishlist} 
               handleSearch={(ticker) => {
@@ -992,8 +1015,6 @@ const saveAnalysisToCache = async (ticker, analysisData) => {
           <FaList />
         </Fab>
       )}
-
-      <StockAnalysisModal open={openAnalysisModal} handleClose={() => setOpenAnalysisModal(false)} result={aiAnalysis} stock={currentStock}/>
     </Box>
   );
 }
