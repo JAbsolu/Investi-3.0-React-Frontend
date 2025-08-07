@@ -7,17 +7,96 @@ import { database, auth } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 
 // Stock analysis chat component with modern chat design
-const AnalysisChat = ({ result, ticker }) => {
+const AnalysisChat = ({ ticker }) => {
     const [analysisDate, setAnalysisDate] = useState(null);
     const [isFromCache, setIsFromCache] = useState(false);
     const [initialAnalysis, setInitialAnalysis] = useState('');
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isWaitingForAnalysis, setIsWaitingForAnalysis] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
     const [conversationId, setConversationId] = useState(null);
+    const [analysisResult, setAnalysisResult] = useState(null);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
+
+    const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
+
+      //----------------- perform analysis with global cache ----------------
+    const saveAnalysisToCache = async (ticker, analysisData) => {
+        try {
+            const cacheData = {
+                analysis: analysisData,
+                timestamp: Date.now()
+            };
+            await set(ref(database, `stockAnalyses/${ticker}`), cacheData);
+        } catch (error) {
+            console.error("Error saving analysis to cache:", error);
+        }
+    };
+
+    const getAiAnalysis = async (ticker) => {
+      if (!ticker) return;
+      
+      setIsWaitingForAnalysis(true);
+      setMessages([]); // Clear any previous messages
+      
+      try {
+        // Standardize ticker to uppercase for consistent keys
+        const standardizedTicker = ticker.toUpperCase();
+        
+        const dbRef = ref(database);
+        const snapshot = await get(child(dbRef, `stockAnalyses/${standardizedTicker}`));
+        
+        if (snapshot.exists()) {
+          const cachedAnalysis = snapshot.val();
+          const analysisDate = new Date(cachedAnalysis.timestamp);
+          const now = new Date();
+          
+          // Calculate difference in days
+          const diffTime = Math.abs(now - analysisDate);
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          
+          // If analysis is less than 3 days old, use it
+          if (diffDays < 3) {            
+            // Set the cached analysis data to state
+            setAnalysisResult(cachedAnalysis.analysis);
+            setAnalysisDate(analysisDate);
+            setIsFromCache(true);
+            setIsWaitingForAnalysis(false);
+            return;
+          }
+        }
+        
+        // If we got here, we need a fresh analysis
+        const openAiURL = `${API_URL}/analysis?ticker=${standardizedTicker}`;
+        
+        const response = await fetch(openAiURL);
+        const result = await response.json();
+        
+        if (!response.ok) {
+          console.log(response.status, result.message);
+          setIsWaitingForAnalysis(false);
+          return;
+        }
+        
+        // Get analysis data from API response
+        const analysisData = result.data;
+        setAnalysisResult(analysisData);
+        setAnalysisDate(new Date());
+        setIsFromCache(false);
+        setIsWaitingForAnalysis(false);
+        
+        // Save new analysis to Firebase
+        await saveAnalysisToCache(standardizedTicker, analysisData);
+        
+        console.log(`Fresh analysis for ${standardizedTicker} completed and cached.`);
+      } catch (error) {
+        console.log("Error in AI Analysis:", error.message || "");
+        setIsWaitingForAnalysis(false);
+      }
+    };
     
     // OpenAI client configuration
     const ORG_ID = process.env.REACT_APP_OPENAI_ORG_ID;
@@ -47,6 +126,23 @@ const AnalysisChat = ({ result, ticker }) => {
         });
         return () => unsubscribe();
     }, []);
+
+    // Track when we're waiting for analysis
+    useEffect(() => {
+        if (ticker && !analysisResult) {
+            setIsWaitingForAnalysis(true);
+            setMessages([]); // Clear any previous messages
+        } else if (analysisResult) {
+            setIsWaitingForAnalysis(false);
+        }
+    }, [ticker, analysisResult]);
+
+    // Trigger analysis when ticker changes
+    useEffect(() => {
+        if (ticker) {
+            getAiAnalysis(ticker);
+        }
+    }, [ticker]);
 
     // Save conversation to Firebase
     const saveConversationToFirebase = async (newMessages) => {
@@ -169,50 +265,85 @@ const AnalysisChat = ({ result, ticker }) => {
         return timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
-    // Initialize chat with analysis when result changes
+    // Initialize chat with analysis when analysisResult changes - now supports streaming
     useEffect(() => {
-        if (result && ticker) {
+        if (analysisResult && ticker) {
+            // Set initial messages with system prompt first
+            const systemMessage = {
+                id: '1',
+                role: 'system',
+                content: `You are a financial analyst assistant analyzing ${ticker}. Use the following context from the previous analysis to maintain consistency and answer follow-up questions thoroughly. Remember key metrics, technical indicators, fundamental data, and your recommendation.`,
+                timestamp: new Date()
+            };
+
+            // Create streaming assistant message
+            const assistantMessage = {
+                id: '2',
+                role: 'assistant',
+                content: '',
+                timestamp: new Date(),
+                isStreaming: true
+            };
+
+            const initialMessages = [systemMessage, assistantMessage];
+            setMessages(initialMessages);
+
+            // Start streaming the result
             let analysisText = '';
-            
-            if (typeof result === 'string') {
-                analysisText = result;
-            } else if (result && result.analysis) {
-                analysisText = result.analysis;
-            } else if (result) {
+            if (typeof analysisResult === 'string') {
+                analysisText = analysisResult;
+            } else if (analysisResult && analysisResult.analysis) {
+                analysisText = analysisResult.analysis;
+            } else if (analysisResult) {
                 analysisText = [
-                    `Decision: ${result.decision || ''}`,
-                    `Technical Analysis: ${result.technical_analysis || ''}`,
-                    `Fundamental Analysis: ${result.fundamental_analysis || ''}`
+                    `Decision: ${analysisResult.decision || ''}`,
+                    `Technical Analysis: ${analysisResult.technical_analysis || ''}`,
+                    `Fundamental Analysis: ${analysisResult.fundamental_analysis || ''}`
                 ].join('\n\n');
             }
-            
-            setInitialAnalysis(analysisText);
-            
-            // Set initial messages with system prompt and analysis
-            const initialMessages = [
-                {
-                    id: '1',
-                    role: 'system',
-                    content: `You are a financial analyst assistant analyzing ${ticker}. Use the following context from the previous analysis to maintain consistency and answer follow-up questions thoroughly. Remember key metrics, technical indicators, fundamental data, and your recommendation.`,
-                    timestamp: new Date()
-                },
-                {
-                    id: '2',
-                    role: 'assistant',
-                    content: analysisText,
-                    timestamp: new Date()
+
+            // Simulate streaming by adding characters progressively
+            let currentIndex = 0;
+            const streamInterval = setInterval(() => {
+                if (currentIndex < analysisText.length) {
+                    const chunk = analysisText.slice(0, currentIndex + 3); // Add 3 characters at a time
+                    currentIndex += 3;
+
+                    setMessages(prev => {
+                        const updated = [...prev];
+                        const lastMessage = updated[updated.length - 1];
+                        if (lastMessage && lastMessage.role === 'assistant') {
+                            lastMessage.content = chunk;
+                            lastMessage.isStreaming = currentIndex < analysisText.length;
+                        }
+                        return updated;
+                    });
+                } else {
+                    // Streaming complete
+                    clearInterval(streamInterval);
+                    setMessages(prev => {
+                        const updated = [...prev];
+                        const lastMessage = updated[updated.length - 1];
+                        if (lastMessage && lastMessage.role === 'assistant') {
+                            lastMessage.content = analysisText;
+                            lastMessage.isStreaming = false;
+                        }
+                        return updated;
+                    });
+                    setInitialAnalysis(analysisText);
                 }
-            ];
-            
-            setMessages(initialMessages);
-            
+            }, 50); // Stream at 50ms intervals for smooth effect
+
             // Create new conversation ID for this analysis
             if (currentUser) {
                 const newConversationRef = push(ref(database, 'conversations'));
                 setConversationId(newConversationRef.key);
             }
+
+            // Cleanup interval on unmount or when effect reruns
+            return () => clearInterval(streamInterval);
         }
-    }, [result, ticker, currentUser]);
+    }, [analysisResult, ticker, currentUser]);
 
     // Format message content for display
     const formatMessageContent = (content) => {
@@ -231,7 +362,7 @@ const AnalysisChat = ({ result, ticker }) => {
 
     // Add timestamp indicator component
     useEffect(() => {
-      if (result && ticker) {
+      if (analysisResult && ticker) {
         // Check if there's cached data and get its timestamp
         const checkCacheTimestamp = async () => {
           try {
@@ -258,7 +389,7 @@ const AnalysisChat = ({ result, ticker }) => {
         
         checkCacheTimestamp();
       }
-    }, [result, ticker]);
+    }, [analysisResult, ticker]);
 
     return (
         <div className="flex flex-col w-full mb-6 min-h-[600px] max-w-4xl mx-auto overflow-hidden rounded-xl shadow-2xl" 
@@ -278,7 +409,7 @@ const AnalysisChat = ({ result, ticker }) => {
                             AI ticker Analysis {ticker ? `- ${ticker.toUpperCase()}` : ''}
                         </h1>
                         <p className="text-sm" style={{ color: teal[300] }}>
-                            Online and ready to help
+                            {isWaitingForAnalysis ? 'Analyzing market data...' : 'Online and ready to help'}
                         </p>
                     </div>
                 </div>
@@ -291,7 +422,26 @@ const AnalysisChat = ({ result, ticker }) => {
                      maxHeight: '500px'
                  }}>
                 
-                {messages.length === 0 ? (
+                {isWaitingForAnalysis ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                        <div className="relative">
+                            <Loader className="w-16 h-16 animate-spin mb-4" style={{ color: teal[400] }} />
+                            <div className="absolute inset-0 w-16 h-16 border-2 border-dashed rounded-full animate-ping" 
+                                 style={{ borderColor: teal[300], animationDuration: '2s' }}></div>
+                        </div>
+                        <p className="text-xl font-bold mb-2" style={{ color: teal[300] }}>
+                            Analyzing {ticker?.toUpperCase()}...
+                        </p>
+                        <p className="text-sm text-center max-w-md" style={{ color: teal[200] }}>
+                            Our AI is processing market data, technical indicators, and fundamental analysis. This may take a few moments.
+                        </p>
+                        <div className="mt-4 flex items-center space-x-2" style={{ color: teal[400] }}>
+                            <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: teal[400] }}></div>
+                            <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: teal[400], animationDelay: '0.2s' }}></div>
+                            <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: teal[400], animationDelay: '0.4s' }}></div>
+                        </div>
+                    </div>
+                ) : messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-8">
                         <Loader className="w-15 h-15 animate-spin mb-4" style={{ color: teal[400] }} />
                         <p className="text-lg font-bold" style={{ color: teal[300] }}>
@@ -362,6 +512,16 @@ const AnalysisChat = ({ result, ticker }) => {
                                                 />
                                             )}
                                             
+                                            {/* Show streaming indicator */}
+                                            {message.isStreaming && (
+                                                <div className="flex items-center mt-2">
+                                                    <Loader className="w-3 h-3 animate-spin mr-2" style={{ color: teal[400] }} />
+                                                    <span className="text-xs" style={{ color: teal[300] }}>
+                                                        Streaming...
+                                                    </span>
+                                                </div>
+                                            )}
+                                            
                                             <p className={`text-xs mt-1 ${
                                                 message.role === 'user' 
                                                     ? 'opacity-70' 
@@ -376,7 +536,7 @@ const AnalysisChat = ({ result, ticker }) => {
                         })}
                         
                         {/* Typing Indicator */}
-                        {isLoading && (
+                        {isLoading && !messages.some(msg => msg.isStreaming) && (
                             <div className="flex justify-start">
                                 <div className="flex items-end space-x-2">
                                     <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mr-2"
@@ -400,7 +560,7 @@ const AnalysisChat = ({ result, ticker }) => {
                         )}
                         
                         {/* Analysis metadata */}
-                        {initialAnalysis && (
+                        {initialAnalysis && !messages.some(msg => msg.isStreaming) && (
                             <div className="mt-6 pt-4 border-t" style={{ borderColor: `${teal[800]}40` }}>
                                 <div className="flex justify-between items-center mb-2 opacity-80">
                                     <span className="text-xs flex items-center gap-1" style={{ color: '#5eead4' }}>
@@ -452,7 +612,7 @@ const AnalysisChat = ({ result, ticker }) => {
                             value={inputText}
                             onChange={(e) => setInputText(e.target.value)}
                             onKeyPress={handleKeyPress}
-                            placeholder="Type your message here..."
+                            placeholder={isWaitingForAnalysis ? "Waiting for analysis to complete..." : "Type your message here..."}
                             className="w-full px-4 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 transition-all duration-200"
                             rows="1"
                             style={{ 
@@ -463,12 +623,12 @@ const AnalysisChat = ({ result, ticker }) => {
                                 color: 'white',
                                 backdropFilter: 'blur(4px)'
                             }}
-                            disabled={isLoading}
+                            disabled={isLoading || isWaitingForAnalysis}
                         />
                     </div>
                     <button
                         onClick={handleSendMessage}
-                        disabled={!inputText.trim() || isLoading}
+                        disabled={!inputText.trim() || isLoading || isWaitingForAnalysis}
                         className="p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                         style={{
                             backgroundColor: teal[600],
@@ -486,7 +646,12 @@ const AnalysisChat = ({ result, ticker }) => {
                 
                 {/* Character count or other info */}
                 <div className="flex justify-between items-center mt-2 text-xs" style={{ color: '#0f766e' }}>
-                    <span>Press Enter to send, Shift+Enter for new line</span>
+                    <span>
+                        {isWaitingForAnalysis 
+                            ? "Analysis in progress - chat will be available once complete" 
+                            : "Press Enter to send, Shift+Enter for new line"
+                        }
+                    </span>
                     <span>{inputText.length}/2000</span>
                 </div>
             </div>
