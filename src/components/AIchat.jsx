@@ -70,7 +70,7 @@ const AiChat = ({ isOpen, onClose, stockSymbol, fullPage = false }) => {
 
     try {
       const stream = await client.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-4o-mini-2024-07-18",
         messages: openAIMessages,
         stream: true,
       });

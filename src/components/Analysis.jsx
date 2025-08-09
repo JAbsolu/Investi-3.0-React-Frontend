@@ -220,7 +220,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
             const apiMessages = updatedMessages.filter(msg => msg.role !== 'system' || msg.content.includes('financial analyst'));
 
             const stream = await client.chat.completions.create({
-                model: "gpt-4o",
+                model: "gpt-4o-mini-2024-07-18",
                 messages: apiMessages,
                 stream: true,
                 temperature: 0.4,
