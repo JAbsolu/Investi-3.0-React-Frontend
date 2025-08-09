@@ -27,6 +27,10 @@ const Analysis = ({ ticker, showAnalysis }) => {
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
     const contentRef = useRef(null);
+    
+    // Add refs to prevent duplicate calls
+    const lastAnalyzedTicker = useRef(null);
+    const isAnalyzing = useRef(false);
 
     const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
     
@@ -35,6 +39,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
         try {
             const cacheData = {
                 analysis: analysisData,
+                ticker: ticker,
                 timestamp: Date.now()
             };
             await set(ref(database, `stockAnalyses/${ticker}`), cacheData);
@@ -46,14 +51,23 @@ const Analysis = ({ ticker, showAnalysis }) => {
     const getAiAnalysis = async (ticker) => {
           if (!ticker) return;
           
+          const standardizedTicker = ticker.toUpperCase();
+          
+          // Prevent duplicate calls
+          if (isAnalyzing.current || lastAnalyzedTicker.current === standardizedTicker) {
+            console.log("Preventing duplicate analysis call for:", standardizedTicker);
+            return;
+          }
+                    
+          isAnalyzing.current = true;
+          lastAnalyzedTicker.current = standardizedTicker;
+          
           setIsWaitingForAnalysis(true);
           setMessages([]); // Clear any previous messages
           setAnalysisResult(null);
           
           try {
             // Standardize ticker to uppercase for consistent keys
-            const standardizedTicker = ticker.toUpperCase();
-            
             const dbRef = ref(database);
             const snapshot = await get(child(dbRef, `stockAnalyses/${standardizedTicker}`));
             
@@ -65,14 +79,18 @@ const Analysis = ({ ticker, showAnalysis }) => {
               // Calculate difference in days
               const diffTime = Math.abs(now - analysisDate);
               const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-              
-              // If analysis is less than 3 days old, use it
-              if (diffDays < 3) {            
+
+              // If analysis is less than 2 days old, use it
+              if (diffDays < 2) {
                 // Set the cached analysis data to state
-                setAnalysisResult(cachedAnalysis.analysis);
+                setAnalysisResult({
+                  ...cachedAnalysis.analysis,
+                  ticker: standardizedTicker
+                });
                 setAnalysisDate(analysisDate);
                 setIsFromCache(true);
                 setIsWaitingForAnalysis(false);
+                isAnalyzing.current = false;
                 return;
               }
             }
@@ -86,23 +104,28 @@ const Analysis = ({ ticker, showAnalysis }) => {
             if (!response.ok) {
               console.log(response.status, result.message);
               setIsWaitingForAnalysis(false);
+              isAnalyzing.current = false;
               return;
             }
             
             // Get analysis data from API response
             const analysisData = result.data;
-            setAnalysisResult(analysisData);
+            setAnalysisResult({
+              ...analysisData,
+              ticker: standardizedTicker
+            });
             setAnalysisDate(new Date());
             setIsFromCache(false);
             setIsWaitingForAnalysis(false);
             
             // Save new analysis to Firebase
             await saveAnalysisToCache(standardizedTicker, analysisData);
-            
-            console.log(`Fresh analysis for ${standardizedTicker} completed and cached.`);
+            // console.log(`Fresh analysis for ${standardizedTicker} completed and cached.`);
           } catch (error) {
-            console.log("Error in AI Analysis:", error.message || "");
+            // console.log("Error in AI Analysis:", error.message || "");
             setIsWaitingForAnalysis(false);
+          } finally {
+            isAnalyzing.current = false;
           }
         };
     
@@ -149,20 +172,31 @@ const Analysis = ({ ticker, showAnalysis }) => {
         return () => unsubscribe();
     }, []);
 
-    // Track when we're waiting for analysis
+    // Track when we're waiting for analysis and trigger analysis when ticker changes
     useEffect(() => {
-        if (ticker && !analysisResult) {
-            setIsWaitingForAnalysis(true);
-            setMessages([]); // Clear any previous messages
+        if (ticker && showAnalysis) {
+            const standardizedTicker = ticker.toUpperCase();
+            // Only trigger analysis if we don't have a result for this ticker or if ticker changed
+            if (!analysisResult || analysisResult.ticker !== standardizedTicker) {
+                setIsWaitingForAnalysis(true);
+                setMessages([]); // Clear any previous messages
+                getAiAnalysis(ticker);
+            }
         } else if (analysisResult) {
             setIsWaitingForAnalysis(false);
         }
-    }, [ticker, analysisResult]);
-
-    // Trigger analysis when ticker changes
+    }, [ticker, showAnalysis]);
+    
+    // Reset analysis tracking when ticker changes
     useEffect(() => {
         if (ticker) {
-            getAiAnalysis(ticker);
+            const standardizedTicker = ticker.toUpperCase();
+            if (lastAnalyzedTicker.current && lastAnalyzedTicker.current !== standardizedTicker) {
+                // Ticker changed, reset tracking
+                lastAnalyzedTicker.current = null;
+                isAnalyzing.current = false;
+                setAnalysisResult(null);
+            }
         }
     }, [ticker]);
 
@@ -331,7 +365,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
                     `Decision: ${analysisResult.decision || ''}`,
                     `Technical Analysis: ${analysisResult.technical_analysis || ''}`,
                     `Fundamental Analysis: ${analysisResult.fundamental_analysis || ''}`
-                ].join('\n\n');
+                ].join('\n\n'); // Keep double newlines for proper section separation
             }
 
             // Simulate streaming by adding characters progressively
@@ -380,16 +414,20 @@ const Analysis = ({ ticker, showAnalysis }) => {
     // Format message content for display
     const formatMessageContent = (content) => {
         return content
+            .trim() // Remove leading/trailing whitespace
             // Headings
-            .replace(/#{3}\s*(.*)/g, `<h3 style="color: ${teal[300]}; font-weight: 600; margin-top: 15px; margin-bottom: 10px; font-size: 18px;">$1</h3>`)
+            .replace(/#{3}\s*(.*)/g, `<h3 style="color: ${teal[300]}; font-weight: 600; margin-top: 5px; margin-bottom: 5px; font-size: 18px;">$1</h3>`)
             // Bold
             .replace(/\*\*(.*?)\*\*/g, `<strong>$1</strong>`)
             // Italics
             .replace(/\*(.*?)\*/g, `<em style="color: #5eead4;">$1</em>`)
             // Links
             .replace(/\[(.*?)\]\((.*?)\)/g, `<a href="$2" style="color: ${teal[400]}; text-decoration: none;" target="_blank">$1</a>`)
-            // Line breaks
-            .replace(/\n/g, '<br>');
+            // Clean up multiple consecutive line breaks first
+            .replace(/\n{3,}/g, '\n\n') // Replace 3+ newlines with just 2
+            // Convert remaining line breaks to HTML
+            .replace(/\n\n/g, '<br><br>') // Double newlines become paragraph breaks
+            .replace(/\n/g, ''); // Single newlines become line breaks
     };
 
     // Add timestamp indicator component
