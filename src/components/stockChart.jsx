@@ -55,14 +55,24 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
   const [loading, setLoading] = useState(false);
   const [currentResolution, setCurrentResolution] = useState('4hour');
 
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
+  const getDateDaysAgo = (days = 360) => {
+    const today = new Date();
+    const pastDate = new Date(today.getTime() - (days * 24 * 60 * 60 * 1000));
+    return pastDate.toISOString().split('T')[0];
+  };
+
   // Get candlesticks data from API with dynamic resolution based on zoom level
-  const getCandleSticks = async(tickerSymbol, startDate, endDate = null, resampleFreq = '4hour') => {
-    if (!tickerSymbol) return;
+  const getCandleSticks = async(ticker, interval="4hour", currentDate = getTodayDate(), pastDate = getDateDaysAgo(360)) => {
+    if (!ticker) return;
     
     setLoading(true);
     try {
-      let url = `${API_URL}/tiingo/candlestics?ticker=${tickerSymbol}&startDate=${startDate}&resampleFreq=${resampleFreq}`;
-
+      const url = `${API_URL}/fmp/chart?ticker=${ticker}&interval=${interval}&from=${pastDate}&to=${currentDate}`;
       const response = await fetch(url);
       const result = await response.json();
 
@@ -71,20 +81,27 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
         return;
       }
 
-      const formattedData = result.data?.map(item => ({
+      // Handle the new API response format - data is directly in the result array
+      const dataArray = Array.isArray(result) ? result : result.data || [];
+      
+      const formattedData = dataArray
+        .filter(item => item && item.date && item.open && item.high && item.low && item.close) // Filter out invalid data
+        .map(item => ({
           time: formatTimeToHHMMAMPM(item.date),
           date: formatDateToMMDDYY(item.date),
-          open: parseFloat(item.open.toFixed(2)),
-          high: parseFloat(item.high.toFixed(2)),
-          low: parseFloat(item.low.toFixed(2)),
-          close: parseFloat(item.close.toFixed(2)),
-          value: item.close, // for line chart
+          open: parseFloat(item.open) || 0,
+          high: parseFloat(item.high) || 0,
+          low: parseFloat(item.low) || 0,
+          close: parseFloat(item.close) || 0,
+          value: parseFloat(item.close) || 0, // for line chart
+          volume: item.volume || 0,
           originalDate: new Date(item.date) // Keep original date for sorting
         }))
+        .filter(item => !isNaN(item.open) && !isNaN(item.high) && !isNaN(item.low) && !isNaN(item.close)) // Filter out NaN values
         .sort((a, b) => a.originalDate - b.originalDate); // Sort by actual date
 
       setCandleSticksData(formattedData || []);
-      setCurrentResolution(resampleFreq);
+      setCurrentResolution(interval);
       console.log("Formatted candle sticks", formattedData);
     } catch (error) {
       console.error("Error fetching candlestick data:", error);
@@ -102,9 +119,9 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
     if (daysDiff <= 1) {
       return '5min'; // Very detailed for 1 day or less
     } else if (daysDiff <= 7) {
-      return '30min'; // 30 minute intervals for up to 1 week
+      return '15min'; // 15 minute intervals for up to 1 week
     } else if (daysDiff <= 30) {
-      return '2hour'; // 2 hour intervals for up to 1 month
+      return '1hour'; // 1 hour intervals for up to 1 month
     } else if (daysDiff <= 90) {
       return '4hour'; // 4 hour intervals for up to 3 months
     } else if (daysDiff <= 365) {
@@ -140,8 +157,14 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
       index: i
     }));
 
-    // Scales
-    const xScale = d3.scaleTime()
+    // Scales - Use band scale for more consistent candlestick spacing
+    const xScale = d3.scaleBand()
+      .domain(formattedData.map((d, i) => i))
+      .range([0, width])
+      .padding(0.1);
+
+    // Also create a time scale for axis labeling
+    const timeScale = d3.scaleTime()
       .domain(d3.extent(formattedData, d => d.date))
       .range([0, width]);
 
@@ -160,20 +183,42 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
       .on("zoom", function(event) {
         const { transform } = event;
         
-        // Update scales with zoom transform
-        const newXScale = transform.rescaleX(xScale);
-        const newYScale = transform.rescaleY(yScale);
+        // For band scale, we need to handle zoom differently
+        // Calculate visible data range based on transform
+        const totalItems = formattedData.length;
+        const itemsPerView = Math.max(1, Math.floor(totalItems / transform.k));
+        const startIndex = Math.max(0, Math.floor(-transform.x / (width / totalItems) / transform.k));
+        const endIndex = Math.min(totalItems - 1, startIndex + itemsPerView);
         
-        // Get visible time range
-        const visibleDomain = newXScale.domain();
-        const startDate = new Date(visibleDomain[0]);
-        const endDate = new Date(visibleDomain[1]);
+        // Get visible data
+        const visibleData = formattedData.slice(startIndex, endIndex + 1);
+        
+        if (visibleData.length === 0) return;
+        
+        // Create new scales for visible data
+        const visibleXScale = d3.scaleBand()
+          .domain(visibleData.map((d, i) => startIndex + i))
+          .range([0, width])
+          .padding(0.1);
+        
+        // Update Y scale domain based on visible data
+        const visibleYDomain = [
+          d3.min(visibleData, d => Math.min(d.low, d.open, d.close)) * 0.99,
+          d3.max(visibleData, d => Math.max(d.high, d.open, d.close)) * 1.01
+        ];
+        
+        const visibleYScale = d3.scaleLinear()
+          .domain(visibleYDomain)
+          .nice()
+          .range([height, 0]);
         
         // Determine if we need to fetch new data based on zoom level
         const shouldFetchNewData = transform.k > 2; // Fetch higher resolution when zoomed in significantly
         
-        if (shouldFetchNewData) {
-          // Fetch new data with appropriate resolution for the visible time range
+        if (shouldFetchNewData && visibleData.length > 0) {
+          // Calculate time range for visible data
+          const startDate = visibleData[0].date;
+          const endDate = visibleData[visibleData.length - 1].date;
           const newResolution = getResolutionForTimeRange(startDate, endDate);
           const startDateStr = startDate.toISOString().split('T')[0];
           const endDateStr = endDate.toISOString().split('T')[0];
@@ -184,7 +229,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
           // Debounce the API call to avoid too many requests
           clearTimeout(window.zoomFetchTimeout);
           window.zoomFetchTimeout = setTimeout(() => {
-            getCandleSticks(ticker, startDateStr, endDateStr, newResolution);
+            getCandleSticks(ticker, newResolution, endDateStr, startDateStr);
           }, 500);
         }
         
@@ -197,30 +242,12 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
         chart.selectAll(".x-axis").remove();
         chart.selectAll(".y-axis").remove();
         
-        // Filter data to visible range for better performance
-        const visibleData = formattedData.filter(d => 
-          d.date >= visibleDomain[0] && d.date <= visibleDomain[1]
-        );
-        
-        // Update Y scale domain based on visible data
-        const visibleYDomain = [
-          d3.min(visibleData, d => Math.min(d.low, d.open, d.close)) * 0.99,
-          d3.max(visibleData, d => Math.max(d.high, d.open, d.close)) * 1.01
-        ];
-        
-        const dynamicYScale = d3.scaleLinear()
-          .domain(visibleYDomain)
-          .nice()
-          .range([height, 0]);
-        
-        const finalYScale = transform.rescaleY(dynamicYScale);
-        
         // Redraw grid
-        const xGrid = d3.axisBottom(newXScale)
+        const xGrid = d3.axisBottom(visibleXScale)
           .tickSize(-height)
           .tickFormat("");
 
-        const yGrid = d3.axisLeft(finalYScale)
+        const yGrid = d3.axisLeft(visibleYScale)
           .tickSize(-width)
           .tickFormat("");
 
@@ -241,18 +268,16 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
 
         // Redraw chart elements based on chart type using visible data
         if (chartType === 'candlestick') {
-          const candleWidth = Math.max(1, (width / visibleData.length) * 0.6 * Math.min(transform.k, 2));
-
           // Candlestick bodies
           chart.selectAll(".candle-body")
             .data(visibleData)
             .enter()
             .append("rect")
             .attr("class", "candle-body")
-            .attr("x", d => newXScale(d.date) - candleWidth / 2)
-            .attr("y", d => finalYScale(Math.max(d.open, d.close)))
-            .attr("width", candleWidth)
-            .attr("height", d => Math.abs(finalYScale(d.open) - finalYScale(d.close)))
+            .attr("x", (d, i) => visibleXScale(startIndex + i))
+            .attr("y", d => visibleYScale(Math.max(d.open, d.close)))
+            .attr("width", visibleXScale.bandwidth())
+            .attr("height", d => Math.abs(visibleYScale(d.open) - visibleYScale(d.close)) || 1)
             .attr("fill", d => d.close >= d.open ? "#14b8a6" : "#ef4444")
             .attr("stroke", d => d.close >= d.open ? "#0d9488" : "#dc2626")
             .attr("stroke-width", 1)
@@ -264,17 +289,17 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
             .enter()
             .append("line")
             .attr("class", "candle-wick")
-            .attr("x1", d => newXScale(d.date))
-            .attr("x2", d => newXScale(d.date))
-            .attr("y1", d => finalYScale(d.high))
-            .attr("y2", d => finalYScale(d.low))
+            .attr("x1", (d, i) => visibleXScale(startIndex + i) + visibleXScale.bandwidth() / 2)
+            .attr("x2", (d, i) => visibleXScale(startIndex + i) + visibleXScale.bandwidth() / 2)
+            .attr("y1", d => visibleYScale(d.high))
+            .attr("y2", d => visibleYScale(d.low))
             .attr("stroke", d => d.close >= d.open ? "#14b8a6" : "#ef4444")
             .attr("stroke-width", 1);
 
         } else if (chartType === 'line') {
           const line = d3.line()
-            .x(d => newXScale(d.date))
-            .y(d => finalYScale(d.close))
+            .x((d, i) => visibleXScale(startIndex + i) + visibleXScale.bandwidth() / 2)
+            .y(d => visibleYScale(d.close))
             .curve(d3.curveMonotoneX);
 
           chart.append("path")
@@ -289,8 +314,8 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
             .enter()
             .append("circle")
             .attr("class", "dot")
-            .attr("cx", d => newXScale(d.date))
-            .attr("cy", d => finalYScale(d.close))
+            .attr("cx", (d, i) => visibleXScale(startIndex + i) + visibleXScale.bandwidth() / 2)
+            .attr("cy", d => visibleYScale(d.close))
             .attr("r", 3)
             .attr("fill", "#14b8a6")
             .attr("stroke", "#ffffff")
@@ -299,9 +324,9 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
 
         } else if (chartType === 'area') {
           const area = d3.area()
-            .x(d => newXScale(d.date))
+            .x((d, i) => visibleXScale(startIndex + i) + visibleXScale.bandwidth() / 2)
             .y0(height)
-            .y1(d => finalYScale(d.close))
+            .y1(d => visibleYScale(d.close))
             .curve(d3.curveMonotoneX);
 
           // Gradient definition
@@ -328,8 +353,8 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
             .attr("d", area);
 
           const line = d3.line()
-            .x(d => newXScale(d.date))
-            .y(d => finalYScale(d.close))
+            .x((d, i) => visibleXScale(startIndex + i) + visibleXScale.bandwidth() / 2)
+            .y(d => visibleYScale(d.close))
             .curve(d3.curveMonotoneX);
 
           chart.append("path")
@@ -340,36 +365,19 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
             .attr("d", line);
         }
 
-        // Update axes with dynamic formatting
-        const timeDiff = visibleDomain[1].getTime() - visibleDomain[0].getTime();
-        const hoursDiff = timeDiff / (1000 * 60 * 60);
-        
-        let xAxisFormat;
-        let tickCount;
-        
-        if (hoursDiff <= 24) {
-          // Less than 1 day - show hours
-          xAxisFormat = d3.timeFormat("%H:%M");
-          tickCount = Math.min(8, Math.max(4, Math.floor(hoursDiff / 2)));
-        } else if (hoursDiff <= 168) {
-          // Less than 1 week - show day and time
-          xAxisFormat = d3.timeFormat("%m/%d %H:%M");
-          tickCount = Math.min(10, Math.max(5, Math.floor(hoursDiff / 12)));
-        } else if (hoursDiff <= 720) {
-          // Less than 1 month - show dates
-          xAxisFormat = d3.timeFormat("%m/%d");
-          tickCount = Math.min(12, Math.max(6, Math.floor(hoursDiff / 24)));
-        } else {
-          // More than 1 month - show month/year
-          xAxisFormat = d3.timeFormat("%m/%y");
-          tickCount = Math.min(10, Math.max(4, Math.floor(hoursDiff / 168)));
-        }
+        // Update axes with proper formatting
+        const xAxis = d3.axisBottom(visibleXScale)
+          .tickFormat((d, i) => {
+            const dataIndex = d; // d is already the index
+            const dataPoint = formattedData[dataIndex];
+            if (dataPoint && dataPoint.date) {
+              return d3.timeFormat("%m/%d")(dataPoint.date);
+            }
+            return '';
+          })
+          .tickValues(visibleXScale.domain().filter((d, i) => i % Math.max(1, Math.ceil(visibleData.length / 6)) === 0));
 
-        const xAxis = d3.axisBottom(newXScale)
-          .tickFormat(xAxisFormat)
-          .ticks(tickCount);
-
-        const yAxis = d3.axisLeft(finalYScale)
+        const yAxis = d3.axisLeft(visibleYScale)
           .tickFormat(d => `$${d.toFixed(2)}`)
           .ticks(8);
 
@@ -441,8 +449,24 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
         .style("backdrop-filter", "blur(10px)");
 
       if (chartType === 'candlestick') {
-        // Candlestick width
-        const candleWidth = Math.max(2, (width / formattedData.length) * 0.6);
+        // Dynamic candlestick width based on data density and available space
+        const dataPoints = formattedData.length;
+        const availableWidth = width;
+        const minWidth = 1;
+        const maxWidth = 12;
+        const optimalSpacing = 0.8; // 80% width, 20% spacing
+        
+        let candleWidth;
+        if (dataPoints <= 50) {
+          // For small datasets, use larger candles
+          candleWidth = Math.min(maxWidth, Math.max(minWidth, (availableWidth / dataPoints) * optimalSpacing));
+        } else if (dataPoints <= 200) {
+          // Medium datasets
+          candleWidth = Math.min(8, Math.max(minWidth, (availableWidth / dataPoints) * optimalSpacing));
+        } else {
+          // Large datasets, keep candles small but visible
+          candleWidth = Math.min(4, Math.max(minWidth, (availableWidth / dataPoints) * optimalSpacing));
+        }
 
         // Candlestick bodies
         chart.selectAll(".candle-body")
@@ -450,10 +474,10 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
           .enter()
           .append("rect")
           .attr("class", "candle-body")
-          .attr("x", d => xScale(d.date) - candleWidth / 2)
+          .attr("x", (d, i) => xScale(i))
           .attr("y", d => yScale(Math.max(d.open, d.close)))
-          .attr("width", candleWidth)
-          .attr("height", d => Math.abs(yScale(d.open) - yScale(d.close)))
+          .attr("width", xScale.bandwidth())
+          .attr("height", d => Math.abs(yScale(d.open) - yScale(d.close)) || 1) // Ensure minimum height
           .attr("fill", d => d.close >= d.open ? "#14b8a6" : "#ef4444")
           .attr("stroke", d => d.close >= d.open ? "#0d9488" : "#dc2626")
           .attr("stroke-width", 1)
@@ -467,10 +491,10 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
                 ${d.date.toLocaleDateString('en-US')}
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-family: monospace;">
-                <div style="color: #5eead4;">Open:</div><div style="color: #14b8a6;">$${d.open.toFixed(2)}</div>
-                <div style="color: #5eead4;">High:</div><div style="color: #10b981;">$${d.high.toFixed(2)}</div>
-                <div style="color: #5eead4;">Low:</div><div style="color: #f87171;">$${d.low.toFixed(2)}</div>
-                <div style="color: #5eead4;">Close:</div><div style="color: #ffffff; font-weight: bold;">$${d.close.toFixed(2)}</div>
+                <div style="color: #5eead4;">Open:</div><div style="color: #14b8a6;">$${(d.open || 0).toFixed(2)}</div>
+                <div style="color: #5eead4;">High:</div><div style="color: #10b981;">$${(d.high || 0).toFixed(2)}</div>
+                <div style="color: #5eead4;">Low:</div><div style="color: #f87171;">$${(d.low || 0).toFixed(2)}</div>
+                <div style="color: #5eead4;">Close:</div><div style="color: #ffffff; font-weight: bold;">$${(d.close || 0).toFixed(2)}</div>
               </div>
             `)
             .style("left", (event.pageX + 10) + "px")
@@ -487,8 +511,8 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
           .enter()
           .append("line")
           .attr("class", "candle-wick")
-          .attr("x1", d => xScale(d.date))
-          .attr("x2", d => xScale(d.date))
+          .attr("x1", (d, i) => xScale(i) + xScale.bandwidth() / 2)
+          .attr("x2", (d, i) => xScale(i) + xScale.bandwidth() / 2)
           .attr("y1", d => yScale(d.high))
           .attr("y2", d => yScale(d.low))
           .attr("stroke", d => d.close >= d.open ? "#14b8a6" : "#ef4444")
@@ -498,7 +522,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
       } else if (chartType === 'line') {
         // Line chart
         const line = d3.line()
-          .x(d => xScale(d.date))
+          .x((d, i) => xScale(i) + xScale.bandwidth() / 2)
           .y(d => yScale(d.close))
           .curve(d3.curveMonotoneX);
 
@@ -515,7 +539,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
           .enter()
           .append("circle")
           .attr("class", "dot")
-          .attr("cx", d => xScale(d.date))
+          .attr("cx", (d, i) => xScale(i) + xScale.bandwidth() / 2)
           .attr("cy", d => yScale(d.close))
           .attr("r", 3)
           .attr("fill", "#14b8a6")
@@ -532,7 +556,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
                 ${d.date.toLocaleDateString('en-US')}
               </div>
               <div style="color: #ffffff; font-family: monospace; font-size: 14px;">
-                Price: <span style="font-weight: bold;">$${d.close.toFixed(2)}</span>
+                Price: <span style="font-weight: bold;">$${(d.close || 0).toFixed(2)}</span>
               </div>
             `)
             .style("left", (event.pageX + 10) + "px")
@@ -547,7 +571,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
       } else if (chartType === 'area') {
         // Area chart
         const area = d3.area()
-          .x(d => xScale(d.date))
+          .x((d, i) => xScale(i) + xScale.bandwidth() / 2)
           .y0(height)
           .y1(d => yScale(d.close))
           .curve(d3.curveMonotoneX);
@@ -577,7 +601,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
 
         // Line on top
         const line = d3.line()
-          .x(d => xScale(d.date))
+          .x((d, i) => xScale(i) + xScale.bandwidth() / 2)
           .y(d => yScale(d.close))
           .curve(d3.curveMonotoneX);
 
@@ -591,8 +615,15 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
 
       // Axes
       const xAxis = d3.axisBottom(xScale)
-        .tickFormat(d3.timeFormat("%m/%d/%y"))
-        .ticks(8);
+        .tickFormat((d, i) => {
+          // d is the index, formattedData[d] gives us the data point
+          const dataPoint = formattedData[d];
+          if (dataPoint && dataPoint.date) {
+            return d3.timeFormat("%m/%d")(dataPoint.date);
+          }
+          return '';
+        })
+        .tickValues(xScale.domain().filter((d, i) => i % Math.ceil(formattedData.length / 8) === 0)); // Show ~8 ticks
 
       const yAxis = d3.axisLeft(yScale)
         .tickFormat(d => `$${d.toFixed(2)}`)
@@ -634,7 +665,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
   // Fetch initial data when ticker changes
   useEffect(() => {
     if (ticker) {
-      getCandleSticks(ticker, getStartDay(selectedPeriod), null, '4hour'); // Use current selected period
+      getCandleSticks(ticker, '4hour', getTodayDate(), getStartDay(selectedPeriod)); // Use current selected period
     }
     
     // Cleanup function to clear any pending timeouts
@@ -689,8 +720,8 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
       
       // Reset to original time period data
       if (ticker) {
-        const resampleFreq = selectedPeriod === 'YTD' || selectedPeriod === '1Y' ? '4hour' : '4hour';
-        getCandleSticks(ticker, getStartDay(selectedPeriod), null, resampleFreq);
+        const interval = selectedPeriod === 'YTD' || selectedPeriod === '1Y' ? '4hour' : '4hour';
+        getCandleSticks(ticker, interval, getTodayDate(), getStartDay(selectedPeriod));
       }
       
       svg.transition()
@@ -708,22 +739,22 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
     // Clear any pending zoom fetch timeouts
     clearTimeout(window.zoomFetchTimeout);
     
-    let resampleFreq;
+    let interval;
     
     switch (period) {
       case 'YTD':
-        resampleFreq = '4hour'; // 4 hour intervals for YTD data
+        interval = '4hour'; // Daily intervals for year-to-date data
         break;
       case '1Y':
-        resampleFreq = '4hour'; // 4 hour intervals for yearly data
+        interval = '4hour'; // Daily intervals for yearly data
         break;
       default:
-        resampleFreq = '4hour';
+        interval = '4hour';
     }
     
     // Get start date based on period and fetch new data from API
     if (ticker) {
-      getCandleSticks(ticker, getStartDay(period), null, resampleFreq);
+      getCandleSticks(ticker, interval, getTodayDate(), getStartDay(period));
     }
   };
 
@@ -857,13 +888,13 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
             </div>
             <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs font-mono">
               <div className="text-white">Open:</div>
-              <div className="text-white">${hoveredData.open.toFixed(2)}</div>
+              <div className="text-white">${(hoveredData.open || 0).toFixed(2)}</div>
               <div className="text-green-400">High:</div>
-              <div className="text-white">${hoveredData.high.toFixed(2)}</div>
+              <div className="text-white">${(hoveredData.high || 0).toFixed(2)}</div>
               <div className="text-white">Low:</div>
-              <div className="text-red-400">${hoveredData.low.toFixed(2)}</div>
+              <div className="text-red-400">${(hoveredData.low || 0).toFixed(2)}</div>
               <div className="text-white">Close:</div>
-              <div className="text-white font-semibold">${hoveredData.close.toFixed(2)}</div>
+              <div className="text-white font-semibold">${(hoveredData.close || 0).toFixed(2)}</div>
             </div>
           </div>
         )}

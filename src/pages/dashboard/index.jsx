@@ -117,7 +117,8 @@ export default function DashboardPage() {
   
   /* -------------- get candlesticks ------------- */
   const getCandleSticks = async(ticker, startDate) => {
-    const url = `${API_URL}/tiingo/candlestics?ticker=${ticker}&startDate=${startDate}`;
+    const endDate = new Date().toISOString().split('T')[0]; // Today's date
+    const url = `${API_URL}/fmp/chart?ticker=${ticker}&interval=5min&from=${startDate}&to=${endDate}&resampleFreq=4hour`;
     const response = await fetch(url);
     const result = await response.json();
 
@@ -126,7 +127,9 @@ export default function DashboardPage() {
       return;
     }
 
-    setCandleSticksData(result.data);
+    // Handle the new API response format - data is directly in the result array
+    const dataArray = Array.isArray(result) ? result : result.data || [];
+    setCandleSticksData(dataArray);
     console.log("status", response.status, result.message);
   }
 

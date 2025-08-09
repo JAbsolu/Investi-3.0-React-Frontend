@@ -11,9 +11,19 @@ const AreaChartComponent = ({currentStock}) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
+  const getDateDaysAgo = (days = 360) => {
+    const today = new Date();
+    const pastDate = new Date(today.getTime() - (days * 24 * 60 * 60 * 1000));
+    return pastDate.toISOString().split('T')[0];
+  };
   /*  get candlesticks */
-  const getCandleSticks = async(ticker, startDate) => {
-    const url = `${API_URL}/tiingo/candlestics?ticker=${ticker}&startDate=${startDate}&resampleFreq=4hour`;
+  const getCandleSticks = async(ticker, interval="5min", currentDate = getTodayDate(), pastDate = getDateDaysAgo(360)) => {
+    const url = `${API_URL}/fmp/chart?ticker=${ticker}&interval=${interval}&from=${pastDate}&to=${currentDate}&resampleFreq=4hour`;
     const response = await fetch(url);
     const result = await response.json();
 
@@ -22,14 +32,18 @@ const AreaChartComponent = ({currentStock}) => {
       return;
     }
 
-    const formattedData = result.data?.map(item => ({
+    // Handle the new API response format - data is directly in the result array
+    const dataArray = Array.isArray(result) ? result : result.data || [];
+    
+    const formattedData = dataArray.map(item => ({
         time: formatTimeToHHMMAMPM(item.date),
         date: formatDateToMMDDYY(item.date),
-        open: item.open.toFixed(2),
-        high: item.high.toFixed(2),
-        low: item.low.toFixed(2),
-        close: item.close.toFixed(2),
-        value: item.close, // for line chart
+        open: parseFloat(item.open).toFixed(2),
+        high: parseFloat(item.high).toFixed(2),
+        low: parseFloat(item.low).toFixed(2),
+        close: parseFloat(item.close).toFixed(2),
+        value: parseFloat(item.close), // for line chart
+        volume: item.volume,
         originalDate: new Date(item.date) // Keep original date for sorting
       }))
       .sort((a, b) => a.originalDate - b.originalDate); // Sort by actual date
@@ -40,7 +54,7 @@ const AreaChartComponent = ({currentStock}) => {
 
   useEffect(() => {
     if (currentStock) {
-      getCandleSticks(currentStock, getStartDay());
+      getCandleSticks(currentStock);
     }
   }, [currentStock]);
 
