@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import { FaTimes, FaList } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { green, teal, grey } from '@mui/material/colors';
+import { green, teal, grey, red } from '@mui/material/colors';
 import { ref, set, get, child } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import DashboardSidebar from "./components/DashboardSidebar";
@@ -21,13 +21,11 @@ import { useAuth } from "../../hooks/useAuth";
 import { useResponsive } from "../../hooks/useResponsive";
 import DashboardHeader from "./components/DashboardHeader";
 import StockDataView from "./components/StockDataView";
-
+import TradingStrategies from "./components/TradingStrategies";
 // Constants
 const white = "#ffffff";
 const darkBg = "#0d0d0d";
-const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
-const [background, tealcustom] = ["#111111", "#4db6ac"];
 
 const keyStatisticsArray = [
   "Market Cap", 
@@ -119,6 +117,12 @@ export default function DashboardPage() {
   const handleAnalysis = () => {
     setShowAnalysis(true);
     setCurrentView('analysis');
+  };
+
+  const handleStrategyClick = (strategy) => {
+    console.log('Strategy clicked:', strategy);
+    // Add navigation or modal logic here
+    // navigate(`/dashboard/strategy/${strategy.id}`);
   };
 
   // Utility functions
@@ -313,96 +317,62 @@ export default function DashboardPage() {
                   />
                 </Box>
 
+                {/* Trading Strategies Section */}
+                <Box sx={{ width: '100%', mt: 3 }}>
+                  <TradingStrategies onStrategyClick={handleStrategyClick} />
+                </Box>
+
                 {/* Company Profile and Statistics */}
                 <Paper sx={{ 
                   px: 0, 
                   pt: 0, 
                   backgroundColor: "inherit",
                   maxWidth: '100%',
+                  minWidth: '100%',
                   borderRadius: 2
                 }}>
-                  {/* Stock key statistics */}
-                  <Box container spacing={1} mt={2.5} color={white}>
-                    <h2 className="font-semibold text-base mb-2"
-                      style={{ color: teal[300] }}
-                    >
-                      Key Statistics
-                    </h2>
-                    <Pagination 
-                      startingIndex={keyStatisticsStartIndex} 
-                      endingIndex={keyStatisticsEndIndex}
-                      setNewStartIndex={setKeyStatisticsStartIndex}
-                      setNewEndIndex={setKeyStatisticsEndIndex}
-                      data={keyStatisticsArray}
-                      children={
-                        keyStatisticsArray.slice(keyStatisticsStartIndex, keyStatisticsEndIndex).map((statLabel, index) => {
-                          const statMap = {
-                            "Market Cap": stockData?.marketCap ? formatNumber(stockData.marketCap) : "—",
-                            "P/E Ratio": stockData?.peRatio ? stockData.peRatio : "—",
-                            "Dividend Yield": stockData?.dividendYield ? `${stockData.dividendYield}%` : "—",
-                            "52 Week High": stockData?.fiftyTwoWeekHigh ? stockData.fiftyTwoWeekHigh : "—",
-                            "52 Week Low": stockData?.fiftyTwoWeekLow ? stockData.fiftyTwoWeekLow : "—",
-                            "Average 10D volume": stockData?.averageDailyVolume10Day ? formatNumber(stockData.averageDailyVolume10Day) : "—",
-                            "Volume": stockData?.regularMarketVolume ? formatNumber(stockData.regularMarketVolume) : "—",
-                            "Today High": stockData?.regularMarketDayHigh ? stockData.regularMarketDayHigh.toFixed(2) : "—",
-                            "Today Low": stockData?.regularMarketDayLow ? stockData.regularMarketDayLow.toFixed(2) : "—",
-                            "Open Price": stockData?.regularMarketOpen || "—",
-                            "Market Price": stockData?.regularMarketPrice || "—",
-                            "52 Week low": stockData?.fiftyTwoWeekLow || "—",
-                            "52 Week high": stockData?.fiftyTwoWeekHigh || "—"
-                          };
-                          
-                          return (
-                            <Typography key={index} variant="body2">
-                              <strong className="font-semibold">{statLabel}</strong> <br/> {statMap[statLabel]}
-                            </Typography>
-                          );
-                        })
-                      }
-                    />
-                    
-                    {/* News Section */}
-                    <Box mt={4}>
-                      <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <h2 className="font-semibold text-base mb-0"
-                          style={{ color: teal[300] }}
-                        >                      
-                          Recent News
-                        </h2>
-                        <Button   
-                          size="small" 
-                          variant="text" 
-                          sx={{ 
-                            color: teal[500], 
-                            textTransform: 'none',
-                            '&:hover': { 
-                              color: teal[300]
-                            }
-                          }}
-                          onClick={() => navigate("/dashboard/news")}
-                        >
-                          View all news
-                        </Button>
-                      </Box>
-                    
-                      <Divider sx={{ my: 1, bgcolor: teal[500], opacity: 0.7 }} />
-                      
-                      {stockNews?.length > 0 ? (
-                        <SearchPagination
-                          searchResults={stockNews}
-                          startingIndex={newsStartIndex}
-                          endingIndex={newsEndIndex}
-                          handleBack={handleBack}
-                          handleNext={handleNext}
-                        />
-                      ) : (
-                        <Box sx={{ textAlign: 'center', py: 6 }}>
-                          <Typography color={grey[500]} sx={{ fontStyle: 'italic' }}>
-                            No news available for this stock
-                          </Typography>
-                        </Box>
-                      )}
+
+                  {/* News Section */}
+                  <Box mt={4}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                      <h2 className="font-semibold text-base mb-0"
+                        style={{ color: teal[300] }}
+                      >                      
+                        Recent News
+                      </h2>
+                      <Button   
+                        size="small" 
+                        variant="text" 
+                        sx={{ 
+                          color: teal[500], 
+                          textTransform: 'none',
+                          '&:hover': { 
+                            color: teal[300]
+                          }
+                        }}
+                        onClick={() => navigate("/dashboard/news")}
+                      >
+                        View all news
+                      </Button>
                     </Box>
+                  
+                    <Divider sx={{ my: 1, bgcolor: teal[500], opacity: 0.7 }} />
+                    
+                    {stockNews?.length > 0 ? (
+                      <SearchPagination
+                        searchResults={stockNews}
+                        startingIndex={newsStartIndex}
+                        endingIndex={newsEndIndex}
+                        handleBack={handleBack}
+                        handleNext={handleNext}
+                      />
+                    ) : (
+                      <Box sx={{ textAlign: 'center', py: 6 }}>
+                        <Typography color={grey[500]} sx={{ fontStyle: 'italic' }}>
+                          No news available for this stock
+                        </Typography>
+                      </Box>
+                    )}
                   </Box>
                 </Paper>
               </Box>
