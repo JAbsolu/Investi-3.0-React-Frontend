@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Button, Paper } from '@mui/material';
 import { teal } from '@mui/material/colors';
 import StockChart from "./stockChart"

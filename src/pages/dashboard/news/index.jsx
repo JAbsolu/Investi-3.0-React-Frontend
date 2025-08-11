@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import DashboardSidebar from "../../../components/DashboardSidebar";
+import DashboardSidebar from "../components/DashboardSidebar";
 import { 
     Box, Divider, Typography, Container,
     useMediaQuery, useTheme, IconButton, Drawer

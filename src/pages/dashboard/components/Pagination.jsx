@@ -1,8 +1,7 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { teal } from "@mui/material/colors";
-import { useState } from "react";
 
 const white = "#ffffff";
 
