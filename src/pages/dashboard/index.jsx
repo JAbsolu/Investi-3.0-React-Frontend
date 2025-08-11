@@ -1,31 +1,28 @@
 import "./styles.css";
 import { useEffect, useState } from "react";
 import { 
-  Box, Button, TextField, Typography, Grid, Paper, 
-  Divider, Link, InputAdornment, useMediaQuery, useTheme,
-  IconButton, Drawer, Fab
+  Box, Button, Typography, Paper, 
+  Divider, IconButton, Drawer, Fab
 } from "@mui/material";
-import { FaSearch, FaChartLine, FaTimes, FaList } from "react-icons/fa";
-import { HiOutlineMenu } from "react-icons/hi"; // Add this import for the hamburger icon
+import { FaTimes, FaList } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../firebaseConfig";
-import { red, green, blue, lightBlue, cyan, teal, lightGreen, grey } from '@mui/material/colors';
+import { green, teal, grey } from '@mui/material/colors';
 import { ref, set, get, child } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import DashboardSidebar from "../../components/DashboardSidebar";
-import { onAuthStateChanged } from "firebase/auth";
-import StockChart from "../../components/stockChart";
 import { isStockMarketOpen } from "../../util/apis";
-import { AutoAwesome, List } from '@mui/icons-material';
-import SearchBar from "../../components/SearchBar";
-import SearchPagination from "../../components/SearchPagination";
-import Pagination from "../../components/Pagination";
+import SearchPagination from "./components/SearchPagination";
+import Pagination from "./components/Pagination";
 import { getStartDay } from "../../util";
 import WatchlistWidget from "../../components/WatchlistWidget";
-import Analysis from "../../components/Analysis";
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-// ------------------ Color Variables ------------------
+import { useStockData } from "../../hooks/useStockData";
+import { useWishlist } from "../../hooks/useWishlist";
+import { useAuth } from "../../hooks/useAuth";
+import { useResponsive } from "../../hooks/useResponsive";
+import DashboardHeader from "./components/DashboardHeader";
+import StockDataView from "./components/StockDataView";
+
+// Constants
 const white = "#ffffff";
 const darkBg = "#0d0d0d";
 const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
@@ -45,294 +42,168 @@ const keyStatisticsArray = [
   "52 Week Low",
   "52 Week Range",
   "P/E Ratio",
-]
+];
 
 export default function DashboardPage() {
-  const theme = useTheme();
-  const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
   
-  // Add state for mobile sidebar drawer
+  // Custom hooks
+  const { user, userId, email } = useAuth();
+  const { isMobile, isTablet, isDesktop, isSmallScreen, isMediumScreen } = useResponsive();
+  const {
+    stockData,
+    currentStock,
+    candleSticksData,
+    companyMetadata,
+    stockNews,
+    loading,
+    errors,
+    searchStock,
+    getCandleSticks,
+    setCurrentStock
+  } = useStockData();
+  
+  const {
+    wishlist,
+    loading: wishlistLoading,
+    error: wishlistError,
+    fetchWishlist,
+    addToWishlist: addToWishlistHook,
+    removeFromWishlist
+  } = useWishlist(userId);
+
+  // Local state
+  const [stock, setStock] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
-  
-  // Handle toggle drawer
+  const [mobileWishlistOpen, setMobileWishlistOpen] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [currentView, setCurrentView] = useState('chart');
+
+  // Pagination state
+  const [keyStatisticsStartIndex, setKeyStatisticsStartIndex] = useState(0);
+  const [keyStatisticsEndIndex, setKeyStatisticsEndIndex] = useState(5);
+  const [newsStartIndex, setNewsStartIndex] = useState(0);
+  const [newsEndIndex, setNewsEndIndex] = useState(5);
+
+  // Event handlers
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  // Add state for mobile wishlist drawer
-  const [mobileWishlistOpen, setMobileWishlistOpen] = useState(false);
-
-  // ------------------ State ------------------
-  const [stock, setStock] = useState("");
-  const [currentStock, setCurrentStock] = useState("");
-  const [stockData, setStockData] = useState([]);
-  const [stockMetaData, setStockMetaData] = useState([]);
-  const [isBullish, setIsBullish] = useState(true);
-  const [companyMetadata, setCompanyMetadata] = useState([]);
-  const [stockNews, setStockNews] = useState([]);
-  const [email, setEmail] = useState("");
-  const [userId, setUserId] = useState("");
-  const [wishlist, setWishlist] = useState(null);
-  const [candleSticksData, setCandleSticksData] = useState([]);
-  const [showAnalysis, setShowAnalysis] = useState(false);
-  const [currentView, setCurrentView] = useState('chart'); // 'chart' or 'analysis'
-
-  const [keyStatisticsStartIndex, setKeyStatisticsStartIndex] = useState(0);
-  const [keyStatisticsEndIndex, setKeyStatisticsEndIndex] = useState(5);
-
-  const [newsStartIndex, setNewsStartIndex] = useState(0);
-  const [newsEndIndex, setNewsEndIndex] = useState(5);
-
-  const scrollToTop = () => {
-        const scrollableElement = document.querySelector('[data-scrollable="true"]');
-        if (scrollableElement) {
-            scrollableElement.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-    };
-
-   const handleNext = () => {
-        if (newsEndIndex >= stockNews.length) return;
-        setNewsStartIndex( prev => prev += 5);
-        setNewsEndIndex(prev => prev += 5);
-        scrollToTop();
-    }
-
-    const handleBack = () => {
-        if (newsEndIndex === 0) {
-            setNewsStartIndex(0);
-            setNewsEndIndex(10);
-        }
-        setNewsStartIndex( prev => prev -= 5);
-        setNewsEndIndex(prev => prev -= 5);
-        scrollToTop();
-    }
-
-
-  // ------------------ use navigate  ------------------
-  const navigate = useNavigate();
-  
-  /* -------------- get candlesticks ------------- */
-  const getCandleSticks = async(ticker, startDate) => {
-    const endDate = new Date().toISOString().split('T')[0]; // Today's date
-    const url = `${API_URL}/fmp/chart?ticker=${ticker}&interval=5min&from=${startDate}&to=${endDate}&resampleFreq=4hour`;
-    const response = await fetch(url);
-    const result = await response.json();
-
-    if (!response.ok) {
-      console.log("Status", response.status, result.message);
-      return;
-    }
-
-    // Handle the new API response format - data is directly in the result array
-    const dataArray = Array.isArray(result) ? result : result.data || [];
-    setCandleSticksData(dataArray);
-    console.log("status", response.status, result.message);
-  }
-
-  // ------------------ Search ------------------
   const handleSearch = async (ticker) => {
-    if (!ticker) {
-      console.log("no user id found");
-      return;
-    }    
-
-    getStockData(ticker); 
-    getCandleSticks(ticker, getStartDay());
-    getCompanyMetadata(ticker);
-    getNews(ticker)
-    setCurrentStock(ticker);
-    setStock(""); 
-  };
-
-  //---------- hanle search on key down ----------
-  const handleSearchOnEnter = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault(); // optional: prevents default form submission
-      handleSearch(e.target.value); 
-      setCurrentView('chart'); // Reset to chart view on new search
-    }
-  };
-  
-  // -------------------- save last search ------------------
-  const saveLastSearch = async (userId, stock) => {
-    try {
-      await set(ref(database, `lastSearch/${userId}`), stock)
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  // --------------------- add to wishlist ------------------------
-  const addToWishlist = async () => {
-    if (!userId || !currentStock) console.log("userid not found", "current stock not found", currentStock)
-
-    try {
-      const wishlistRef = ref(database, `wishlist/${userId}`);
-      const snapshot = await get(wishlistRef);
-  
-      let currentWishlist = [];
-  
-      if (snapshot.exists()) {
-        currentWishlist = snapshot.val();
-      }
-  
-      // Prevent duplicates
-      if (!currentWishlist.includes(currentStock)) {
-        const updatedWishlist = [...currentWishlist, currentStock.toUpperCase()];
-        await set(wishlistRef, updatedWishlist);
-        console.log("Stock added to wishlist!");
-        fetchWishlist();
-      } else {
-        console.log("Stock already in wishlist");
-      }
-  
-    } catch (error) {
-      console.log("Error saving to wishlist:", error.message || "");
-    }
-  }
-
-  // -------------- get wishlist ----------------------
-  const fetchWishlist = async () => {
-    if (!userId) return;
-
-    try {
-      const wishlistRef = ref(database, `wishlist/${userId}`);
-      const snapshot = await get(wishlistRef);
-
-      if (snapshot.exists()) {
-        setWishlist(snapshot.val()); // should be an array like ["AAPL", "TSLA"]
-        console.log("Wishlist loaded:", snapshot.val());
-      } else {
-        console.log("No wishlist found");
-        setWishlist([]); // Optional: reset to empty array if not found
-      }
-    } catch (error) {
-      console.log("Error fetching wishlist:", error.message || "");
-    }
-  };
-
-  //------------- remove from wishlish -------------
-  const removeFromWishlist = async (tickerToRemove) => {
-    if (!userId) return;
-  
-    try {
-      const wishlistRef = ref(database, `wishlist/${userId}`);
-      const snapshot = await get(wishlistRef);
-  
-      if (snapshot.exists()) {
-        const currentWishlist = snapshot.val();
-        const updatedWishlist = currentWishlist.filter((ticker) => ticker !== tickerToRemove);
-  
-        await set(wishlistRef, updatedWishlist);
-        setWishlist(updatedWishlist); // update local state
-        console.log(`${tickerToRemove} removed from wishlist`);
-        fetchWishlist() // update client
-      }
-    } catch (error) {
-      console.log("Error removing stock from wishlist:", error.message || "");
-    }
-  };
-  
-  // ------------------ Company Metadata ------------------
-  const getCompanyMetadata = async (ticker) => {
     if (!ticker) return;
     
-    try {
-      const response = await fetch(`${API_URL}/tiingo/company-metadata?ticker=${ticker}`);
-      const result = await response.json();
-
-      if (!response.ok){
-        console.log("Status:", response.status, response.statusText);
-        window.location.reload();
-        return;
-      }
-      // console.log("Status:", response.status, response.statusText, result.message);
-      setCompanyMetadata(result.data);
-      console.log("Company metadata loaded:", result.data);
-    } catch (error) {
-      console.log("Fetch error:", error);
+    await searchStock(ticker);
+    setStock("");
+    setCurrentView('chart');
+    
+    // Save last search
+    if (userId) {
+      saveLastSearch(userId, ticker);
     }
   };
 
-  // ------------------ Stock Data ------------------
-  const getStockData = async (ticker) => {
-    // console.log("Getting stock data for ticker:", ticker);
-    if (!ticker) {
-      // console.log("No ticker provided, ticker is", ticker);
-      return;
-    }
-  
-    try {
-      const response = await fetch(`${API_URL}/yf/stockdata?ticker=${ticker}`);
-      const result = await response.json();
-  
-      if (!response.ok) {
-        console.log(response.status, response.statusText, result.message);
-        return;
-      }
-      
-      // Check if we have valid stock data in the response
-      if (result?.data?.body && result.data.body.length > 0) {
-        const stockDataResult = result.data.body[0];
-        
-        // Set the stock data in state
-        setStockData(stockDataResult);
-        
-        // Only save the last search if we have valid stock data
-        if (userId && stockDataResult.regularMarketPrice !== undefined) {
-          // console.log("Valid stock data received, saving last search:", ticker);
-          saveLastSearch(userId, ticker);
-        }
-        
-        console.log("Stock data successfully loaded:", response.status, response.statusText);
-      } else {
-        console.log("No valid stock data in response");
-      }
-    } catch (error) {
-      console.log("Error fetching stock data:", error.message || "");
+  const handleSearchOnEnter = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch(e.target.value);
     }
   };
 
-  // ------------------ Number Formatter ------------------
-  const formatNumber = n => {
+  const handleAddToWishlist = async () => {
+    if (currentStock) {
+      await addToWishlistHook(currentStock);
+    }
+  };
+
+  const handleAnalysis = () => {
+    setShowAnalysis(true);
+    setCurrentView('analysis');
+  };
+
+  // Utility functions
+  const saveLastSearch = async (userId, stock) => {
+    try {
+      await set(ref(database, `lastSearch/${userId}`), stock);
+    } catch (error) {
+      console.log("Error saving last search:", error);
+    }
+  };
+
+  const formatNumber = (n) => {
     if (n >= 1e12) return (n / 1e12).toFixed(n % 1e12 === 0 ? 0 : 1) + 'T';
     if (n >= 1e9) return (n / 1e9).toFixed(n % 1e9 === 0 ? 0 : 1) + 'B';
     if (n >= 1e6) return (n / 1e6).toFixed(n % 1e6 === 0 ? 0 : 1) + 'M';
     return n.toLocaleString();
   };
 
-  // ------------------ Get News ------------------
-  const getNews = async (ticker) => {
-    const url = ticker ? `${API_URL}/tiingo/news?ticker=${ticker}` 
-                : `${API_URL}/tiingo/news`
-    try {
-      const response = await fetch(url);
-      const result = await response.json();
-
-      if (!response.ok) {
-        console.log(response.status, response.statusText, result.message);
-      }
-
-      console.log(response.status, response.statusText, result.message);
-      setStockNews(result.data);
-
-    } catch (error) {
-      console.log(error);
+  // Pagination handlers
+  const scrollToTop = () => {
+    const scrollableElement = document.querySelector('[data-scrollable="true"]');
+    if (scrollableElement) {
+      scrollableElement.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     }
-  }
+  };
 
-//----------------- useEffects ------------------
+  const handleNext = () => {
+    if (newsEndIndex >= stockNews.length) return;
+    setNewsStartIndex(prev => prev + 5);
+    setNewsEndIndex(prev => prev + 5);
+    scrollToTop();
+  };
 
-  //get candlesticks live
+  const handleBack = () => {
+    if (newsEndIndex === 0) {
+      setNewsStartIndex(0);
+      setNewsEndIndex(10);
+    }
+    setNewsStartIndex(prev => prev - 5);
+    setNewsEndIndex(prev => prev - 5);
+    scrollToTop();
+  };
+
+  // Effects
   useEffect(() => {
+    if (userId) {
+      fetchWishlist();
+    }
+  }, [userId, fetchWishlist]);
+
+  // Load last search or default to AAPL
+  useEffect(() => {
+    const fetchLastSearch = async () => {
+      if (!userId) return;
+
+      try {
+        const dbRef = ref(database);
+        const snapshot = await get(child(dbRef, `/lastSearch/${userId}`));
+
+        if (snapshot.exists()) {
+          const ticker = snapshot.val();
+          console.log("Found last search:", ticker);
+          await searchStock(ticker);
+        } else {
+          console.log("No last search found, defaulting to AAPL");
+          await searchStock("AAPL");
+        }
+      } catch (error) {
+        console.log("Error getting last search:", error);
+        await searchStock("AAPL");
+      }
+    };
+
+    fetchLastSearch();
+  }, [userId, searchStock]);
+
+  // Live candlesticks updates
+  useEffect(() => {
+    if (!currentStock) return;
 
     const startDate = getStartDay();
 
-    // Fetch immediately if market is open
     if (isStockMarketOpen()) {
       getCandleSticks(currentStock, startDate);
     }
@@ -341,86 +212,24 @@ export default function DashboardPage() {
       if (isStockMarketOpen()) {
         getCandleSticks(currentStock, startDate);
       }
-    }, 60000); // every 1 minute
+    }, 60000);
 
     return () => clearInterval(interval);
-  }, [currentStock]);
+  }, [currentStock, getCandleSticks]);
 
-  //get user on auth state change
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserId(user.uid);
-        setEmail(user.email);
-      }
-    });
-  
-    return () => unsubscribe(); 
-  }, []);
-
-  useEffect(() => {
-    const startDate = getStartDay();
-
-    const fetchLastSearch = async () => {
-      if (!userId) return;
-  
-      try {
-        const dbRef = ref(database);
-        const snapshot = await get(child(dbRef, `/lastSearch/${userId}`));
-  
-        if (snapshot.exists()) {
-          const ticker = snapshot.val();
-          console.log("Found last search:", ticker);
-          setCurrentStock(ticker);
-          getCandleSticks(ticker, startDate);
-          getStockData(ticker);
-          getNews(ticker);
-          getCompanyMetadata(ticker);
-        } else {
-          console.log("No last search found, defaulting to AAPL");
-          getCandleSticks("AAPL", startDate);
-          getStockData("AAPL");
-          getNews("AAPL");
-          getCompanyMetadata("AAPL");
-        }
-      } catch (error) {
-        console.log("Error getting data:", error.message || "");
-        // Fallback to default ticker on error
-        console.log("Error occurred, defaulting to AAPL");
-        const ticker = "AAPL";
-        setCurrentStock(ticker);
-        getCandleSticks(ticker, startDate);
-        getStockData(ticker);
-        getNews(ticker);
-        getCompanyMetadata(ticker);
-      }
-    };
-  
-    fetchLastSearch();
-  }, [userId]); 
-
-  //------------- get wishlist -----------------
-  useEffect(() => {  
-    fetchWishlist();
-  }, [userId]);
-  
-  // ------------------ JSX ------------------
   return (
     <Box sx={{ 
       display: "flex",
       height: "100vh",
       backgroundColor: darkBg, 
       color: "white", 
-      // background: 'linear-gradient(to bottom, #121212, #0d0d0d)',
       overflow: "hidden",
     }}>
-
-      {/* Left Sidebar - Fixed width */}
+      {/* Left Sidebar */}
       {!isSmallScreen && (
         <Box sx={{ 
           width: "240px", 
           flexShrink: 0,
-          // borderRight: `1px solid ${green[900]}`,
         }}>
           <DashboardSidebar />
         </Box>
@@ -432,23 +241,20 @@ export default function DashboardPage() {
         open={mobileOpen}
         onClose={handleDrawerToggle}
         variant="temporary"
-        ModalProps={{
-          keepMounted: true, 
-        }}
+        ModalProps={{ keepMounted: true }}
         sx={{
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': { 
             width: 240,
             boxSizing: 'border-box',
-            background: darkGradient || 'linear-gradient(to bottom, #121212, #0d0d0d)',
-            // borderRight: `1px solid ${green[900]}`,
+            background: darkGradient,
           },
         }}
       >
         <DashboardSidebar onClose={handleDrawerToggle} />
       </Drawer>
 
-      {/* Main Content Area - Flexible width */}
+      {/* Main Content Area */}
       <Box sx={{ 
         flex: 1,
         display: "flex",
@@ -456,15 +262,11 @@ export default function DashboardPage() {
         overflow: "hidden",
         minWidth: 0,
       }}>
-        
-        {/* Main Content Container */}
         <Box sx={{ 
           flex: 1,
           display: "flex",
           overflow: "hidden",
         }}>
-          
-          {/* Central Content Area */}
           <Box sx={{ 
             flex: 1,
             px: 1, 
@@ -476,382 +278,159 @@ export default function DashboardPage() {
             scrollbarWidth: 'none',
             '-ms-overflow-style': 'none',
           }}>
-        
-        {/* Mobile Navigation & Search - Combined in one line */}
-        {isSmallScreen && (
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center',
-            gap: 0.5,
-            mb: 1.5,
-            px: 0 // Small horizontal padding to prevent edge touching
-          }}>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ 
-                color: teal[400],
-                p: 1,
-                '&:hover': { backgroundColor: 'rgba(0, 128, 128, 0.1)' }
-              }}
-            >
-              <HiOutlineMenu />
-            </IconButton>
+            {/* Header with search and actions */}
+            <DashboardHeader
+              isSmallScreen={isSmallScreen}
+              mobileOpen={mobileOpen}
+              handleDrawerToggle={handleDrawerToggle}
+              stock={stock}
+              setStock={setStock}
+              handleSearchOnEnter={handleSearchOnEnter}
+              onAnalysis={handleAnalysis}
+              onAddToWishlist={handleAddToWishlist}
+            />
             
-            {/* Search Bar - Mobile Optimized */}
+            <Box>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column',
+                alignItems: 'center',
+                width: '100%',
+                maxWidth: '1200px',
+                margin: '0 auto',
+                gap: 0
+              }}>
+                {/* Stock Data View */}
+                <Box sx={{ width: '100%' }}>
+                  <StockDataView
+                    stockData={stockData}
+                    companyMetadata={companyMetadata}
+                    currentStock={currentStock}
+                    showAnalysis={showAnalysis}
+                    currentView={currentView}
+                    setCurrentView={setCurrentView}
+                    isSmallScreen={isSmallScreen}
+                  />
+                </Box>
+
+                {/* Company Profile and Statistics */}
+                <Paper sx={{ 
+                  px: 0, 
+                  pt: 0, 
+                  backgroundColor: "inherit",
+                  maxWidth: '100%',
+                  borderRadius: 2
+                }}>
+                  {/* Stock key statistics */}
+                  <Box container spacing={1} mt={2.5} color={white}>
+                    <h2 className="font-semibold text-base mb-2"
+                      style={{ color: teal[300] }}
+                    >
+                      Key Statistics
+                    </h2>
+                    <Pagination 
+                      startingIndex={keyStatisticsStartIndex} 
+                      endingIndex={keyStatisticsEndIndex}
+                      setNewStartIndex={setKeyStatisticsStartIndex}
+                      setNewEndIndex={setKeyStatisticsEndIndex}
+                      data={keyStatisticsArray}
+                      children={
+                        keyStatisticsArray.slice(keyStatisticsStartIndex, keyStatisticsEndIndex).map((statLabel, index) => {
+                          const statMap = {
+                            "Market Cap": stockData?.marketCap ? formatNumber(stockData.marketCap) : "—",
+                            "P/E Ratio": stockData?.peRatio ? stockData.peRatio : "—",
+                            "Dividend Yield": stockData?.dividendYield ? `${stockData.dividendYield}%` : "—",
+                            "52 Week High": stockData?.fiftyTwoWeekHigh ? stockData.fiftyTwoWeekHigh : "—",
+                            "52 Week Low": stockData?.fiftyTwoWeekLow ? stockData.fiftyTwoWeekLow : "—",
+                            "Average 10D volume": stockData?.averageDailyVolume10Day ? formatNumber(stockData.averageDailyVolume10Day) : "—",
+                            "Volume": stockData?.regularMarketVolume ? formatNumber(stockData.regularMarketVolume) : "—",
+                            "Today High": stockData?.regularMarketDayHigh ? stockData.regularMarketDayHigh.toFixed(2) : "—",
+                            "Today Low": stockData?.regularMarketDayLow ? stockData.regularMarketDayLow.toFixed(2) : "—",
+                            "Open Price": stockData?.regularMarketOpen || "—",
+                            "Market Price": stockData?.regularMarketPrice || "—",
+                            "52 Week low": stockData?.fiftyTwoWeekLow || "—",
+                            "52 Week high": stockData?.fiftyTwoWeekHigh || "—"
+                          };
+                          
+                          return (
+                            <Typography key={index} variant="body2">
+                              <strong className="font-semibold">{statLabel}</strong> <br/> {statMap[statLabel]}
+                            </Typography>
+                          );
+                        })
+                      }
+                    />
+                    
+                    {/* News Section */}
+                    <Box mt={4}>
+                      <Box display="flex" justifyContent="space-between" alignItems="center">
+                        <h2 className="font-semibold text-base mb-0"
+                          style={{ color: teal[300] }}
+                        >                      
+                          Recent News
+                        </h2>
+                        <Button   
+                          size="small" 
+                          variant="text" 
+                          sx={{ 
+                            color: teal[500], 
+                            textTransform: 'none',
+                            '&:hover': { 
+                              color: teal[300]
+                            }
+                          }}
+                          onClick={() => navigate("/dashboard/news")}
+                        >
+                          View all news
+                        </Button>
+                      </Box>
+                    
+                      <Divider sx={{ my: 1, bgcolor: teal[500], opacity: 0.7 }} />
+                      
+                      {stockNews?.length > 0 ? (
+                        <SearchPagination
+                          searchResults={stockNews}
+                          startingIndex={newsStartIndex}
+                          endingIndex={newsEndIndex}
+                          handleBack={handleBack}
+                          handleNext={handleNext}
+                        />
+                      ) : (
+                        <Box sx={{ textAlign: 'center', py: 6 }}>
+                          <Typography color={grey[500]} sx={{ fontStyle: 'italic' }}>
+                            No news available for this stock
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                </Paper>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Right Sidebar - Wishlist */}
+          {!isSmallScreen && !isMediumScreen && (
             <Box sx={{ 
-              display: "flex", 
-              flexGrow: 1,
-              alignItems: "center",
-              // background: 'rgba(20, 30, 20, 0.3)',
-              borderRadius: '8px',
-              border: `1px solid ${teal[900]}`,
-              overflow: 'hidden',
-              height: '38px',
+              width: "320px", 
+              flexShrink: 0,
+              overflow: "auto",
+              '&::-webkit-scrollbar': { display: 'none' },
+              scrollbarWidth: 'none',
+              '-ms-overflow-style': 'none',
             }}>
-              <TextField
-                fullWidth
-                placeholder="Search stock..."
-                value={stock}
-                onChange={(e) => setStock(e.target.value?.trim())}
-                onKeyDown={(e) => handleSearchOnEnter(e)}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 0,
-                    '& fieldset': { border: 'none' }
-                  },
-                  '& .MuiInputBase-input': {
-                    color: grey[100],
-                    fontSize: '16px', // Changed from '0.85rem' to '16px' to prevent mobile zoom
-                    padding: '6px 8px',
-                    height: '18px',
-                    '&::placeholder': {
-                      color: grey[500],
-                      opacity: 1
-                    }
-                  },
-                  backgroundColor: 'transparent'
-                }}
+              <WatchlistWidget 
+                wishlist={wishlist} 
+                removeFromWishlist={removeFromWishlist} 
+                handleSearch={handleSearch} 
+                ticker={currentStock} 
+                marketChange={stockData?.regularMarketChange}
+                setCurrentView={setCurrentView}
               />
             </Box>
-          </Box>
-        )}
-        
-        <Box>
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-            maxWidth: '1200px',
-            margin: '0 auto',
-            gap: 0
-          }}>
-
-            {/* Stock Chart */}
-            <Box sx={{ width: '100%' }}>
-              <Paper sx={{ 
-                py: 1, 
-                px: isSmallScreen ? 0 : 1,  
-                backgroundColor: 'inherit', 
-                borderRadius: 2,
-                mb: 0,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-              }}>
-                {/* Action buttons - Full width container on mobile */}
-                <Box sx={{ 
-                  display: "flex", 
-                  justifyContent: isSmallScreen ? "space-between" : "end",
-                  gap: isSmallScreen ? 1 : 1.5, 
-                  mb: 0,
-                  width: "100%", // Full width container
-                }}>
-                  {/* Desktop search bar */}
-                  {!isSmallScreen && (
-                    <SearchBar 
-                      handleSearchOnEnter={handleSearchOnEnter}
-                      onChange={(e) => setStock(e.target.value?.trim())}
-                      ticker={stock}
-                      setTicker={setStock}
-                      placeholder="Search stock"
-                    />
-                  )}
-                  <Button
-                    variant="contained"
-                    startIcon={<AutoAwesome />}
-                    sx={{ 
-                      color: 'white', 
-                      minWidth: "12em",
-                      maxHeight: "3em",
-                      backgroundColor: teal[700],
-                      textTransform: "none", 
-                      borderRadius: '10px',
-                      px: isSmallScreen ? 1.2 : 2.5, // Smaller padding on mobile
-                      fontSize: isSmallScreen ? '0.8rem' : '10pt',
-                      flexGrow: isSmallScreen ? 1 : 0, // Take full width on mobile
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        backgroundColor: teal[600],
-                        transform: 'translateY(-2px)',
-                        boxShadow: `0 6px 12px rgba(0,128,128,0.3)`
-                      }
-                    }}
-                    onClick={() => {
-                      setShowAnalysis(true);
-                      setCurrentView('analysis');
-                    }}
-                  >
-                    AI Analysis 
-                  </Button>
-                  <Button
-                    startIcon={<List/>}
-                    variant="outlined"
-                    sx={{ 
-                      minWidth: "12em",
-                      maxHeight: "3em",
-                      color: grey[200], 
-                      borderColor: teal[500], 
-                      borderRadius: '10px',
-                      textTransform: "none",
-                      px: isSmallScreen ? 1 : 2,
-                      fontSize: isSmallScreen ? '0.8rem' : '10pt',
-                      flexGrow: isSmallScreen ? 1 : 0, // Take full width on mobile
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        backgroundColor: 'rgba(100, 100, 100, 0.1)',
-                        transform: 'translateX(3px)'
-                      }
-                    }}
-                    onClick={addToWishlist}
-                  >
-                    Add to List
-                  </Button>
-                </Box>
-
-                {/* Content Area - Toggle between Chart and Analysis */}
-                {stockData?.regularMarketPrice !== undefined && stockData?.regularMarketChange !== undefined && stockData?.regularMarketChangePercent !== undefined ? (
-                  <Box sx={{ 
-                    position: 'relative',
-                    width: '100%',
-                    minHeight: showAnalysis ? '400px' : 'auto',
-                    mt: isSmallScreen ? 2.5 : 0,
-                    overflow: 'hidden'
-                  }}>
-                    {/* Stock Chart View */}
-                    {(!showAnalysis || currentView === 'chart') && (
-                      <Box sx={{ 
-                        width: '100%',
-                        opacity: currentView === 'chart' ? 1 : 0,
-                        transform: currentView === 'chart' ? 'translateX(0)' : 'translateX(-20px)',
-                        transition: 'all 0.3s ease-in-out'
-                      }}>
-                        <StockChart 
-                          companyName={companyMetadata?.name}  
-                          ticker={stock || currentStock} 
-                          price={stockData?.regularMarketPrice?.toFixed(2)} 
-                          marketPriceChange={stockData?.regularMarketChange} 
-                        />
-                      </Box>
-                    )}
-
-                    {/* AI Analysis View */}
-                    {showAnalysis && currentView === 'analysis' && (
-                      <Box sx={{ 
-                        width: '100%',
-                        opacity: currentView === 'analysis' ? 1 : 0,
-                        transform: currentView === 'analysis' ? 'translateX(0)' : 'translateX(20px)',
-                        transition: 'all 0.3s ease-in-out'
-                      }}>
-                        <Analysis ticker={currentStock} showAnalysis={showAnalysis} />
-                      </Box>
-                    )}
-                  </Box>
-                ) : null}
-
-                {/* Toggle Navigation Controls - Show when analysis is available */}
-                {showAnalysis && (
-                  <Box sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'space-between',
-                    borderRadius: '8px',
-                    mt: 1,
-                  }}>
-                    <Button
-                      startIcon={<NavigateBeforeIcon />}
-                      onClick={() => setCurrentView('chart')}
-                      variant={currentView === 'chart' ? 'contained' : 'outlined'}
-                      size="small"
-                      sx={{
-                        backgroundColor: currentView === 'chart' ? teal[600] : 'transparent',
-                        borderColor: teal[500],
-                        color: currentView === 'chart' ? 'white' : teal[400],
-                        textTransform: 'none',
-                        minWidth: '20px',
-                        '&:hover': {
-                          backgroundColor: currentView === 'chart' ? teal[700] : 'rgba(0, 150, 136, 0.1)',
-                        }
-                      }}
-                    >
-                    </Button>
-                    
-                    <Button
-                      endIcon={<NavigateNextIcon />}
-                      onClick={() => setCurrentView('analysis')}
-                      variant={currentView === 'analysis' ? 'contained' : 'outlined'}
-                      size="small"
-                      sx={{
-                        backgroundColor: currentView === 'analysis' ? teal[600] : 'transparent',
-                        borderColor: teal[500],
-                        color: currentView === 'analysis' ? 'white' : teal[400],
-                        textTransform: 'none',
-                        minWidth: '20px',
-                        '&:hover': {
-                          backgroundColor: currentView === 'analysis' ? teal[700] : 'rgba(0, 150, 136, 0.1)',
-                        }
-                      }}
-                    >
-                    </Button>
-                  </Box>
-                )}
-
-              </Paper>
-            </Box>
-
-            {/* Company Profile */}
-            <Paper sx={{ 
-              px: 0, 
-              pt: 0, 
-              backgroundColor: "inherit",
-              maxWidth: '100%',
-              borderRadius: 2
-            }}>
-            
-              {/* Stock key statistics */}
-              <Box container spacing={1} mt={2.5} color={white}>
-                <h2 className="font-semibold text-base mb-2"
-                  style={{ color: teal[300] }}
-                >
-                  Key Statistics
-                </h2>
-                  <Pagination startingIndex={keyStatisticsStartIndex} endingIndex={keyStatisticsEndIndex}
-                    setNewStartIndex={setKeyStatisticsStartIndex}
-                    setNewEndIndex={setKeyStatisticsEndIndex}
-                    data={keyStatisticsArray}
-                    children={
-                      keyStatisticsArray.slice(keyStatisticsStartIndex, keyStatisticsEndIndex).map((statLabel, index) => {
-                        const statMap = {
-                          "Market Cap": stockData?.marketCap ? formatNumber(stockData.marketCap) : "—",
-                          "P/E Ratio": stockData?.peRatio ? stockData.peRatio : "—",
-                          "Dividend Yield": stockData?.dividendYield ? `${stockData.dividendYield}%` : "—",
-                          "52 Week High": stockData?.fiftyTwoWeekHigh ? stockData.fiftyTwoWeekHigh : "—",
-                          "52 Week Low": stockData?.fiftyTwoWeekLow ? stockData.fiftyTwoWeekLow : "—",
-                          "Average 10D volume": stockData?.averageDailyVolume10Day ? formatNumber(stockData.averageDailyVolume10Day) : "—",
-                          "Volume": stockData?.regularMarketVolume ? formatNumber(stockData.regularMarketVolume) : "—",
-                          "Today High": stockData?.regularMarketDayHigh ? stockData.regularMarketDayHigh.toFixed(2) : "—",
-                          "Today Low": stockData?.regularMarketDayLow ? stockData.regularMarketDayLow.toFixed(2) : "—",
-                          "Open Price": stockData?.regularMarketOpen || "—",
-                          "Market Price": stockData?.regularMarketPrice || "—",
-                          "52 Week low": stockData?.fiftyTwoWeekLow || "—",
-                          "52 Week high": stockData?.fiftyTwoWeekHigh || "—"
-                        }
-                        return (
-                          <Typography key={index} variant="body2">
-                            <strong className="font-semibold">{statLabel}</strong> <br/> {statMap[statLabel]}
-                          </Typography>
-                        );
-                      })
-                    }
-                  >
-                  </Pagination>
-                <Box mt={4}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <h2 className="font-semibold text-base mb-0"
-                    style={{ color: teal[300] }}
-                  >                      
-                      Recent News
-                    </h2>
-                    <Button   
-                      size="small" 
-                      variant="text" 
-                      sx={{ 
-                        color: teal[500], 
-                        textTransform: 'none',
-                        '&:hover': { 
-                          color: teal[300]
-                        }
-                      }}
-                      onClick={() => navigate("/dashboard/news")}
-                    >
-                      View all news
-                    </Button>
-                  </Box>
-                
-                  <Divider sx={{ my: 1, bgcolor: teal[500], opacity: 0.7 }} />
-                  
-                  { stockNews?.length > 0 ? (
-                    <SearchPagination
-                        searchResults={stockNews}
-                        startingIndex={newsStartIndex}
-                        endingIndex={newsEndIndex}
-                        handleBack={handleBack}
-                        handleNext={handleNext}
-                    />
-                    // stockNews.slice(0,10).map((news, index) => (
-                    //   <Link key={news.id} href={news?.url} target="_blank" underline="none" color={white}>
-                    //     <Box key={index} py={2.5} px={0} mb={0.5} 
-                    //     sx={{
-                    //       transition: 'all 0.2s ease',
-                    //       "&:hover": {
-                    //         px: 2,
-                    //         backgroundColor: '#0cac990d',
-                    //         transform: 'translateX(5px)',
-                    //       }
-                    //     }}>
-                    //       <Typography fontSize="11pt" color={teal[400]}>{news?.source.charAt(0).toUpperCase() + news?.source.slice(1)}</Typography>
-                    //       <Typography fontWeight="bold" color={grey[100]} sx={{ my: 0.5 }}>{news?.title}</Typography>
-                    //       <Typography fontSize="10pt" color={grey[500]} sx={{ opacity: 0.9 }}>{news?.description}</Typography>
-                    //     </Box>
-                    //   </Link>
-                    // ))
-                  ) : (
-                    <Box sx={{ textAlign: 'center', py: 6 }}>
-                      <Typography color={grey[500]} sx={{ fontStyle: 'italic' }}>No news available for this stock</Typography>
-                    </Box>
-                  )}
-                </Box>
-              </Box>
-            </Paper>
-          </Box>
+          )}
         </Box>
       </Box>
-
-      {/* Right Sidebar - Wishlist (only on large screens) */}
-      {!isSmallScreen && !isMediumScreen && (
-        <Box sx={{ 
-          width: "320px", 
-          flexShrink: 0,
-          // borderLeft: `1px solid ${green[900]}`,
-          overflow: "auto",
-          '&::-webkit-scrollbar': { display: 'none' },
-          scrollbarWidth: 'none',
-          '-ms-overflow-style': 'none',
-        }}>
-          <WatchlistWidget 
-            wishlist={wishlist} 
-            removeFromWishlist={removeFromWishlist} 
-            handleSearch={handleSearch} 
-            ticker={currentStock} 
-            marketChange={stockData?.regularMarketChange}
-            setCurrentView={setCurrentView}
-          />
-        </Box>
-      )}
-
-      </Box>
-    </Box>
 
       {/* Mobile Wishlist Drawer */}
       <Drawer
@@ -859,9 +438,7 @@ export default function DashboardPage() {
         open={mobileWishlistOpen}
         onClose={() => setMobileWishlistOpen(false)}
         variant="temporary"
-        ModalProps={{
-          keepMounted: true,
-        }}
+        ModalProps={{ keepMounted: true }}
         sx={{
           display: { md: 'none' },
           '& .MuiDrawer-paper': { 
@@ -869,7 +446,6 @@ export default function DashboardPage() {
             maxWidth: '320px',
             boxSizing: 'border-box',
             background: darkGradient,
-            // borderLeft: `1px solid ${green[900]}`,
           },
         }}
       >
