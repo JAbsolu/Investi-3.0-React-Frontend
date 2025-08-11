@@ -60,7 +60,7 @@ const StrategyCard = ({ strategy, onClick }) => {
           sx={{
             color: 'white',
             fontWeight: 700,
-            fontSize: '1.4rem',
+            fontSize: '1rem',
             mb: 1.5,
             lineHeight: 1.2
           }}

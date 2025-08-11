@@ -22,6 +22,8 @@ import { useResponsive } from "../../hooks/useResponsive";
 import DashboardHeader from "./components/DashboardHeader";
 import StockDataView from "./components/StockDataView";
 import TradingStrategies from "./components/TradingStrategies";
+import ExploreMarket from "./components/ExploreMarket";
+
 // Constants
 const white = "#ffffff";
 const darkBg = "#0d0d0d";
@@ -123,6 +125,12 @@ export default function DashboardPage() {
     console.log('Strategy clicked:', strategy);
     // Add navigation or modal logic here
     // navigate(`/dashboard/strategy/${strategy.id}`);
+  };
+
+  const handleToolClick = (tool) => {
+    console.log('Market tool clicked:', tool);
+    // Add navigation logic here
+    // navigate(tool.route);
   };
 
   // Utility functions
@@ -320,6 +328,11 @@ export default function DashboardPage() {
                 {/* Trading Strategies Section */}
                 <Box sx={{ width: '100%', mt: 3 }}>
                   <TradingStrategies onStrategyClick={handleStrategyClick} />
+                </Box>
+
+                {/* Explore Market Section */}
+                <Box sx={{ width: '100%', mt: 4 }}>
+                  <ExploreMarket onToolClick={handleToolClick} />
                 </Box>
 
                 {/* Company Profile and Statistics */}
