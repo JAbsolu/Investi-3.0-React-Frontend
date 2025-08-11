@@ -1,22 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { 
     Box, 
     Typography,
     Container,
-    Paper,
     useMediaQuery, 
     useTheme, 
     IconButton, 
     Drawer,
-    TextField,
-    Button,
     Divider
 } from "@mui/material";
-import AIChat from "../../../components/AIchat";
-import DashboardSidebar from "../../../components/DashboardSidebar";
+import AIChat from "../components/AIchat";
+import DashboardSidebar from "../components/DashboardSidebar";
 import { green, teal, grey } from "@mui/material/colors";
 import { HiOutlineMenu } from "react-icons/hi";
-import { FaPaperPlane, FaRobot } from "react-icons/fa";
 
 const ChatPage = () => {
     // Match color scheme with rest of dashboard
