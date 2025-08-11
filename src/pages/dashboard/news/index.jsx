@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react";
 import DashboardSidebar from "../../../components/DashboardSidebar";
 import { 
-    Box, Divider, Link, Typography, Container, Paper,
-    useMediaQuery, useTheme, IconButton, Drawer , TextField, InputAdornment, Button
+    Box, Divider, Typography, Container,
+    useMediaQuery, useTheme, IconButton, Drawer
 } from "@mui/material";
 import { green, teal, grey } from "@mui/material/colors";
 import { HiOutlineMenu } from "react-icons/hi";
-import { FaSearch } from "react-icons/fa";
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import SearchBar from "../../../components/SearchBar";
-import SearchPagination from "../../../components/SearchPagination";
+import SearchBar from "../components/SearchBar";
+import SearchPagination from "../components/SearchPagination";
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
-const cardBg = 'rgba(20, 30, 20, 0.4)';
 const white = "#ffffff";
 const API_URL = process.env.REACT_APP_API_URL;
 
