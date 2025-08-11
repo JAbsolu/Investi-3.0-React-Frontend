@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Send, Bot, User, Loader, TrendingUp, Search } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import { Send, Bot, Loader, TrendingUp } from 'lucide-react';
 import { FaCloudDownloadAlt } from 'react-icons/fa';
-import { IoMdSend } from 'react-icons/io';
 import { 
-  Box, Typography, CircularProgress, 
-  TextField, IconButton, InputAdornment, Divider, Card, CardContent
+  Box, Typography, 
+  TextField, IconButton, Card, CardContent
 } from '@mui/material';
 import { teal } from '@mui/material/colors';
 import OpenAI from "openai";
