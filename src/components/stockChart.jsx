@@ -67,6 +67,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
   };
 
   // Get candlesticks data from API with dynamic resolution based on zoom level
+  let maxRetries = 4;
   const getCandleSticks = async(ticker, interval="4hour", currentDate = getTodayDate(), pastDate = getDateDaysAgo(360)) => {
     if (!ticker) return;
     
@@ -77,7 +78,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
       const result = await response.json();
 
       if (!response.ok) {
-        console.log("Status", response.status, result.message);
+        // console.log("Status", response.status, result.message);
         return;
       }
 
@@ -102,10 +103,14 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
 
       setCandleSticksData(formattedData || []);
       setCurrentResolution(interval);
-      console.log("Formatted candle sticks", formattedData);
+      // console.log("Formatted candle sticks", formattedData);
     } catch (error) {
-      console.error("Error fetching candlestick data:", error);
+      // console.error("Error fetching candlestick data:", error);
       setCandleSticksData([]);
+      if (maxRetries > 0) {
+        maxRetries -= 1;
+        getCandleSticks(ticker, '4hour', currentDate, pastDate);
+      }
     } finally {
       setLoading(false);
     }
