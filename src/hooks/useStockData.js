@@ -21,7 +21,7 @@ export const useStockData = () => {
       return result;
     } catch (error) {
       setErrors(prev => ({ ...prev, [key]: error.message }));
-      console.log(`Error in ${key}:`, error.message);
+      // console.log(`Error in ${key}:`, error.message);
     } finally {
       setLoading(prev => ({ ...prev, [key]: false }));
     }
