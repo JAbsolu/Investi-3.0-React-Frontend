@@ -930,7 +930,8 @@ const Analysis = ({ ticker, showAnalysis }) => {
                     background: '#f8fafc'
                 }}
             >
-                <Box 
+                {/* Follow-up Question */}
+                {/* <Box 
                     component="form"
                     onSubmit={(e) => {
                         e.preventDefault();
@@ -1003,10 +1004,10 @@ const Analysis = ({ ticker, showAnalysis }) => {
                             <Send className="w-5 h-5" />
                         )}
                     </IconButton>
-                </Box>
+                </Box> */}
                 
                 {/* Input Footer */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+                {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
                     <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '12px' }}>
                         {isWaitingForAnalysis 
                             ? "Analysis in progress - chat will be available once complete" 
@@ -1016,7 +1017,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
                     <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '12px' }}>
                         {inputText.length}/2000
                     </Typography>
-                </Box>
+                </Box> */}
             </Box>
         </Card>
     );
