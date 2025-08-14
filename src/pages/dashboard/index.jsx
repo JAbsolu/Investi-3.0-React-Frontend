@@ -122,14 +122,12 @@ export default function DashboardPage() {
   };
 
   const handleStrategyClick = (strategy) => {
-    console.log('Strategy clicked:', strategy);
-    // Add navigation or modal logic here
+    // console.log('Strategy clicked:', strategy);
     // navigate(`/dashboard/strategy/${strategy.id}`);
   };
 
   const handleToolClick = (tool) => {
-    console.log('Market tool clicked:', tool);
-    // Add navigation logic here
+    // console.log('Market tool clicked:', tool);
     // navigate(tool.route);
   };
 
@@ -138,7 +136,7 @@ export default function DashboardPage() {
     try {
       await set(ref(database, `lastSearch/${userId}`), stock);
     } catch (error) {
-      console.log("Error saving last search:", error);
+      // console.log("Error saving last search:", error);
     }
   };
 
@@ -195,14 +193,14 @@ export default function DashboardPage() {
 
         if (snapshot.exists()) {
           const ticker = snapshot.val();
-          console.log("Found last search:", ticker);
+          // console.log("Found last search:", ticker);
           await searchStock(ticker);
         } else {
-          console.log("No last search found, defaulting to AAPL");
+          // console.log("No last search found, defaulting to AAPL");
           await searchStock("AAPL");
         }
       } catch (error) {
-        console.log("Error getting last search:", error);
+        // console.log("Error getting last search:", error);
         await searchStock("AAPL");
       }
     };

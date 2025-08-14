@@ -23,14 +23,14 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
       const baseUrl = API_URL.endsWith('/') ? API_URL : `${API_URL}/`;
       const url = `${baseUrl}tiingo/livedata?ticker=${ticker}`;
       
-      console.log("Fetching data for:", ticker, "URL:", url);
+      // console.log("Fetching data for:", ticker, "URL:", url);
       
       const response = await fetch(url);
       const result = await response.json();
 
       // Only update if response is ok
       if (!response.ok) {
-        console.log("Error fetching data for ticker:", ticker, result.message || response.statusText);
+        // console.log("Error fetching data for ticker:", ticker, result.message || response.statusText);
         return;
       }
 
@@ -45,9 +45,9 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
         return filteredData;
       });
       
-      console.log("Data received for ticker:", ticker, result.data);
+      // console.log("Data received for ticker:", ticker, result.data);
     } catch (error) {
-      console.log("Error fetching ticker data:", ticker, error.message || "");
+      // console.log("Error fetching ticker data:", ticker, error.message || "");
       setError(true);
     } finally {
       setLoading(false);
@@ -57,11 +57,11 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
   // Fetch data when wishlist changes and periodically refresh
   useEffect(() => {
     if (!wishlist || !Array.isArray(wishlist) || wishlist.length === 0) {
-      console.log("Wishlist is empty or invalid:", wishlist);
+      // console.log("Wishlist is empty or invalid:", wishlist);
       return;
     }
     
-    console.log("Wishlist updated, fetching data for:", wishlist);
+    // console.log("Wishlist updated, fetching data for:", wishlist);
     
     // Initial fetch for all tickers
     wishlist.forEach(ticker => {
@@ -71,7 +71,7 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
     // Set up interval for periodic updates (every 60 seconds)
     const interval = setInterval(() => {
       if (wishlist && wishlist.length > 0) {
-        console.log("Refreshing watchlist data...");
+        // console.log("Refreshing watchlist data...");
         wishlist.forEach(ticker => {
           if (ticker) getLiveStockData(ticker);
         });

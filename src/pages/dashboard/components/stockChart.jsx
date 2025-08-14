@@ -77,7 +77,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
       const result = await response.json();
 
       if (!response.ok) {
-        console.log("Status", response.status, result.message);
+        // console.log("Status", response.status, result.message);
         return;
       }
 
@@ -102,7 +102,7 @@ const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
 
       setCandleSticksData(formattedData || []);
       setCurrentResolution(interval);
-      console.log("Formatted candle sticks", formattedData);
+      // console.log("Formatted candle sticks", formattedData);
     } catch (error) {
       console.error("Error fetching candlestick data:", error);
       setCandleSticksData([]);

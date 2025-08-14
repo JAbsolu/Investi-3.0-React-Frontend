@@ -19,13 +19,13 @@ export const useWishlist = (userId) => {
 
       if (snapshot.exists()) {
         setWishlist(snapshot.val());
-        console.log("Wishlist loaded:", snapshot.val());
+        // console.log("Wishlist loaded:", snapshot.val());
       } else {
         setWishlist([]);
       }
     } catch (error) {
       setError(error.message);
-      console.log("Error fetching wishlist:", error.message);
+      // console.log("Error fetching wishlist:", error.message);
     } finally {
       setLoading(false);
     }
@@ -33,7 +33,7 @@ export const useWishlist = (userId) => {
 
   const addToWishlist = useCallback(async (ticker) => {
     if (!userId || !ticker) {
-      console.log("Missing userId or ticker");
+      // console.log("Missing userId or ticker");
       return;
     }
 
@@ -50,13 +50,13 @@ export const useWishlist = (userId) => {
         const updatedWishlist = [...currentWishlist, ticker.toUpperCase()];
         await set(wishlistRef, updatedWishlist);
         setWishlist(updatedWishlist);
-        console.log("Stock added to wishlist!");
+        // console.log("Stock added to wishlist!");
       } else {
-        console.log("Stock already in wishlist");
+        // console.log("Stock already in wishlist");
       }
     } catch (error) {
       setError(error.message);
-      console.log("Error saving to wishlist:", error.message);
+      // console.log("Error saving to wishlist:", error.message);
     }
   }, [userId]);
 
@@ -73,11 +73,11 @@ export const useWishlist = (userId) => {
 
         await set(wishlistRef, updatedWishlist);
         setWishlist(updatedWishlist);
-        console.log(`${tickerToRemove} removed from wishlist`);
+        // console.log(`${tickerToRemove} removed from wishlist`);
       }
     } catch (error) {
       setError(error.message);
-      console.log("Error removing stock from wishlist:", error.message);
+      // console.log("Error removing stock from wishlist:", error.message);
     }
   }, [userId]);
 

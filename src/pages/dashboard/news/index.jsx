@@ -61,7 +61,7 @@ const News = () => {
             if (response.status == 200){
                 const result = await response.json();
                 setSearchResults(result.data);
-                console.log(result.data);
+                // console.log(result.data);
             }else{
                 console.warn(`Error fetching news for ${searchTerm}:`, response.status, response.message);
             }
@@ -84,15 +84,16 @@ const News = () => {
                 const result = await response.json();
 
                 if (!response.ok) {
-                    console.log(response.status, response.statusText, result.message);
+                    // console.log(response.status, response.statusText, result.message);
                     return;
                 }
 
-                console.log(response.status, response.statusText, result.message, result);
+                // console.log(response.status, response.statusText, result.message, result);
                 setMarketNews(result.data.slice(0, 200));
 
             } catch(error) {
-                console.log(error);
+                // console.log(error);
+                return;
             }
         }
         getNews();

@@ -20,7 +20,6 @@ const SignIn = () => {
       const email = user.email;
   
       // You can store it in state, cookies, localStorage, etc.
-      console.log("Signed in user email:", email);
       Cookies.set("userEmail", email); // Example of storing in a cookie
   
       navigate("/dashboard");

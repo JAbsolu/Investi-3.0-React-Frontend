@@ -53,7 +53,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
           
           // Prevent duplicate calls
           if (isAnalyzing.current || lastAnalyzedTicker.current === standardizedTicker) {
-            console.log("Preventing duplicate analysis call for:", standardizedTicker);
+            // console.log("Preventing duplicate analysis call for:", standardizedTicker);
             return;
           }
                     
@@ -100,7 +100,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
             const result = await response.json();
             
             if (!response.ok) {
-              console.log(response.status, result.message);
+            //   console.log(response.status, result.message);
               setIsWaitingForAnalysis(false);
               isAnalyzing.current = false;
               return;
@@ -120,7 +120,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
             await saveAnalysisToCache(standardizedTicker, analysisData);
             // console.log(`Fresh analysis for ${standardizedTicker} completed and cached.`);
           } catch (error) {
-            // console.log("Error in AI Analysis:", error.message || "");
+            console.log("Error in AI Analysis:", error.message || "");
             setIsWaitingForAnalysis(false);
           } finally {
             isAnalyzing.current = false;

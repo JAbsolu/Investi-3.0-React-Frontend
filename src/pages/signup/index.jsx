@@ -23,14 +23,6 @@ const Signup = () => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Log user details (you can send firstname and lastname to your backend if needed)
-            console.log("User created:", {
-                uid: user.uid,
-                email: user.email,
-                firstname,
-                lastname,
-            });
-
             setSuccess("Signup successful!");
         } catch (err) {
             setError(err.message);

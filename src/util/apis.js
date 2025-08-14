@@ -46,7 +46,7 @@ export const getCandleSticks = async(ticker, startDate, setCandleSticksData,form
     const result = await response.json();
 
     if (!response.ok) {
-      console.log("Status", response.status, result.message);
+      // console.log("Status", response.status, result.message);
       return;
     }
 
@@ -63,6 +63,6 @@ export const getCandleSticks = async(ticker, startDate, setCandleSticksData,form
       .sort((a, b) => a.originalDate - b.originalDate); // Sort by actual date
 
     setCandleSticksData(formattedData);
-    console.log("Formatted candle sticks", formattedData);
+    // console.log("Formatted candle sticks", formattedData);
 }
   
