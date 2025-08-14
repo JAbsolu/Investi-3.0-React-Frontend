@@ -6,7 +6,6 @@ import {
   TextField, IconButton, Card, CardContent
 } from '@mui/material';
 import { teal } from '@mui/material/colors';
-import OpenAI from "openai";
 import { ref, get, child, set, push } from "firebase/database";
 import { auth, database } from '../../../firebaseConfig';
 import { onAuthStateChanged } from "firebase/auth";
@@ -128,18 +127,6 @@ const Analysis = ({ ticker, showAnalysis }) => {
           }
         };
     
-    // OpenAI client configuration
-    const ORG_ID = process.env.REACT_APP_OPENAI_ORG_ID;
-    const PROJ_ID = process.env.REACT_APP_OPENAI_PROJECT_ID;
-    const API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
-  
-    const client = new OpenAI({
-      apiKey: API_KEY,
-      organization: ORG_ID,
-      project: PROJ_ID,
-      dangerouslyAllowBrowser: true
-    });
-
     // Auto-scroll to bottom as messages are added - but not during streaming
     const scrollToBottom = () => {
         if (contentRef.current) {
@@ -249,56 +236,47 @@ const Analysis = ({ ticker, showAnalysis }) => {
         }, 100);
 
         try {
-            // Prepare messages for API
-            const apiMessages = updatedMessages.filter(msg => msg.role !== 'system' || msg.content.includes('financial analyst'));
+            // Prepare conversation history for API (exclude system messages)
+            const conversationHistory = updatedMessages
+                .filter(msg => msg.role !== 'system')
+                .map(msg => ({
+                    role: msg.role,
+                    content: msg.content
+                }));
 
-            const stream = await client.chat.completions.create({
-                model: "gpt-4o-mini-2024-07-18",
-                messages: apiMessages,
-                stream: true,
-                temperature: 0.4,
-                max_tokens: 1000,
+            // Call your secure backend chat endpoint
+            const response = await fetch(`${API_URL}/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: userMessage.content,
+                    stockSymbol: ticker,
+                    conversationHistory: conversationHistory
+                })
             });
 
-            // Create assistant message for streaming
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Create assistant message with the response
             const assistantMessage = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: '',
+                content: data.response || 'No response received',
                 timestamp: new Date()
             };
 
-            let finalMessages = [...updatedMessages, assistantMessage];
+            const finalMessages = [...updatedMessages, assistantMessage];
             setMessages(finalMessages);
 
-            // Scroll to show the assistant is responding
+            // Save conversation to Firebase
             setTimeout(() => {
-                scrollToBottom();
-            }, 100);
-
-            // Stream the response
-            let accumulatedContent = '';
-            for await (const chunk of stream) {
-                const content = chunk.choices[0]?.delta?.content;
-                if (content) {
-                    accumulatedContent += content;
-                    setMessages(prev => {
-                        const updated = [...prev];
-                        const lastMessage = updated[updated.length - 1];
-                        if (lastMessage && lastMessage.role === 'assistant') {
-                            lastMessage.content = accumulatedContent;
-                        }
-                        return updated;
-                    });
-                }
-            }
-
-            // Save final conversation to Firebase
-            setTimeout(() => {
-                setMessages(prev => {
-                    saveConversationToFirebase(prev);
-                    return prev;
-                });
+                saveConversationToFirebase(finalMessages);
             }, 500);
 
         } catch (error) {
