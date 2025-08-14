@@ -48,7 +48,7 @@ const getStartDay = (period = 'YTD') => {
 const StockChart = ({ companyName, ticker, price, marketPriceChange }) => {
   const svgRef = useRef(null);
   const zoomRef = useRef(null);
-  const [chartType, setChartType] = useState('candlestick');
+  const [chartType, setChartType] = useState('area');
   const [hoveredData, setHoveredData] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState('YTD');
   const [candleSticksData, setCandleSticksData] = useState([]);
