@@ -4,7 +4,6 @@ import Home from "./pages/home";
 import SignIn from './pages/signin';
 import Signup from './pages/signup';
 import DashboardPage from './pages/dashboard';
-import ChatPage from "./pages/dashboard/chat";
 import { auth } from './firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useState, useEffect } from 'react';
@@ -40,7 +39,6 @@ function App() {
       <Route path="/signup" element={userIsAuth ? <DashboardPage /> : <Signup />} />
       <Route path="/features" element={<FeaturesPage />} />
       <Route path="/dashboard" element={userIsAuth ? <DashboardPage /> : <SignIn />} />
-      <Route path="/dashboard/chat" element={userIsAuth ? <ChatPage /> : <SignIn />} />
       <Route path="/dashboard/news" element={userIsAuth ? <News /> : <SignIn />} />
       <Route path="/dashboard/assistant" element={userIsAuth ? <AssistantPage /> : <SignIn />} />
     </Routes>

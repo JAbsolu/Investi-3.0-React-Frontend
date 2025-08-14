@@ -5,7 +5,6 @@ import {
 } from '@mui/material';
 import { FaPaperPlane, FaRobot, FaUser, FaTimes } from 'react-icons/fa';
 import { green, teal, grey } from '@mui/material/colors';
-import OpenAI from "openai";
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -20,17 +19,6 @@ const AiChat = ({ isOpen, onClose, stockSymbol, fullPage = false }) => {
   const messagesEndRef = useRef(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const ORG_ID = process.env.REACT_APP_OPENAI_ORG_ID;
-  const PROJ_ID = process.env.REACT_APP_OPENAI_PROJECT_ID;
-  const API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
-
-  const client = new OpenAI({
-    apiKey: API_KEY,
-    organization: ORG_ID,
-    project: PROJ_ID,
-    dangerouslyAllowBrowser: true
-  });
 
   // Scroll to bottom of chat when messages change
   useEffect(() => {
@@ -61,46 +49,46 @@ const AiChat = ({ isOpen, onClose, stockSymbol, fullPage = false }) => {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
 
-    // Setup OpenAI chat format
-    const openAIMessages = messages.map(msg => ({
-      role: msg.sender === 'user' ? 'user' : 'assistant',
-      content: msg.text
-    }));
-    openAIMessages.push({ role: "user", content: prompt });
-
     try {
-      const stream = await client.chat.completions.create({
-        model: "gpt-4o-mini-2024-07-18",
-        messages: openAIMessages,
-        stream: true,
+      // Call your backend API instead of OpenAI directly
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: prompt,
+          stockSymbol: stockSymbol,
+          conversationHistory: messages.map(msg => ({
+            role: msg.sender === 'user' ? 'user' : 'assistant',
+            content: msg.text
+          }))
+        })
       });
 
-      let assistantReply = "";
-
-      for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content;
-        if (content) {
-          assistantReply += content;
-          setAiResponse(prev => prev + content);
-        }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Finalize assistant message
+      const data = await response.json();
+      
+      // Add AI response to messages
       setMessages(prev => [...prev, { 
         id: Date.now() + 1, 
-        text: assistantReply, 
+        text: data.response || data.message || 'No response received', 
         sender: 'ai' 
       }]);
-      setAiResponse("");
+      
     } catch (error) {
-      console.error("Streaming error:", error);
+      console.error("Chat API error:", error);
       setMessages(prev => [...prev, { 
         id: Date.now() + 1, 
-        text: 'Sorry, I encountered an error processing your request.', 
+        text: 'Sorry, I encountered an error processing your request. Please try again.', 
         sender: 'ai'
       }]);
     } finally {
       setIsLoading(false);
+      setAiResponse("");
     }
   };
 
