@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Navbar from "../../components/Navbar"
 import Footer from "../../components/Footer";
-import { green, grey, teal } from "@mui/material/colors";
+import { grey, teal } from "@mui/material/colors";
 
 
 // Constants for colors matching dashboard
