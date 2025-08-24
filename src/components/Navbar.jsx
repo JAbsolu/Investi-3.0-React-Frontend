@@ -91,7 +91,9 @@ const Navbar = () => {
               fontSize: '0.9rem',
               fontWeight: '500',
               transition: 'all 0.2s ease'
-            }}>
+            }}
+              onClick={() => navigate('/signup')}
+            >
               Sign up
             </button>
           </div>
@@ -178,7 +180,9 @@ const Navbar = () => {
               width: '100%',
               fontWeight: '500',
               fontSize: '0.9rem'
-            }}>
+            }}
+              onClick={() => navigate('/signup')}
+            >
               Sign Up
             </button>
           </div>
