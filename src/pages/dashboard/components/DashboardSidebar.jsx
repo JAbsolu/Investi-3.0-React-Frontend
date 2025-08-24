@@ -147,19 +147,6 @@ function DashboardSidebar({ onClose }) {
             </Button>
           </Tooltip>
 
-          <Tooltip title="Chat with AI" placement="right" arrow>
-            <Button
-              onClick={() => {
-                navigate("/dashboard/chat");
-                handleItemClick();
-              }}
-              startIcon={<IoChatbubbleEllipsesOutline size={20} />}
-              sx={getButtonStyle("/dashboard/chat")}
-            >
-              Chat
-            </Button>
-          </Tooltip>
-
           <Tooltip title="Latest News" placement="right" arrow>
             <Button
               onClick={() => {
