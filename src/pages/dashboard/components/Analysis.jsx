@@ -46,6 +46,20 @@ const Analysis = ({ ticker, showAnalysis }) => {
         }
     };
 
+    //save user analysis
+    const saveUserAnalysis = async (ticker, analysisData) => {
+        try {
+            const cacheData = {
+                analysis: analysisData,
+                ticker: ticker,
+                timestamp: Date.now()
+            };
+            await set(ref(database, `userStockAnalyses/${currentUser.uid}/${ticker}`), cacheData);
+        } catch (error) {
+            console.error("Error saving user analysis:", error.message);
+        }
+    };
+
     const getAiAnalysis = async (ticker) => {
           if (!ticker) return;
           
@@ -118,6 +132,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
             
             // Save new analysis to Firebase
             await saveAnalysisToCache(standardizedTicker, analysisData);
+            await saveUserAnalysis(standardizedTicker, analysisData);
             // console.log(`Fresh analysis for ${standardizedTicker} completed and cached.`);
           } catch (error) {
             console.log("Error in AI Analysis:", error.message || "");
