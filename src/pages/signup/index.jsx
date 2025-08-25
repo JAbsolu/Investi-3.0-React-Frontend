@@ -5,6 +5,7 @@ import { FaChartLine } from "react-icons/fa";
 import { ref, set } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import { useNavigate } from "react-router-dom";
+import { teal } from "@mui/material/colors";
 
 const Signup = () => {
     const [firstname, setFirstname] = useState("");
@@ -74,7 +75,7 @@ const Signup = () => {
                 }}
             >
                 <Box sx={{ display: "flex", gap: 2, justifyContent: "center", alignItems: "center" }}> 
-                    <Avatar sx={{ m: 1, bgcolor: "#05df72" }}>
+                    <Avatar sx={{ m: 1, bgcolor: teal[500] }}>
                         <FaChartLine />
                     </Avatar>
                     <Typography sx={{ mt: 1.5 }} component="h1" variant="h5">
@@ -141,16 +142,19 @@ const Signup = () => {
                     <Button
                         type="submit"
                         variant="contained"
-                        color="primary"
                         fullWidth
-                        sx={{ marginTop: 2 }}
+                        sx={{ 
+                            marginTop: 2,
+                            bgcolor: teal[500],
+                            "&:hover": { bgcolor: teal[600] }
+                        }}
                     >
                         Sign Up
                     </Button>
                 </form>
                 <Typography variant="body2" sx={{ mt: 2 }}>
                   Already have an account?{" "}
-                  <a href="/signin" style={{ color: "#66bb6a" }}>
+                  <a href="/signin" style={{ color: teal[500] }}>
                     Sign in
                   </a>
                 </Typography>

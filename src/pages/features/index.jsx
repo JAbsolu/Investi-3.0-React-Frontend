@@ -1,5 +1,5 @@
 import { Box, Typography, List, ListItem, ListItemText, Paper, Divider } from "@mui/material";
-import { green, teal, grey } from "@mui/material/colors";
+import { teal, green, grey } from "@mui/material/colors";
 import { FaBrain, FaChartLine, FaUsers, FaRocket, FaCloudDownloadAlt, FaHistory } from "react-icons/fa";
 import Navbar from "../../components/Navbar";
 
@@ -36,8 +36,8 @@ const Features = () => {
                         <ListItemText
                             primary="AI-Powered Stock Analysis"
                             secondary="Our app uses generative AI to analyze market trends, technical indicators, and fundamental data to provide comprehensive predictions on whether a stock is bullish or bearish."
-                            sx={{ 
-                                "& .MuiTypography-primary": { fontWeight: "bold", color: green[400], mb: 0.5 },
+                            sx={{
+                                "& .MuiTypography-primary": { fontWeight: "bold", color: teal[400], mb: 0.5 },
                                 "& .MuiTypography-body2": { color: grey[300] } 
                             }}
                         />
@@ -50,8 +50,8 @@ const Features = () => {
                         <ListItemText
                             primary="Real-Time Stock Statistics"
                             secondary="Access detailed statistics such as price-to-earnings ratio, market cap, dividend yield, historical performance charts, and more to make data-driven investment decisions."
-                            sx={{ 
-                                "& .MuiTypography-primary": { fontWeight: "bold", color: green[400], mb: 0.5 },
+                            sx={{
+                                "& .MuiTypography-primary": { fontWeight: "bold", color: teal[400], mb: 0.5 },
                                 "& .MuiTypography-body2": { color: grey[300] } 
                             }}
                         />
@@ -64,8 +64,8 @@ const Features = () => {
                         <ListItemText
                             primary="Globally Cached Analysis Results"
                             secondary="Our platform intelligently caches stock analyses, making them instantly available to all users. This means you get immediate access to recent analyses without waiting for processing, while ensuring data stays fresh and relevant."
-                            sx={{ 
-                                "& .MuiTypography-primary": { fontWeight: "bold", color: green[400], mb: 0.5 },
+                            sx={{
+                                "& .MuiTypography-primary": { fontWeight: "bold", color: teal[400], mb: 0.5 },
                                 "& .MuiTypography-body2": { color: grey[300] } 
                             }}
                         />
@@ -78,8 +78,8 @@ const Features = () => {
                         <ListItemText
                             primary="Conversation History"
                             secondary="Engage with our AI in meaningful follow-up conversations about any stock. Your interaction history is preserved, allowing you to pick up where you left off and access your previous insights anytime."
-                            sx={{ 
-                                "& .MuiTypography-primary": { fontWeight: "bold", color: green[400], mb: 0.5 },
+                            sx={{
+                                "& .MuiTypography-primary": { fontWeight: "bold", color: teal[400], mb: 0.5 },
                                 "& .MuiTypography-body2": { color: grey[300] } 
                             }}
                         />
@@ -106,8 +106,8 @@ const Features = () => {
                         <ListItemText
                             primary="User-Friendly Interface"
                             secondary="Easily navigate through stock data and analysis with our intuitive and clean interface, designed for both beginner investors and experienced traders."
-                            sx={{ 
-                                "& .MuiTypography-primary": { fontWeight: "bold", color: green[400], mb: 0.5 },
+                            sx={{
+                                "& .MuiTypography-primary": { fontWeight: "bold", color: teal[400], mb: 0.5 },
                                 "& .MuiTypography-body2": { color: grey[300] } 
                             }}
                         />

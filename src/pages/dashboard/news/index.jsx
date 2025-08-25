@@ -4,7 +4,7 @@ import {
     Box, Divider, Typography, Container,
     useMediaQuery, useTheme, IconButton, Drawer
 } from "@mui/material";
-import { green, teal, grey } from "@mui/material/colors";
+import { teal, grey } from "@mui/material/colors";
 import { HiOutlineMenu } from "react-icons/hi";
 import SearchBar from "../components/SearchBar";
 import SearchPagination from "../components/SearchPagination";
@@ -153,7 +153,7 @@ const News = () => {
                         width: 240,
                         boxSizing: 'border-box',
                         background: darkGradient,
-                        borderRight: `1px solid ${green[900]}`,
+                        borderRight: `1px solid ${teal[900]}`,
                     },
                 }}
             >
@@ -224,7 +224,7 @@ const News = () => {
                             setTicker={setTicker}
                             placeholder="Search for news"
                         />                     
-                        <Divider sx={{ bgcolor: green[900], opacity: 0.5 }} />
+                        <Divider sx={{ bgcolor: teal[900], opacity: 0.5 }} />
                     </Box>
                     
                     {/* News Articles */}      
@@ -253,7 +253,7 @@ const News = () => {
                             sx={{
                                 backgroundColor: 'rgba(20, 30, 20, 0.3)',
                                 borderRadius: '10px',
-                                border: `1px solid ${green[900]}`,
+                                border: `1px solid ${teal[900]}`,
                                 my: 4,
                                 width: "100%"
                             }}

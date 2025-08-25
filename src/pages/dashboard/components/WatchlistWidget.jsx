@@ -1,6 +1,6 @@
 import { Box, Paper, Typography, Divider, CircularProgress } from "@mui/material";
 import { RxCross2 } from "react-icons/rx";
-import { red, green, grey, teal } from '@mui/material/colors';
+import { red, teal, grey } from '@mui/material/colors';
 import { useEffect, useState, useCallback } from "react";
 import { IoTrendingUp, IoTrendingDown } from "react-icons/io5";
 
@@ -95,14 +95,14 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         {stock.tngoLast > stock.prevClose ? 
-          <IoTrendingUp color={green[400]} /> : 
+          <IoTrendingUp color={teal[400]} /> : 
           <IoTrendingDown color={red[400]} />
         }
         <Typography 
           variant="body1" 
           fontWeight="bold"
           sx={{ 
-            color: stock.tngoLast > stock.prevClose ? green[400] : red[400],
+            color: stock.tngoLast > stock.prevClose ? teal[400] : red[400],
             letterSpacing: 0.5
           }}>
           ${stock.tngoLast?.toFixed(2)}

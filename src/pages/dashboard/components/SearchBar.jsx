@@ -1,5 +1,5 @@
 import { Box, InputAdornment, TextField, useMediaQuery } from "@mui/material"
-import { green, grey, teal } from "@mui/material/colors";
+import { teal, grey } from "@mui/material/colors";
 import { FaSearch } from "react-icons/fa";
 
 const SearchBar = ({ handleSearchOnEnter, ticker, setTicker, placeholder }) => {

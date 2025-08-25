@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import { FaTimes, FaList } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { green, teal, grey, red } from '@mui/material/colors';
+import { teal, grey, red } from '@mui/material/colors';
 import { ref, set, get, child } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import DashboardSidebar from "./components/DashboardSidebar";
@@ -442,7 +442,7 @@ export default function DashboardPage() {
             alignItems: 'center',
             p: 2,
             borderBottom: `1px solid ${teal[500]}`,
-            background: `linear-gradient(90deg, ${teal[900]}, ${green[900]})`,
+            background: `linear-gradient(90deg, ${teal[900]}, ${teal[800]})`,
           }}>
             <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
               My Watchlist

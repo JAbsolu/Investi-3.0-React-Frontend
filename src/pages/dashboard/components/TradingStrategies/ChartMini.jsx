@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, Chip } from '@mui/material';
-import { green, red, blue, purple, amber } from '@mui/material/colors';
+import { teal, red, blue, purple, amber } from '@mui/material/colors';
 
 const ChartMini = ({ strategy }) => {
   const { chartType, chartData, indicators, liveData, stockList, patternData } = strategy;
@@ -49,12 +49,12 @@ const ChartMini = ({ strategy }) => {
         <svg width="100%" height="80%" viewBox="0 0 100 60">
           <path
             d="M10,45 Q30,20 50,30 T90,15"
-            stroke={green[400]}
+            stroke={teal[400]}
             strokeWidth="2"
             fill="none"
           />
           {/* Buy Indicator */}
-          <circle cx="25" cy="35" r="3" fill={green[400]} />
+          <circle cx="25" cy="35" r="3" fill={teal[400]} />
           <text x="25" y="50" textAnchor="middle" fontSize="6" fill="white">Buy</text>
           {/* Sell Indicator */}
           <circle cx="75" cy="20" r="3" fill={red[400]} />
@@ -81,11 +81,11 @@ const ChartMini = ({ strategy }) => {
               width: 8,
               height: 8,
               borderRadius: '50%',
-              backgroundColor: green[400],
+              backgroundColor: teal[400],
               animation: 'pulse 2s infinite'
             }}
           />
-          <Typography sx={{ fontSize: '0.7rem', color: green[400], fontWeight: 600 }}>
+          <Typography sx={{ fontSize: '0.7rem', color: teal[400], fontWeight: 600 }}>
             {liveData.symbol}
           </Typography>
         </Box>
@@ -102,7 +102,7 @@ const ChartMini = ({ strategy }) => {
               sx={{
                 width: 3,
                 height: Math.random() * 20 + 10,
-                backgroundColor: Math.random() > 0.5 ? green[400] : red[400],
+                backgroundColor: Math.random() > 0.5 ? teal[400] : red[400],
                 borderRadius: 0.5
               }}
             />
@@ -133,7 +133,7 @@ const ChartMini = ({ strategy }) => {
               sx={{
                 fontSize: '0.5rem',
                 height: 16,
-                backgroundColor: stock.status === 'Positive' ? green[700] : red[700],
+                backgroundColor: stock.status === 'Positive' ? teal[700] : red[700],
                 color: 'white'
               }}
             />
@@ -168,12 +168,12 @@ const ChartMini = ({ strategy }) => {
             strokeDasharray="3,3"
             fill="none"
           />
-          <circle cx="65" cy="18" r="2" fill={green[400]} />
+          <circle cx="65" cy="18" r="2" fill={teal[400]} />
         </svg>
         
         <Typography sx={{ 
           fontSize: '0.6rem', 
-          color: green[400], 
+          color: teal[400], 
           fontWeight: 600,
           mt: 0.5
         }}>
