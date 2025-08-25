@@ -12,6 +12,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const signInWithGoogle = async () => {
     try {
@@ -19,8 +20,7 @@ const SignIn = () => {
       const user = result.user;
       const email = user.email;
   
-      // You can store it in state, cookies, localStorage, etc.
-      Cookies.set("userEmail", email); // Example of storing in a cookie
+      Cookies.set("userEmail", email);
   
       navigate("/dashboard");
     } catch (error) {
@@ -30,16 +30,22 @@ const SignIn = () => {
 
   const navigate = useNavigate();
 
-  const handleSignIn = async (e) => {
+  const handleSignIn = (e) => {
     e.preventDefault();
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      alert("Signed in successfully");
-      navigate("/dashboard")
-    } catch (error) {
-      console.error("Error signing in:", error.message);
-      alert("Failed to sign in. Please check your credentials.");
-    }
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        const email = user.email;
+        const name = user.displayName;
+        Cookies.set("userEmail", email);
+        Cookies.set("userName", name);
+        console.info("User is signed in");
+        navigate("/dashboard");
+      })
+      .catch((error) => {
+        setErrorMessage(error.message);
+        console.error("Error signing in", error.message);
+      });
   };
 
   return (
@@ -166,6 +172,11 @@ const SignIn = () => {
           >
             Sign In
           </Button>
+          {errorMessage && (
+            <Typography color="error" variant="body2" align="center">
+              {errorMessage}
+            </Typography>
+          )}
         </Box>
        {/* sign in with google */}
        <Box 
