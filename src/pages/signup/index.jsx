@@ -11,6 +11,7 @@ const Signup = () => {
     const [lastname, setLastname] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordConfirmation, setPasswordConfirmation] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
@@ -19,6 +20,11 @@ const Signup = () => {
 
     const handleSignup = async (e) => {
         e.preventDefault();
+
+        if (password !== passwordConfirmation) {
+            setError("Passwords do not match");
+            return;
+        }
         setError("");
         setSuccess("");
 
@@ -112,6 +118,15 @@ const Signup = () => {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <TextField
+                        label="Password confirmation"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        type="password"
+                        value={passwordConfirmation}
+                        onChange={(e) => setPasswordConfirmation(e.target.value)}
                     />
                     {error && (
                         <Typography color="error" variant="body2" gutterBottom>
