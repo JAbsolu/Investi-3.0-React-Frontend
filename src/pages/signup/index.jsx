@@ -1,7 +1,10 @@
 import { Box, TextField, Button, Typography, Avatar } from "@mui/material";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { FaChartLine } from "react-icons/fa";
+import { ref, set } from "firebase/database";
+import { database } from "../../firebaseConfig";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
     const [firstname, setFirstname] = useState("");
@@ -12,6 +15,7 @@ const Signup = () => {
     const [success, setSuccess] = useState("");
 
     const auth = getAuth();
+    const navigate = useNavigate();
 
     const handleSignup = async (e) => {
         e.preventDefault();
@@ -23,7 +27,21 @@ const Signup = () => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
+            // Update user profile with first and last name
+            await updateProfile(user, {
+                displayName: `${firstname} ${lastname}`
+            });
+
+            // Add user to database
+            await set(ref(database, `users/${user.uid}`), {
+                firstName: firstname,
+                lastName: lastname,
+                email: email,
+                createdAt: Date.now()
+            });
+
             setSuccess("Signup successful!");
+            navigate("/dashboard");
         } catch (err) {
             setError(err.message);
         }
