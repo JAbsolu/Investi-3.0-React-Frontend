@@ -67,7 +67,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
           try {
             // Standardize ticker to uppercase for consistent keys
             const dbRef = ref(database);
-            const snapshot = await get(child(dbRef, `stockAnalyses/${standardizedTicker}`));
+            const snapshot = await get(child(dbRef, `/stockAnalyses/${standardizedTicker}`));
             
             if (snapshot.exists()) {
               const cachedAnalysis = snapshot.val();
@@ -125,7 +125,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
           } finally {
             isAnalyzing.current = false;
           }
-        };
+    };
     
     // Auto-scroll to bottom as messages are added - but not during streaming
     const scrollToBottom = () => {
