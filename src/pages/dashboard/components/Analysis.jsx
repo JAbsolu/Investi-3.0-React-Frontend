@@ -3,12 +3,13 @@ import { Send, Bot, Loader, TrendingUp } from 'lucide-react';
 import { FaCloudDownloadAlt } from 'react-icons/fa';
 import { 
   Box, Typography, 
-  TextField, IconButton, Card, CardContent
+  Card, CardContent
 } from '@mui/material';
 import { teal } from '@mui/material/colors';
 import { ref, get, child, set, push } from "firebase/database";
 import { auth, database } from '../../../firebaseConfig';
 import { onAuthStateChanged } from "firebase/auth";
+import { useAuth } from '../../../hooks/useAuth';
 
 // Stock analysis chat component with modern chat design
 const Analysis = ({ ticker, showAnalysis }) => {
@@ -25,6 +26,8 @@ const Analysis = ({ ticker, showAnalysis }) => {
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
     const contentRef = useRef(null);
+
+      const { userId } = useAuth();
     
     // Add refs to prevent duplicate calls
     const lastAnalyzedTicker = useRef(null);
@@ -40,7 +43,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
                 ticker: ticker,
                 timestamp: Date.now()
             };
-            await set(ref(database, `stockAnalyses/${ticker}`), cacheData);
+            await set(ref(database, `stockAnalysis/${ticker}`), cacheData);
         } catch (error) {
             console.error("Error saving analysis to cache:", error);
         }
@@ -54,7 +57,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
                 ticker: ticker,
                 timestamp: Date.now()
             };
-            await set(ref(database, `userStockAnalyses/${currentUser.uid}/${ticker}`), cacheData);
+            await set(ref(database, `userStockAnalysis/${userId}/${ticker}`), cacheData);
         } catch (error) {
             console.error("Error saving user analysis:", error.message);
         }
@@ -81,7 +84,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
           try {
             // Standardize ticker to uppercase for consistent keys
             const dbRef = ref(database);
-            const snapshot = await get(child(dbRef, `/stockAnalyses/${standardizedTicker}`));
+            const snapshot = await get(child(dbRef, `/stockAnalysis/${standardizedTicker}`));
             
             if (snapshot.exists()) {
               const cachedAnalysis = snapshot.val();
@@ -429,7 +432,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
         const checkCacheTimestamp = async () => {
           try {
             const dbRef = ref(database);
-            const snapshot = await get(child(dbRef, `stockAnalyses/${ticker.toUpperCase()}`));
+            const snapshot = await get(child(dbRef, `stockAnalysis/${ticker.toUpperCase()}`));
             
             if (snapshot.exists()) {
               const cachedData = snapshot.val();
