@@ -22,7 +22,9 @@ const SignIn = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       const email = user.email;
-  
+      const username = user.displayName;
+      
+      Cookies.set("userName", username);
       Cookies.set("userEmail", email);
   
       navigate("/dashboard");

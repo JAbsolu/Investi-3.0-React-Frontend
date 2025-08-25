@@ -23,26 +23,12 @@ import DashboardHeader from "./components/DashboardHeader";
 import StockDataView from "./components/StockDataView";
 import TradingStrategies from "./components/TradingStrategies";
 import ExploreMarket from "./components/ExploreMarket";
+import Cookies from "js-cookie";
 
 // Constants
 const white = "#ffffff";
 const darkBg = "#0d0d0d";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
-
-const keyStatisticsArray = [
-  "Market Cap", 
-  "Average 10D volume",
-  "Volume",
-  "Today High",
-  "Today Low",
-  "Open Price",
-  "Market Price",
-  "Dividend Yield",
-  "52 Week High",
-  "52 Week Low",
-  "52 Week Range",
-  "P/E Ratio",
-];
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -136,15 +122,8 @@ export default function DashboardPage() {
     try {
       await set(ref(database, `lastSearch/${userId}`), stock);
     } catch (error) {
-      // console.log("Error saving last search:", error);
+      console.log(error.message);
     }
-  };
-
-  const formatNumber = (n) => {
-    if (n >= 1e12) return (n / 1e12).toFixed(n % 1e12 === 0 ? 0 : 1) + 'T';
-    if (n >= 1e9) return (n / 1e9).toFixed(n % 1e9 === 0 ? 0 : 1) + 'B';
-    if (n >= 1e6) return (n / 1e6).toFixed(n % 1e6 === 0 ? 0 : 1) + 'M';
-    return n.toLocaleString();
   };
 
   // Pagination handlers
