@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { Container, TextField, Button, Typography, Box, Avatar } from "@mui/material";
-import { FaChartLine } from 'react-icons/fa';
+import { FaChartLine } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "../../firebaseConfig";
 import { FcGoogle } from "react-icons/fc";
 import Cookies from "js-cookie";
 import PwdResetModal from "./components/PwdResetModal";
+import { teal } from "@mui/material/colors";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -93,7 +94,7 @@ const SignIn = () => {
           gap: "3px"
         }} 
       >
-        <Avatar sx={{ m: 1, bgcolor: "#05df72" }}>
+        <Avatar sx={{ m: 1, bgcolor: teal[500] }}>
             <FaChartLine />
           </Avatar>
           <Typography sx={{ mt: 1.5 }} component="h1" variant="h5">
@@ -128,10 +129,10 @@ const SignIn = () => {
                   borderColor: "gray",
                 },
                 "&:hover fieldset": {
-                  borderColor: "white",
+                  borderColor: teal[300],
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "green",
+                  borderColor: teal[500],
                 },
               },
             }}
@@ -160,10 +161,10 @@ const SignIn = () => {
                   borderColor: "gray",
                 },
                 "&:hover fieldset": {
-                  borderColor: "white",
+                  borderColor: teal[300],
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "green",
+                  borderColor: teal[500],
                 },
               },
             }}
@@ -175,8 +176,8 @@ const SignIn = () => {
             sx={{
               mt: 3,
               mb: 2,
-              bgcolor: "green.500",
-              "&:hover": { bgcolor: "green.600" },
+              bgcolor: teal[500],
+              "&:hover": { bgcolor: teal[600] },
             }}
           >
             Sign In
@@ -187,11 +188,11 @@ const SignIn = () => {
               variant="body2"
               onClick={() => setShowResetModal(true)}
               sx={{
-                color: "#66bb6a",
+                color: teal[600],
                 cursor: "pointer",
                 textDecoration: "underline",
                 "&:hover": {
-                  color: "#4caf50",
+                  color: teal[400],
                 },
               }}
             >
@@ -239,7 +240,7 @@ const SignIn = () => {
         </Box>
         <Typography variant="body2" sx={{ mt: 2 }}>
           Don’t have an account?{" "}
-          <a href="/signup" style={{ color: "#66bb6a" }}>
+          <a href="/signup" style={{ color: teal[500], textDecoration: "none" }}>
             Sign up
           </a>
         </Typography>
