@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { Container, TextField, Button, Typography, Box, Avatar} from "@mui/material";
-import { FaChartLine } from "react-icons/fa";
+import { Container, TextField, Button, Typography, Box, Avatar } from "@mui/material";
+import { FaChartLine } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import { auth, googleProvider } from "../../firebaseConfig";
 import { FcGoogle } from "react-icons/fc";
 import Cookies from "js-cookie";
+import PwdResetModal from "./components/PwdResetModal";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -13,6 +14,7 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const signInWithGoogle = async () => {
     try {
@@ -63,6 +65,13 @@ const SignIn = () => {
         color: "white",
       }}
     >
+      {showResetModal && (
+        <PwdResetModal
+          open={showResetModal}
+          onClose={() => setShowResetModal(false)}
+          initialEmail={email}
+        />
+      )}
       <Box
         sx={{
           display: "flex",
@@ -172,6 +181,24 @@ const SignIn = () => {
           >
             Sign In
           </Button>
+          
+          <Box sx={{ textAlign: "center", mb: 2 }}>
+            <Typography
+              variant="body2"
+              onClick={() => setShowResetModal(true)}
+              sx={{
+                color: "#66bb6a",
+                cursor: "pointer",
+                textDecoration: "underline",
+                "&:hover": {
+                  color: "#4caf50",
+                },
+              }}
+            >
+              Forgot your password?
+            </Typography>
+          </Box>
+
           {errorMessage && (
             <Typography color="error" variant="body2" align="center">
               {errorMessage}
