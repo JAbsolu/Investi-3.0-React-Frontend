@@ -240,7 +240,7 @@ const LatestStockNews = () => {
             sx={{
               flex: '1 1 280px',
               minWidth: '280px',
-              maxWidth: '400px'
+              maxWidth: '420px'
             }}
           >
             <NewsCard newsItem={newsItem} />

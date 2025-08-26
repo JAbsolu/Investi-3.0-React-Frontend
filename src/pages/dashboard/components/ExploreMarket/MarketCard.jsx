@@ -15,7 +15,7 @@ const MarketCard = ({ tool, onClick }) => {
         border: `1px solid rgba(${teal[500]}, 0.3)`,
         borderRadius: 2,
         p: 3,
-        height: '160px',
+        height: '190px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
