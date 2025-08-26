@@ -23,6 +23,7 @@ import DashboardHeader from "./components/DashboardHeader";
 import StockDataView from "./components/StockDataView";
 import TradingStrategies from "./components/TradingStrategies";
 import ExploreMarket from "./components/ExploreMarket";
+import LatestStockNews from "./components/LatestStockNews";
 import Cookies from "js-cookie";
 
 // Constants
@@ -300,6 +301,11 @@ export default function DashboardPage() {
                     setCurrentView={setCurrentView}
                     isSmallScreen={isSmallScreen}
                   />
+                </Box>
+
+                {/* Latest Stock News Section */}
+                <Box sx={{ width: '100%' }}>
+                  <LatestStockNews />
                 </Box>
 
                 {/* Trading Strategies Section */}
