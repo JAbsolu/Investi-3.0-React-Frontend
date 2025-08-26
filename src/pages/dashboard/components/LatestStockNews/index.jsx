@@ -50,7 +50,7 @@ const LatestStockNews = () => {
               sx={{ 
                 color: teal[300], 
                 fontWeight: 'bold',
-                fontSize: '1.1rem'
+                fontSize: '2rem'
               }}
             >
               Latest Stock News
