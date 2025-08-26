@@ -82,15 +82,8 @@ const News = () => {
             try {
                 const response = await fetch(url);
                 const result = await response.json();
-
-                if (!response.ok) {
-                    // console.log(response.status, response.statusText, result.message);
-                    return;
-                }
-
                 // console.log(response.status, response.statusText, result.message, result);
                 setMarketNews(result.data.slice(0, 200));
-
             } catch(error) {
                 // console.log(error);
                 return;
@@ -99,7 +92,7 @@ const News = () => {
         getNews();
     },[]);
 
-    //---------- hanle search on key down ----------
+    // hanle search on key down
     const handleSearchOnEnter = (e) => {
         if (e.key === "Enter") {
         e.preventDefault(); 
