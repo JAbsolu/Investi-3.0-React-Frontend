@@ -317,60 +317,6 @@ export default function DashboardPage() {
                 <Box sx={{ width: '100%', mt: 4 }}>
                   <ExploreMarket onToolClick={handleToolClick} />
                 </Box>
-
-                {/* Company Profile and Statistics */}
-                <Paper sx={{ 
-                  px: 0, 
-                  pt: 0, 
-                  backgroundColor: "inherit",
-                  maxWidth: '100%',
-                  minWidth: '100%',
-                  borderRadius: 2
-                }}>
-
-                  {/* News Section */}
-                  <Box mt={4}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <h2 className="font-semibold text-base mb-0"
-                        style={{ color: teal[300] }}
-                      >                      
-                        Recent News
-                      </h2>
-                      <Button   
-                        size="small" 
-                        variant="text" 
-                        sx={{ 
-                          color: teal[500], 
-                          textTransform: 'none',
-                          '&:hover': { 
-                            color: teal[300]
-                          }
-                        }}
-                        onClick={() => navigate("/dashboard/news")}
-                      >
-                        View all news
-                      </Button>
-                    </Box>
-                  
-                    <Divider sx={{ my: 1, bgcolor: teal[500], opacity: 0.7 }} />
-                    
-                    {stockNews?.length > 0 ? (
-                      <SearchPagination
-                        searchResults={stockNews}
-                        startingIndex={newsStartIndex}
-                        endingIndex={newsEndIndex}
-                        handleBack={handleBack}
-                        handleNext={handleNext}
-                      />
-                    ) : (
-                      <Box sx={{ textAlign: 'center', py: 6 }}>
-                        <Typography color={grey[500]} sx={{ fontStyle: 'italic' }}>
-                          No news available for this stock
-                        </Typography>
-                      </Box>
-                    )}
-                  </Box>
-                </Paper>
               </Box>
             </Box>
           </Box>
