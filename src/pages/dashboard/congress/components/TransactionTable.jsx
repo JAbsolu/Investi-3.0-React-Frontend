@@ -15,7 +15,7 @@ import {
 import { teal, red, grey } from '@mui/material/colors';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
-const TransactionTable = ({ transactions, title }) => {
+const TransactionTable = ({ transactions, title, isCompact = false }) => {
   const [orderBy, setOrderBy] = useState('disclosureDate');
   const [order, setOrder] = useState('desc');
 
@@ -69,7 +69,7 @@ const TransactionTable = ({ transactions, title }) => {
         borderRadius: 2,
       }}
     >
-      <Table size="small">
+      <Table size={isCompact ? "small" : "medium"}>
         <TableHead>
           <TableRow sx={{ backgroundColor: '#0d0d0d' }}>
             <TableCell sx={{ color: teal[300], fontWeight: 600 }}>
@@ -92,7 +92,9 @@ const TransactionTable = ({ transactions, title }) => {
                 Symbol
               </TableSortLabel>
             </TableCell>
-            <TableCell sx={{ color: teal[300], fontWeight: 600 }}>Asset</TableCell>
+            {!isCompact && (
+              <TableCell sx={{ color: teal[300], fontWeight: 600 }}>Asset</TableCell>
+            )}
             <TableCell sx={{ color: teal[300], fontWeight: 600 }}>
               <TableSortLabel
                 active={orderBy === 'type'}
@@ -120,19 +122,21 @@ const TransactionTable = ({ transactions, title }) => {
                 onClick={() => handleSort('transactionDate')}
                 sx={{ color: teal[300] }}
               >
-                Transaction Date
+                {isCompact ? 'Date' : 'Transaction Date'}
               </TableSortLabel>
             </TableCell>
-            <TableCell sx={{ color: teal[300], fontWeight: 600 }}>
-              <TableSortLabel
-                active={orderBy === 'disclosureDate'}
-                direction={orderBy === 'disclosureDate' ? order : 'asc'}
-                onClick={() => handleSort('disclosureDate')}
-                sx={{ color: teal[300] }}
-              >
-                Disclosure Date
-              </TableSortLabel>
-            </TableCell>
+            {!isCompact && (
+              <TableCell sx={{ color: teal[300], fontWeight: 600 }}>
+                <TableSortLabel
+                  active={orderBy === 'disclosureDate'}
+                  direction={orderBy === 'disclosureDate' ? order : 'asc'}
+                  onClick={() => handleSort('disclosureDate')}
+                  sx={{ color: teal[300] }}
+                >
+                  Disclosure Date
+                </TableSortLabel>
+              </TableCell>
+            )}
             <TableCell sx={{ color: teal[300], fontWeight: 600 }}>Link</TableCell>
           </TableRow>
         </TableHead>
@@ -152,7 +156,7 @@ const TransactionTable = ({ transactions, title }) => {
               >
                 <TableCell sx={{ color: 'white' }}>
                   <Box>
-                    <Box sx={{ fontWeight: 600 }}>
+                    <Box sx={{ fontWeight: 600, fontSize: isCompact ? '0.85rem' : '1rem' }}>
                       {transaction.firstName} {transaction.lastName}
                     </Box>
                     <Box sx={{ fontSize: '0.75rem', color: grey[500] }}>
@@ -175,18 +179,20 @@ const TransactionTable = ({ transactions, title }) => {
                     />
                   )}
                 </TableCell>
-                <TableCell sx={{ color: grey[300], maxWidth: 200 }}>
-                  <Box sx={{ 
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
-                  }}>
-                    {transaction.assetDescription}
-                  </Box>
-                  <Box sx={{ fontSize: '0.75rem', color: grey[500] }}>
-                    {transaction.assetType}
-                  </Box>
-                </TableCell>
+                {!isCompact && (
+                  <TableCell sx={{ color: grey[300], maxWidth: 200 }}>
+                    <Box sx={{ 
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      {transaction.assetDescription}
+                    </Box>
+                    <Box sx={{ fontSize: '0.75rem', color: grey[500] }}>
+                      {transaction.assetType}
+                    </Box>
+                  </TableCell>
+                )}
                 <TableCell>
                   <Chip
                     label={transaction.type}
@@ -195,18 +201,21 @@ const TransactionTable = ({ transactions, title }) => {
                       backgroundColor: typeColor,
                       color: 'white',
                       fontWeight: 600,
+                      fontSize: isCompact ? '0.7rem' : '0.75rem',
                     }}
                   />
                 </TableCell>
-                <TableCell sx={{ color: teal[400], fontWeight: 600 }}>
+                <TableCell sx={{ color: teal[400], fontWeight: 600, fontSize: isCompact ? '0.85rem' : '1rem' }}>
                   {transaction.amount}
                 </TableCell>
-                <TableCell sx={{ color: grey[400] }}>
+                <TableCell sx={{ color: grey[400], fontSize: isCompact ? '0.8rem' : '0.9rem' }}>
                   {formatDate(transaction.transactionDate)}
                 </TableCell>
-                <TableCell sx={{ color: grey[400] }}>
-                  {formatDate(transaction.disclosureDate)}
-                </TableCell>
+                {!isCompact && (
+                  <TableCell sx={{ color: grey[400] }}>
+                    {formatDate(transaction.disclosureDate)}
+                  </TableCell>
+                )}
                 <TableCell>
                   {transaction.link && (
                     <IconButton
@@ -220,7 +229,7 @@ const TransactionTable = ({ transactions, title }) => {
                         },
                       }}
                     >
-                      <FaExternalLinkAlt size={14} />
+                      <FaExternalLinkAlt size={isCompact ? 12 : 14} />
                     </IconButton>
                   )}
                 </TableCell>

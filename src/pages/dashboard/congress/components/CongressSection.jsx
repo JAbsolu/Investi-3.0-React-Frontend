@@ -22,7 +22,8 @@ const CongressSection = ({
   tradingActivityData, 
   loading, 
   errors, 
-  onRefresh 
+  onRefresh,
+  isCompact = false
 }) => {
   const [activeTab, setActiveTab] = useState(0);
   const theme = useTheme();
@@ -36,6 +37,10 @@ const CongressSection = ({
   const currentLoading = activeTab === 0 ? loading.finDisclosure : loading.tradingActivity;
   const currentError = activeTab === 0 ? errors.finDisclosure : errors.tradingActivity;
 
+  // Adjust display limits based on layout
+  const mobileLimit = isCompact ? 10 : 20;
+  const desktopLimit = isCompact ? 25 : 50;
+
   const renderContent = () => {
     if (currentLoading) {
       return (
@@ -44,7 +49,7 @@ const CongressSection = ({
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center',
-            minHeight: 200,
+            minHeight: isCompact ? 150 : 200,
             backgroundColor: '#1a1a1a',
             borderRadius: 2,
             border: `1px solid ${teal[800]}`,
@@ -86,7 +91,7 @@ const CongressSection = ({
         <Box 
           sx={{ 
             textAlign: 'center', 
-            py: 6,
+            py: isCompact ? 4 : 6,
             backgroundColor: '#1a1a1a',
             borderRadius: 2,
             border: `1px solid ${teal[800]}`,
@@ -110,10 +115,10 @@ const CongressSection = ({
     if (isMobile) {
       return (
         <Box>
-          {currentData.slice(0, 20).map((transaction, index) => (
+          {currentData.slice(0, mobileLimit).map((transaction, index) => (
             <TransactionCard key={index} transaction={transaction} />
           ))}
-          {currentData.length > 20 && (
+          {currentData.length > mobileLimit && (
             <Typography 
               variant="caption" 
               sx={{ 
@@ -123,29 +128,29 @@ const CongressSection = ({
                 mt: 2 
               }}
             >
-              Showing first 20 transactions
+              Showing first {mobileLimit} transactions
             </Typography>
           )}
         </Box>
       );
     }
 
-    return <TransactionTable transactions={currentData.slice(0, 50)} title={title} />;
+    return <TransactionTable transactions={currentData.slice(0, desktopLimit)} title={title} isCompact={isCompact} />;
   };
 
   return (
-    <Box sx={{ mb: 6 }}>
+    <Box sx={{ mb: isCompact ? 4 : 6 }}>
       {/* Section Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <Box sx={{ color: teal[400], fontSize: '1.5rem' }}>
+        <Box sx={{ color: teal[400], fontSize: isCompact ? '1.25rem' : '1.5rem' }}>
           {icon}
         </Box>
         <Typography 
-          variant="h5" 
+          variant={isCompact ? "h6" : "h5"} 
           sx={{ 
             color: teal[300],
             fontWeight: 600,
-            fontSize: '1.5rem'
+            fontSize: isCompact ? '1.25rem' : '1.5rem'
           }}
         >
           {title}
@@ -158,7 +163,7 @@ const CongressSection = ({
             fontSize: '0.75rem'
           }}
         >
-          ({currentData?.length || 0} transactions)
+          ({currentData?.length || 0})
         </Typography>
       </Box>
 
@@ -167,11 +172,13 @@ const CongressSection = ({
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
+          variant={isCompact ? "fullWidth" : "standard"}
           sx={{
             '& .MuiTab-root': {
               color: grey[500],
               textTransform: 'none',
               fontWeight: 600,
+              fontSize: isCompact ? '0.8rem' : '0.9rem',
               '&.Mui-selected': {
                 color: teal[300],
               },
@@ -182,12 +189,10 @@ const CongressSection = ({
           }}
         >
           <Tab 
-            label="Financial Disclosures" 
-            sx={{ fontSize: '0.9rem' }}
+            label={isCompact ? "Disclosures" : "Financial Disclosures"}
           />
           <Tab 
-            label="Trading Activity" 
-            sx={{ fontSize: '0.9rem' }}
+            label={isCompact ? "Activity" : "Trading Activity"}
           />
         </Tabs>
       </Box>

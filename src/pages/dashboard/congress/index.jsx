@@ -1,3 +1,4 @@
+import React from 'react';
 import { 
   Box, 
   Typography, 
@@ -6,13 +7,12 @@ import {
   Button,
   useMediaQuery,
   useTheme,
-  Divider
+  Grid
 } from '@mui/material';
 import { teal, grey } from '@mui/material/colors';
 import { FaUniversity, FaLandmark, FaRedo, FaExternalLinkAlt } from 'react-icons/fa';
 import CongressSection from './components/CongressSection';
 import { useCongressData } from '../../../hooks/useCongressData';
-import DashboardSidebar from '../components/DashboardSidebar';
 
 // Constants matching dashboard background
 const darkBg = "#0d0d0d";
@@ -27,16 +27,15 @@ const CongressPage = () => {
   
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
     <Box sx={{ 
       backgroundColor: darkBg, 
       color: "white",
       minHeight: "100vh",
-      overflow: "auto",
-      display: 'flex',
+      overflow: "auto"
     }}>
-        <DashboardSidebar />
       <Container maxWidth="xl" sx={{ py: 3 }}>
       {/* Page Header */}
       <Box sx={{ mb: 4 }}>
@@ -111,41 +110,48 @@ const CongressPage = () => {
         </Alert>
       </Box>
 
-      {/* Senate Section */}
-      <CongressSection
-        title="Senate"
-        icon={<FaLandmark />}
-        finDisclosureData={data.senateFinDisclosure}
-        tradingActivityData={data.senateTradingActivity}
-        loading={{
-          finDisclosure: loading.senateFinDisclosure,
-          tradingActivity: loading.senateTradingActivity
-        }}
-        errors={{
-          finDisclosure: errors.senateFinDisclosure,
-          tradingActivity: errors.senateTradingActivity
-        }}
-        onRefresh={() => refreshData(['senateFinDisclosure', 'senateTradingActivity'])}
-      />
+      {/* Congressional Sections - Side by Side on Desktop, Stacked on Mobile */}
+      <Grid container spacing={isTablet ? 0 : 3}>
+        {/* Senate Section */}
+        <Grid item xs={12} md={6}>
+          <CongressSection
+            title="Senate"
+            icon={<FaLandmark />}
+            finDisclosureData={data.senateFinDisclosure}
+            tradingActivityData={data.senateTradingActivity}
+            loading={{
+              finDisclosure: loading.senateFinDisclosure,
+              tradingActivity: loading.senateTradingActivity
+            }}
+            errors={{
+              finDisclosure: errors.senateFinDisclosure,
+              tradingActivity: errors.senateTradingActivity
+            }}
+            onRefresh={() => refreshData(['senateFinDisclosure', 'senateTradingActivity'])}
+            isCompact={!isTablet}
+          />
+        </Grid>
 
-      <Divider sx={{ backgroundColor: teal[800], my: 4 }} />
-
-      {/* House Section */}
-      <CongressSection
-        title="House of Representatives"
-        icon={<FaUniversity />}
-        finDisclosureData={data.houseFinDisclosure}
-        tradingActivityData={data.houseTradingActivity}
-        loading={{
-          finDisclosure: loading.houseFinDisclosure,
-          tradingActivity: loading.houseTradingActivity
-        }}
-        errors={{
-          finDisclosure: errors.houseFinDisclosure,
-          tradingActivity: errors.houseTradingActivity
-        }}
-        onRefresh={() => refreshData(['houseFinDisclosure', 'houseTradingActivity'])}
-      />
+        {/* House Section */}
+        <Grid item xs={12} md={6}>
+          <CongressSection
+            title="House of Representatives"
+            icon={<FaUniversity />}
+            finDisclosureData={data.houseFinDisclosure}
+            tradingActivityData={data.houseTradingActivity}
+            loading={{
+              finDisclosure: loading.houseFinDisclosure,
+              tradingActivity: loading.houseTradingActivity
+            }}
+            errors={{
+              finDisclosure: errors.houseFinDisclosure,
+              tradingActivity: errors.houseTradingActivity
+            }}
+            onRefresh={() => refreshData(['houseFinDisclosure', 'houseTradingActivity'])}
+            isCompact={!isTablet}
+          />
+        </Grid>
+      </Grid>
 
       {/* Footer Info */}
       <Box sx={{ mt: 6, pt: 4, borderTop: `1px solid ${teal[800]}` }}>
