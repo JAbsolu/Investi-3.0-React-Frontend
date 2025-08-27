@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import News from './pages/dashboard/news';
 import AssistantPage from './assistant/AssistantPage';
 import FeaturesPage from "./pages/features";
+import CongressPage from './pages/dashboard/congress';
 
 function App() {
   const [userIsAuth, setUserIsAuth] = useState(false);
@@ -40,6 +41,7 @@ function App() {
       <Route path="/features" element={<FeaturesPage />} />
       <Route path="/dashboard" element={userIsAuth ? <DashboardPage /> : <SignIn />} />
       <Route path="/dashboard/news" element={userIsAuth ? <News /> : <SignIn />} />
+      <Route path="/dashboard/congress" element={userIsAuth ? <CongressPage /> : <SignIn />} />
       <Route path="/dashboard/assistant" element={userIsAuth ? <AssistantPage /> : <SignIn />} />
     </Routes>
   );
