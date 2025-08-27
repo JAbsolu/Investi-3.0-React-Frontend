@@ -52,24 +52,26 @@ const TransactionCard = ({ transaction }) => {
   return (
     <Card
       sx={{
-        backgroundColor: '#1a1a1a',
+        backgroundColor: '#0d0d0d',
         border: `1px solid ${teal[800]}`,
-        borderRadius: 2,
+        borderRadius: 3,
         mb: 2,
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
         '&:hover': {
-          borderColor: teal[600],
-          backgroundColor: '#222222',
+          borderColor: teal[500],
+          backgroundColor: '#1a1a1a',
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
         },
       }}
     >
-      <CardContent sx={{ p: 2 }}>
+      <CardContent sx={{ p: 3 }}>
         {/* Header with Member Name and Symbol */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box>
-            <Typography variant="h6" sx={{ color: 'white', fontWeight: 600, fontSize: '1rem' }}>
+            <Typography variant="h6" sx={{ color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>
               {firstName} {lastName}
             </Typography>
-            <Typography variant="caption" sx={{ color: teal[400] }}>
+            <Typography variant="caption" sx={{ color: teal[300], fontWeight: 500 }}>
               {office} {district && `(${district})`}
             </Typography>
           </Box>
@@ -78,9 +80,10 @@ const TransactionCard = ({ transaction }) => {
               label={symbol}
               size="small"
               sx={{
-                backgroundColor: teal[600],
+                backgroundColor: teal[500],
                 color: 'white',
                 fontWeight: 'bold',
+                fontSize: '0.75rem',
               }}
             />
           )}
@@ -90,9 +93,10 @@ const TransactionCard = ({ transaction }) => {
         <Typography
           variant="body2"
           sx={{
-            color: grey[300],
-            mb: 1,
+            color: grey[200],
+            mb: 2,
             fontWeight: 500,
+            lineHeight: 1.4,
           }}
         >
           {assetDescription}
@@ -107,6 +111,7 @@ const TransactionCard = ({ transaction }) => {
               backgroundColor: typeColor,
               color: 'white',
               fontWeight: 600,
+              fontSize: '0.7rem',
             }}
           />
           {owner && (
@@ -115,8 +120,9 @@ const TransactionCard = ({ transaction }) => {
               size="small"
               variant="outlined"
               sx={{
-                borderColor: grey[600],
-                color: grey[400],
+                borderColor: teal[600],
+                color: teal[200],
+                fontSize: '0.7rem',
               }}
             />
           )}
@@ -125,8 +131,9 @@ const TransactionCard = ({ transaction }) => {
             size="small"
             variant="outlined"
             sx={{
-              borderColor: grey[600],
-              color: grey[400],
+              borderColor: grey[500],
+              color: grey[300],
+              fontSize: '0.7rem',
             }}
           />
         </Box>
@@ -134,8 +141,8 @@ const TransactionCard = ({ transaction }) => {
         {/* Amount and Dates */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <FaDollarSign size={12} color={teal[400]} />
-            <Typography variant="caption" sx={{ color: teal[400], fontWeight: 600 }}>
+            <FaDollarSign size={14} color={teal[400]} />
+            <Typography variant="body2" sx={{ color: teal[300], fontWeight: 600 }}>
               {amount}
             </Typography>
           </Box>
@@ -144,10 +151,10 @@ const TransactionCard = ({ transaction }) => {
         {/* Dates and Link */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
-            <Typography variant="caption" sx={{ color: grey[500], display: 'block' }}>
+            <Typography variant="caption" sx={{ color: grey[400], display: 'block', fontSize: '0.75rem' }}>
               Transaction: {formatDate(transactionDate)}
             </Typography>
-            <Typography variant="caption" sx={{ color: grey[500], display: 'block' }}>
+            <Typography variant="caption" sx={{ color: grey[400], display: 'block', fontSize: '0.75rem' }}>
               Disclosed: {formatDate(disclosureDate)}
             </Typography>
           </Box>
@@ -157,9 +164,12 @@ const TransactionCard = ({ transaction }) => {
               onClick={handleLinkClick}
               sx={{
                 color: teal[400],
+                backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                border: `1px solid ${teal[700]}`,
                 '&:hover': {
-                  color: teal[300],
-                  backgroundColor: 'rgba(0, 150, 136, 0.1)',
+                  color: teal[200],
+                  backgroundColor: 'rgba(20, 184, 166, 0.2)',
+                  borderColor: teal[500],
                 },
               }}
             >
