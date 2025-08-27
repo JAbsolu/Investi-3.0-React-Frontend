@@ -27,7 +27,15 @@ const CongressPage = () => {
     data, 
     loading, 
     errors, 
-    refreshData 
+    refreshData,
+    searchResults,
+    searchLoading,
+    searchErrors,
+    searchSenateTradingByName,
+    searchSenateTradingByTicker,
+    searchHouseTradingByName,
+    searchHouseTradingByTicker,
+    clearSearchResults
   } = useCongressData();
   
   const theme = useTheme();
@@ -44,6 +52,29 @@ const CongressPage = () => {
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
+    // Clear search results when switching tabs
+    clearSearchResults();
+  };
+
+  // Handle search functionality
+  const handleSearch = async (query, searchType, chamber) => {
+    if (chamber === 'senate') {
+      if (searchType === 'name') {
+        await searchSenateTradingByName(query);
+      } else {
+        await searchSenateTradingByTicker(query);
+      }
+    } else {
+      if (searchType === 'name') {
+        await searchHouseTradingByName(query);
+      } else {
+        await searchHouseTradingByTicker(query);
+      }
+    }
+  };
+
+  const handleClearSearch = (chamber, searchType) => {
+    clearSearchResults(chamber, searchType);
   };
 
   // Get current data based on active tab
@@ -282,6 +313,12 @@ const CongressPage = () => {
                   onRefresh={currentData.onRefresh}
                   isCompact={true}
                   constrained={true}
+                  chamber={activeTab === 0 ? 'senate' : 'house'}
+                  searchResults={searchResults}
+                  searchLoading={searchLoading}
+                  searchErrors={searchErrors}
+                  onSearch={handleSearch}
+                  onClearSearch={handleClearSearch}
                 />
               </Box>
             </Container>

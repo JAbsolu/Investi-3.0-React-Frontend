@@ -16,6 +16,7 @@ import { teal, grey } from '@mui/material/colors';
 import { FaRedo, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import TransactionTable from './TransactionTable';
 import TransactionCard from './TransactionCard';
+import TradingSearchControls from './TradingSearchControls';
 
 const CongressSection = ({ 
   title, 
@@ -26,21 +27,75 @@ const CongressSection = ({
   errors, 
   onRefresh,
   isCompact = false,
-  constrained = false
+  constrained = false,
+  // Search related props
+  searchResults = {},
+  searchLoading = {},
+  searchErrors = {},
+  onSearch,
+  onClearSearch,
+  chamber = 'senate' // 'senate' or 'house'
 }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchType, setSearchType] = useState('name');
+  const [searchActive, setSearchActive] = useState(false);
+  
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
     setCurrentPage(0); // Reset pagination when switching tabs
+    
+    // Clear search when switching away from trading activity
+    if (newValue === 0 && searchActive) {
+      handleClearSearch();
+    }
   };
 
-  const currentData = activeTab === 0 ? finDisclosureData : tradingActivityData;
+  // Get current data based on tab and search state
+  const getCurrentData = () => {
+    if (activeTab === 0) {
+      // Financial Disclosures tab - no search functionality
+      return finDisclosureData;
+    } else {
+      // Trading Activity tab - check for search results
+      if (searchActive && searchQuery.trim() && searchQuery.length >= 2) {
+        const searchKey = `${chamber}By${searchType.charAt(0).toUpperCase() + searchType.slice(1)}`;
+        return searchResults[searchKey] || [];
+      }
+      return tradingActivityData;
+    }
+  };
+
+  const currentData = getCurrentData();
   const currentLoading = activeTab === 0 ? loading.finDisclosure : loading.tradingActivity;
   const currentError = activeTab === 0 ? errors.finDisclosure : errors.tradingActivity;
+  
+  // Check if we're currently searching
+  const isSearching = searchActive && searchQuery.trim() && searchQuery.length >= 2 && activeTab === 1;
+  const searchKey = `${chamber}By${searchType.charAt(0).toUpperCase() + searchType.slice(1)}`;
+  const currentSearchLoading = isSearching ? searchLoading[searchKey] : false;
+  const currentSearchError = isSearching ? searchErrors[searchKey] : null;
+
+  // Handle search
+  const handleSearch = (query) => {
+    if (query.trim() && query.length >= 2) {
+      setSearchActive(true);
+      setCurrentPage(0);
+      onSearch(query, searchType, chamber);
+    }
+  };
+
+  // Handle clear search
+  const handleClearSearch = () => {
+    setSearchActive(false);
+    setSearchQuery('');
+    setCurrentPage(0);
+    onClearSearch(chamber, searchType);
+  };
 
   // Pagination settings
   const rowsPerPage = constrained ? (isMobile ? 6 : 8) : (isMobile ? 10 : 25);
@@ -59,6 +114,53 @@ const CongressSection = ({
   };
 
   const renderContent = () => {
+    // Show search loading if actively searching
+    if (currentSearchLoading) {
+      return (
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            minHeight: constrained ? 120 : (isCompact ? 150 : 200),
+            backgroundColor: '#1a1a1a',
+            borderRadius: 2,
+            border: `1px solid ${teal[800]}`,
+          }}
+        >
+          <CircularProgress sx={{ color: teal[400] }} />
+        </Box>
+      );
+    }
+
+    // Show search error if there's one
+    if (currentSearchError) {
+      return (
+        <Alert 
+          severity="error" 
+          sx={{ 
+            backgroundColor: 'rgba(211, 47, 47, 0.1)',
+            color: 'white',
+            border: `1px solid rgba(211, 47, 47, 0.3)`,
+            '& .MuiAlert-icon': { color: 'rgba(211, 47, 47, 0.8)' }
+          }}
+          action={
+            <Button
+              size="small"
+              onClick={() => handleSearch(searchQuery)}
+              sx={{ color: teal[400] }}
+              startIcon={<FaRedo />}
+            >
+              Retry Search
+            </Button>
+          }
+        >
+          Search failed: {currentSearchError}
+        </Alert>
+      );
+    }
+
+    // Show regular loading for initial data fetch
     if (currentLoading) {
       return (
         <Box 
@@ -77,6 +179,7 @@ const CongressSection = ({
       );
     }
 
+    // Show regular error for data fetch
     if (currentError) {
       return (
         <Alert 
@@ -103,7 +206,12 @@ const CongressSection = ({
       );
     }
 
+    // Show no results message
     if (!currentData || currentData.length === 0) {
+      const message = searchActive && searchQuery.trim() && searchQuery.length >= 2
+        ? `No ${searchType === 'name' ? 'members' : 'transactions'} found for "${searchQuery}"`
+        : 'No transactions available';
+        
       return (
         <Box 
           sx={{ 
@@ -115,16 +223,26 @@ const CongressSection = ({
           }}
         >
           <Typography color={grey[500]} sx={{ fontStyle: 'italic' }}>
-            No transactions available
+            {message}
           </Typography>
-          <Button
-            size="small"
-            onClick={onRefresh}
-            sx={{ color: teal[400], mt: 1 }}
-            startIcon={<FaRedo />}
-          >
-            Refresh
-          </Button>
+          {searchActive && searchQuery.trim() && searchQuery.length >= 2 ? (
+            <Button
+              size="small"
+              onClick={handleClearSearch}
+              sx={{ color: teal[400], mt: 1 }}
+            >
+              Clear Search
+            </Button>
+          ) : (
+            <Button
+              size="small"
+              onClick={onRefresh}
+              sx={{ color: teal[400], mt: 1 }}
+              startIcon={<FaRedo />}
+            >
+              Refresh
+            </Button>
+          )}
         </Box>
       );
     }
@@ -259,6 +377,21 @@ const CongressSection = ({
           />
         </Tabs>
       </Box>
+
+      {/* Search Controls - Only show for Trading Activity tab */}
+      {activeTab === 1 && (
+        <TradingSearchControls
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          searchType={searchType}
+          setSearchType={setSearchType}
+          onSearch={handleSearch}
+          onClear={handleClearSearch}
+          loading={currentSearchLoading}
+          searchActive={searchActive}
+          resultsCount={currentData?.length || 0}
+        />
+      )}
 
       {/* Content - Flex 1 to take remaining space */}
       <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
