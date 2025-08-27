@@ -10,6 +10,7 @@ import {
   IoLogOutOutline,
   IoAnalyticsSharp
 } from "react-icons/io5";
+import { FaUniversity } from "react-icons/fa";
 import { auth } from "../../../firebaseConfig";
 
 function DashboardSidebar({ onClose }) {
@@ -37,25 +38,25 @@ function DashboardSidebar({ onClose }) {
   // Button styles with active state
   const getButtonStyle = (path) => ({
     justifyContent: "flex-start",
-    color: isActive(path) ? green[400] : grey[300],
-    backgroundColor: isActive(path) ? 'rgba(0, 128, 0, 0.1)' : 'transparent',
+    color: isActive(path) ? teal[400] : grey[300],
+    backgroundColor: isActive(path) ? 'rgba(20, 184, 166, 0.1)' : 'transparent',
     borderRadius: '10px',
     py: 1.2,
     px: 2,
     mb: 0.5,
     transition: 'all 0.2s ease',
     '&:hover': {
-      backgroundColor: 'rgba(0, 128, 0, 0.15)',
-      color: isActive(path) ? green[300] : grey[100],
+      backgroundColor: 'rgba(20, 184, 166, 0.15)',
+      color: isActive(path) ? teal[300] : grey[100],
       transform: 'translateX(5px)',
     },
     '& .MuiButton-startIcon': {
-      color: isActive(path) ? green[400] : teal[300],
+      color: isActive(path) ? teal[400] : teal[300],
       marginRight: 1.5,
       transition: 'all 0.2s ease',
     },
     '&:hover .MuiButton-startIcon': {
-      color: isActive(path) ? green[300] : green[400],
+      color: isActive(path) ? teal[300] : teal[400],
     },
     fontWeight: isActive(path) ? 600 : 400,
     textTransform: 'none',
@@ -92,7 +93,7 @@ function DashboardSidebar({ onClose }) {
           right: 0,
           width: '1px',
           height: '100%',
-          background: `linear-gradient(to bottom, transparent, ${green[900]}, transparent)`,
+          background: `linear-gradient(to bottom, transparent, ${teal[900]}, transparent)`,
           opacity: 0.6,
         }
       }}
@@ -109,13 +110,13 @@ function DashboardSidebar({ onClose }) {
             borderBottom: `1px solid ${grey[900]}`,
           }}
         >
-          <IoAnalyticsSharp size={28} style={{ color: green[400], marginRight: '12px' }} />
+          <IoAnalyticsSharp size={28} style={{ color: teal[400], marginRight: '12px' }} />
           <Typography 
             variant="h5" 
             fontWeight="bold" 
             sx={{ 
               color: 'white',
-              background: `linear-gradient(90deg, ${teal[400]}, ${green[400]})`,
+              background: `linear-gradient(90deg, ${teal[400]}, ${teal[300]})`,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               textShadow: '0px 2px 4px rgba(0,0,0,0.3)',
@@ -157,6 +158,19 @@ function DashboardSidebar({ onClose }) {
               sx={getButtonStyle("/dashboard/news")}
             >
               Market News
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Congressional Trading" placement="right" arrow>
+            <Button
+              onClick={() => {
+                navigate("/dashboard/congress");
+                handleItemClick();
+              }}
+              startIcon={<FaUniversity size={20} />}
+              sx={getButtonStyle("/dashboard/congress")}
+            >
+              Congress
             </Button>
           </Tooltip>
 

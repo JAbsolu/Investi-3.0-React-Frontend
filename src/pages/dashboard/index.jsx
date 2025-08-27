@@ -1,18 +1,16 @@
 import "./styles.css";
 import { useEffect, useState } from "react";
 import { 
-  Box, Button, Typography, Paper, 
-  Divider, IconButton, Drawer, Fab
+  Box, Typography,
+  IconButton, Drawer, Fab
 } from "@mui/material";
 import { FaTimes, FaList } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { teal, grey, red } from '@mui/material/colors';
+import { teal } from '@mui/material/colors';
 import { ref, set, get, child } from "firebase/database";
 import { database } from "../../firebaseConfig";
 import DashboardSidebar from "./components/DashboardSidebar";
 import { isStockMarketOpen } from "../../util/apis";
-import SearchPagination from "./components/SearchPagination";
-import Pagination from "./components/Pagination";
 import { getStartDay } from "../../util";
 import WatchlistWidget from "./components/WatchlistWidget";
 import { useStockData } from "../../hooks/useStockData";
@@ -24,10 +22,8 @@ import StockDataView from "./components/StockDataView";
 import TradingStrategies from "./components/TradingStrategies";
 import ExploreMarket from "./components/ExploreMarket";
 import LatestStockNews from "./components/LatestStockNews";
-import Cookies from "js-cookie";
 
-// Constants
-const white = "#ffffff";
+// Constants  
 const darkBg = "#0d0d0d";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
 
@@ -115,7 +111,7 @@ export default function DashboardPage() {
 
   const handleToolClick = (tool) => {
     // console.log('Market tool clicked:', tool);
-    // navigate(tool.route);
+    navigate(tool.route);
   };
 
   // Utility functions
