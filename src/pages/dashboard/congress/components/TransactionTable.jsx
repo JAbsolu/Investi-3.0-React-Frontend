@@ -77,7 +77,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                 active={orderBy === 'firstName'}
                 direction={orderBy === 'firstName' ? order : 'asc'}
                 onClick={() => handleSort('firstName')}
-                sx={{ color: teal[300] }}
+                sx={{ color: teal[300] , "&:hover": { color: teal[100]} }}
               >
                 Member
               </TableSortLabel>
@@ -87,7 +87,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                 active={orderBy === 'symbol'}
                 direction={orderBy === 'symbol' ? order : 'asc'}
                 onClick={() => handleSort('symbol')}
-                sx={{ color: teal[300] }}
+                sx={{ color: teal[300] , "&:hover": { color: teal[100]} }}
               >
                 Symbol
               </TableSortLabel>
@@ -100,7 +100,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                 active={orderBy === 'type'}
                 direction={orderBy === 'type' ? order : 'asc'}
                 onClick={() => handleSort('type')}
-                sx={{ color: teal[300] }}
+                sx={{ color: teal[300] , "&:hover": { color: teal[100]} }}
               >
                 Type
               </TableSortLabel>
@@ -110,7 +110,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                 active={orderBy === 'amount'}
                 direction={orderBy === 'amount' ? order : 'asc'}
                 onClick={() => handleSort('amount')}
-                sx={{ color: teal[300] }}
+                sx={{ color: teal[300] , "&:hover": { color: teal[100]} }}
               >
                 Amount
               </TableSortLabel>
@@ -120,7 +120,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                 active={orderBy === 'transactionDate'}
                 direction={orderBy === 'transactionDate' ? order : 'asc'}
                 onClick={() => handleSort('transactionDate')}
-                sx={{ color: teal[300] }}
+                sx={{ color: teal[300] , "&:hover": { color: teal[100]} }}
               >
                 {isCompact ? 'Date' : 'Transaction Date'}
               </TableSortLabel>
@@ -131,7 +131,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                   active={orderBy === 'disclosureDate'}
                   direction={orderBy === 'disclosureDate' ? order : 'asc'}
                   onClick={() => handleSort('disclosureDate')}
-                  sx={{ color: teal[300] }}
+                  sx={{ color: teal[300] , "&:hover": { color: teal[100]} }}
                 >
                   Disclosure Date
                 </TableSortLabel>
