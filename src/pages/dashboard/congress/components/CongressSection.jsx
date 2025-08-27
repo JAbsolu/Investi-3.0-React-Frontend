@@ -8,10 +8,12 @@ import {
   Alert,
   Button,
   useMediaQuery,
-  useTheme
+  useTheme,
+  IconButton,
+  Pagination
 } from '@mui/material';
 import { teal, grey } from '@mui/material/colors';
-import { FaRedo } from 'react-icons/fa';
+import { FaRedo, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import TransactionTable from './TransactionTable';
 import TransactionCard from './TransactionCard';
 
@@ -23,23 +25,38 @@ const CongressSection = ({
   loading, 
   errors, 
   onRefresh,
-  isCompact = false
+  isCompact = false,
+  constrained = false
 }) => {
   const [activeTab, setActiveTab] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
+    setCurrentPage(0); // Reset pagination when switching tabs
   };
 
   const currentData = activeTab === 0 ? finDisclosureData : tradingActivityData;
   const currentLoading = activeTab === 0 ? loading.finDisclosure : loading.tradingActivity;
   const currentError = activeTab === 0 ? errors.finDisclosure : errors.tradingActivity;
 
-  // Adjust display limits based on layout
-  const mobileLimit = isCompact ? 10 : 20;
-  const desktopLimit = isCompact ? 25 : 50;
+  // Pagination settings
+  const rowsPerPage = constrained ? (isMobile ? 6 : 8) : (isMobile ? 10 : 25);
+  const totalPages = Math.ceil((currentData?.length || 0) / rowsPerPage);
+  const paginatedData = currentData?.slice(
+    currentPage * rowsPerPage,
+    (currentPage + 1) * rowsPerPage
+  ) || [];
+
+  const handlePageChange = (direction) => {
+    if (direction === 'next' && currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    } else if (direction === 'prev' && currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   const renderContent = () => {
     if (currentLoading) {
@@ -49,7 +66,7 @@ const CongressSection = ({
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center',
-            minHeight: isCompact ? 150 : 200,
+            minHeight: constrained ? 120 : (isCompact ? 150 : 200),
             backgroundColor: '#1a1a1a',
             borderRadius: 2,
             border: `1px solid ${teal[800]}`,
@@ -91,7 +108,7 @@ const CongressSection = ({
         <Box 
           sx={{ 
             textAlign: 'center', 
-            py: isCompact ? 4 : 6,
+            py: constrained ? 3 : (isCompact ? 4 : 6),
             backgroundColor: '#1a1a1a',
             borderRadius: 2,
             border: `1px solid ${teal[800]}`,
@@ -114,34 +131,80 @@ const CongressSection = ({
 
     if (isMobile) {
       return (
-        <Box>
-          {currentData.slice(0, mobileLimit).map((transaction, index) => (
-            <TransactionCard key={index} transaction={transaction} />
-          ))}
-          {currentData.length > mobileLimit && (
-            <Typography 
-              variant="caption" 
-              sx={{ 
-                color: grey[500], 
-                textAlign: 'center', 
-                display: 'block',
-                mt: 2 
-              }}
-            >
-              Showing first {mobileLimit} transactions
-            </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: constrained ? '100%' : 'auto' }}>
+          <Box sx={{ flex: constrained ? 1 : 'none', overflow: constrained ? 'auto' : 'visible' }}>
+            {paginatedData.map((transaction, index) => (
+              <TransactionCard key={index} transaction={transaction} />
+            ))}
+          </Box>
+          {totalPages > 1 && (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, px: 1 }}>
+              <IconButton
+                onClick={() => handlePageChange('prev')}
+                disabled={currentPage === 0}
+                sx={{ color: currentPage === 0 ? grey[600] : teal[400] }}
+              >
+                <FaChevronLeft />
+              </IconButton>
+              <Typography variant="caption" sx={{ color: grey[500] }}>
+                Page {currentPage + 1} of {totalPages} • {currentData?.length || 0} total
+              </Typography>
+              <IconButton
+                onClick={() => handlePageChange('next')}
+                disabled={currentPage >= totalPages - 1}
+                sx={{ color: currentPage >= totalPages - 1 ? grey[600] : teal[400] }}
+              >
+                <FaChevronRight />
+              </IconButton>
+            </Box>
           )}
         </Box>
       );
     }
 
-    return <TransactionTable transactions={currentData.slice(0, desktopLimit)} title={title} isCompact={isCompact} />;
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: constrained ? '100%' : 'auto' }}>
+        <Box sx={{ flex: constrained ? 1 : 'none', minHeight: 0 }}>
+          <TransactionTable 
+            transactions={paginatedData} 
+            title={title} 
+            isCompact={isCompact} 
+            constrained={constrained}
+          />
+        </Box>
+        {totalPages > 1 && (
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, px: 1 }}>
+            <Button
+              onClick={() => handlePageChange('prev')}
+              disabled={currentPage === 0}
+              size="small"
+              sx={{ color: currentPage === 0 ? grey[600] : teal[400] }}
+              startIcon={<FaChevronLeft />}
+            >
+              Previous
+            </Button>
+            <Typography variant="caption" sx={{ color: grey[500] }}>
+              Page {currentPage + 1} of {totalPages} • Showing {paginatedData.length} of {currentData?.length || 0}
+            </Typography>
+            <Button
+              onClick={() => handlePageChange('next')}
+              disabled={currentPage >= totalPages - 1}
+              size="small"
+              sx={{ color: currentPage >= totalPages - 1 ? grey[600] : teal[400] }}
+              endIcon={<FaChevronRight />}
+            >
+              Next
+            </Button>
+          </Box>
+        )}
+      </Box>
+    );
   };
 
   return (
-    <Box sx={{ mb: isCompact ? 4 : 6 }}>
+    <Box sx={{ mb: constrained ? 0 : (isCompact ? 4 : 6), height: constrained ? '100%' : 'auto', display: 'flex', flexDirection: 'column' }}>
       {/* Section Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, flexShrink: 0 }}>
         <Box sx={{ color: teal[400], fontSize: isCompact ? '1.25rem' : '1.5rem' }}>
           {icon}
         </Box>
@@ -168,7 +231,7 @@ const CongressSection = ({
       </Box>
 
       {/* Tabs */}
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 2, flexShrink: 0 }}>
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
@@ -197,8 +260,10 @@ const CongressSection = ({
         </Tabs>
       </Box>
 
-      {/* Content */}
-      {renderContent()}
+      {/* Content - Flex 1 to take remaining space */}
+      <Box sx={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        {renderContent()}
+      </Box>
     </Box>
   );
 };

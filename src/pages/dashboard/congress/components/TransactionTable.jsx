@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Table,
-  TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TableBody,
   TableRow,
   Paper,
   Chip,
@@ -15,7 +15,7 @@ import {
 import { teal, red, grey } from '@mui/material/colors';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
-const TransactionTable = ({ transactions, title, isCompact = false }) => {
+const TransactionTable = ({ transactions, title, isCompact = false, constrained = false }) => {
   const [orderBy, setOrderBy] = useState('disclosureDate');
   const [order, setOrder] = useState('desc');
 
@@ -69,10 +69,10 @@ const TransactionTable = ({ transactions, title, isCompact = false }) => {
         borderRadius: 2,
       }}
     >
-      <Table size={isCompact ? "small" : "medium"}>
+      <Table size={isCompact ? "small" : "medium"} stickyHeader={constrained}>
         <TableHead>
           <TableRow sx={{ backgroundColor: '#0d0d0d' }}>
-            <TableCell sx={{ color: teal[300], fontWeight: 600 }}>
+            <TableCell sx={{ color: teal[300], fontWeight: 600, backgroundColor: '#0d0d0d', position: constrained ? 'sticky' : 'static', top: 0, zIndex: 1 }}>
               <TableSortLabel
                 active={orderBy === 'firstName'}
                 direction={orderBy === 'firstName' ? order : 'asc'}
@@ -82,7 +82,7 @@ const TransactionTable = ({ transactions, title, isCompact = false }) => {
                 Member
               </TableSortLabel>
             </TableCell>
-            <TableCell sx={{ color: teal[300], fontWeight: 600 }}>
+            <TableCell sx={{ color: teal[300], fontWeight: 600, backgroundColor: '#0d0d0d', position: constrained ? 'sticky' : 'static', top: 0, zIndex: 1 }}>
               <TableSortLabel
                 active={orderBy === 'symbol'}
                 direction={orderBy === 'symbol' ? order : 'asc'}
@@ -93,9 +93,9 @@ const TransactionTable = ({ transactions, title, isCompact = false }) => {
               </TableSortLabel>
             </TableCell>
             {!isCompact && (
-              <TableCell sx={{ color: teal[300], fontWeight: 600 }}>Asset</TableCell>
+              <TableCell sx={{ color: teal[300], fontWeight: 600, backgroundColor: '#0d0d0d', position: constrained ? 'sticky' : 'static', top: 0, zIndex: 1 }}>Asset</TableCell>
             )}
-            <TableCell sx={{ color: teal[300], fontWeight: 600 }}>
+            <TableCell sx={{ color: teal[300], fontWeight: 600, backgroundColor: '#0d0d0d', position: constrained ? 'sticky' : 'static', top: 0, zIndex: 1 }}>
               <TableSortLabel
                 active={orderBy === 'type'}
                 direction={orderBy === 'type' ? order : 'asc'}
@@ -105,7 +105,7 @@ const TransactionTable = ({ transactions, title, isCompact = false }) => {
                 Type
               </TableSortLabel>
             </TableCell>
-            <TableCell sx={{ color: teal[300], fontWeight: 600 }}>
+            <TableCell sx={{ color: teal[300], fontWeight: 600, backgroundColor: '#0d0d0d', position: constrained ? 'sticky' : 'static', top: 0, zIndex: 1 }}>
               <TableSortLabel
                 active={orderBy === 'amount'}
                 direction={orderBy === 'amount' ? order : 'asc'}
@@ -115,7 +115,7 @@ const TransactionTable = ({ transactions, title, isCompact = false }) => {
                 Amount
               </TableSortLabel>
             </TableCell>
-            <TableCell sx={{ color: teal[300], fontWeight: 600 }}>
+            <TableCell sx={{ color: teal[300], fontWeight: 600, backgroundColor: '#0d0d0d', position: constrained ? 'sticky' : 'static', top: 0, zIndex: 1 }}>
               <TableSortLabel
                 active={orderBy === 'transactionDate'}
                 direction={orderBy === 'transactionDate' ? order : 'asc'}
@@ -126,7 +126,7 @@ const TransactionTable = ({ transactions, title, isCompact = false }) => {
               </TableSortLabel>
             </TableCell>
             {!isCompact && (
-              <TableCell sx={{ color: teal[300], fontWeight: 600 }}>
+              <TableCell sx={{ color: teal[300], fontWeight: 600, backgroundColor: '#0d0d0d', position: constrained ? 'sticky' : 'static', top: 0, zIndex: 1 }}>
                 <TableSortLabel
                   active={orderBy === 'disclosureDate'}
                   direction={orderBy === 'disclosureDate' ? order : 'asc'}
@@ -137,7 +137,7 @@ const TransactionTable = ({ transactions, title, isCompact = false }) => {
                 </TableSortLabel>
               </TableCell>
             )}
-            <TableCell sx={{ color: teal[300], fontWeight: 600 }}>Link</TableCell>
+            <TableCell sx={{ color: teal[300], fontWeight: 600, backgroundColor: '#0d0d0d', position: constrained ? 'sticky' : 'static', top: 0, zIndex: 1 }}>Link</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
