@@ -8,7 +8,8 @@ import {
   IoChatbubbleEllipsesOutline,
   IoSettingsOutline, 
   IoLogOutOutline,
-  IoAnalyticsSharp
+  IoAnalyticsSharp,
+  IoCompassOutline
 } from "react-icons/io5";
 import { FaUniversity } from "react-icons/fa";
 import { auth } from "../../../firebaseConfig";
@@ -148,16 +149,16 @@ function DashboardSidebar({ onClose }) {
             </Button>
           </Tooltip>
 
-          <Tooltip title="Latest News" placement="right" arrow>
+          <Tooltip title="Discover News" placement="right" arrow>
             <Button
               onClick={() => {
                 navigate("/dashboard/news");
                 handleItemClick();
               }}
-              startIcon={<IoNewspaperOutline size={20} />}
+              startIcon={<IoCompassOutline size={24} />}
               sx={getButtonStyle("/dashboard/news")}
             >
-              Market News
+              Discover
             </Button>
           </Tooltip>
 
