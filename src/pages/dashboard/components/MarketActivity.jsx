@@ -49,13 +49,11 @@ const MarketActivity = () => {
     <Card
       sx={{
         backgroundColor: 'rgba(20, 184, 166, 0.05)',
-        border: `1px solid ${grey[800]}`,
         borderRadius: 2,
         transition: 'all 0.2s ease',
         cursor: 'pointer',
-        minWidth: isMobile ? '280px' : 'auto',
+        minWidth: isMobile ? '260px' : '280px',
         '&:hover': {
-          borderColor: teal[600],
           transform: 'translateY(-2px)',
           boxShadow: `0 4px 12px rgba(20, 184, 166, 0.1)`,
         }
@@ -67,14 +65,14 @@ const MarketActivity = () => {
             variant="h6" 
             fontWeight="bold" 
             color="white"
-            sx={{ fontSize: '1rem' }}
+            sx={{ fontSize: '0.95rem' }}
           >
             {stock.symbol}
           </Typography>
           <Typography 
             variant="body2" 
-            color={grey[400]}
-            sx={{ fontSize: '0.75rem' }}
+            color={teal[400]}
+            sx={{ fontSize: '0.7rem' }}
           >
             {stock.exchange}
           </Typography>
@@ -82,10 +80,10 @@ const MarketActivity = () => {
         
         <Typography 
           variant="body2" 
-          color={grey[300]}
+          color={teal[300]}
           sx={{ 
             mb: 1,
-            fontSize: '0.85rem',
+            fontSize: '0.8rem',
             display: '-webkit-box',
             WebkitLineClamp: 1,
             WebkitBoxOrient: 'vertical',
@@ -100,7 +98,7 @@ const MarketActivity = () => {
             variant="h6" 
             fontWeight="bold" 
             color="white"
-            sx={{ fontSize: '0.95rem' }}
+            sx={{ fontSize: '0.9rem' }}
           >
             {formatPrice(stock.price)}
           </Typography>
@@ -109,14 +107,14 @@ const MarketActivity = () => {
               variant="body2" 
               color={getChangeColor(stock.change)}
               fontWeight="bold"
-              sx={{ fontSize: '0.8rem' }}
+              sx={{ fontSize: '0.75rem' }}
             >
               {formatPercentage(stock.changesPercentage)}
             </Typography>
             <Typography 
               variant="caption" 
               color={getChangeColor(stock.change)}
-              sx={{ fontSize: '0.7rem' }}
+              sx={{ fontSize: '0.65rem' }}
             >
               {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
             </Typography>
@@ -128,22 +126,36 @@ const MarketActivity = () => {
 
   // Section component
   const MarketSection = ({ title, icon: Icon, data, type, color }) => (
-    <Box flex={1} minWidth={isMobile ? 'auto' : '300px'}>
+    <Box mb={4}>
       <Box 
         display="flex" 
         alignItems="center" 
+        justifyContent={'space-between'}
         mb={2}
         sx={{ px: isMobile ? 1 : 0 }}
       >
-        <Icon size={20} color={color} style={{ marginRight: '8px' }} />
+        {/* <Icon size={18} color={color} style={{ marginRight: '8px' }} /> */}
         <Typography 
           variant="h6" 
           fontWeight="bold" 
-          color="white"
-          sx={{ fontSize: '1.1rem' }}
+          color={teal[400]}
+          sx={{ fontSize: '1rem' }}
         >
           {title}
         </Typography>
+        <Button
+            onClick={() => navigate('/dashboard/market-activity')}
+            sx={{
+                color: teal[400],
+                textTransform: 'none',
+                fontWeight: 500,
+                '&:hover': {
+                backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                },
+            }}
+            >
+            View More
+        </Button>
       </Box>
       
       {loading[type] ? (
@@ -151,7 +163,7 @@ const MarketActivity = () => {
           display="flex" 
           justifyContent="center" 
           alignItems="center" 
-          minHeight="200px"
+          minHeight="180px"
         >
           <CircularProgress sx={{ color: teal[400] }} size={24} />
         </Box>
@@ -181,9 +193,9 @@ const MarketActivity = () => {
           display="flex" 
           gap={2}
           sx={{
-            overflowX: isMobile ? 'auto' : 'visible',
-            flexDirection: isMobile ? 'row' : 'column',
-            pb: isMobile ? 1 : 0,
+            overflowX: 'auto',
+            flexDirection: 'row',
+            pb: 1,
             '&::-webkit-scrollbar': {
               height: '4px',
             },
@@ -197,7 +209,7 @@ const MarketActivity = () => {
             },
           }}
         >
-          {data.map((stock, index) => (
+          {data.slice(0, 4).map((stock, index) => (
             <StockItem key={stock.symbol || index} stock={stock} type={type} />
           ))}
         </Box>
@@ -206,46 +218,14 @@ const MarketActivity = () => {
   );
 
   return (
-    <Box sx={{ mt: 4, mb: 3 }}>
-      {/* Header */}
-      <Box 
-        display="flex" 
-        justifyContent="space-between" 
-        alignItems="center" 
-        mb={3}
-        sx={{ px: 1 }}
-      >
-        <Typography 
-          variant="h5" 
-          fontWeight="bold" 
-          color="white"
-          sx={{ fontSize: { xs: '1.3rem', sm: '1.5rem' } }}
-        >
-          Market Activity
-        </Typography>
-        <Button
-          onClick={() => navigate('/dashboard/market-activity')}
-          endIcon={<FaArrowRight size={14} />}
-          sx={{
-            color: teal[400],
-            textTransform: 'none',
-            fontWeight: 500,
-            '&:hover': {
-              backgroundColor: 'rgba(20, 184, 166, 0.1)',
-            },
-          }}
-        >
-          View More
-        </Button>
-      </Box>
-
+    <Box sx={{ mt: 4, mb: 0 }}>
       {/* Market Data Sections */}
       <Box 
         display="flex" 
         gap={3}
         sx={{
-          flexDirection: { xs: 'column', md: 'row' },
-          alignItems: { xs: 'stretch', md: 'flex-start' }
+          flexDirection: 'column',
+          alignItems: 'stretch'
         }}
       >
         <MarketSection
@@ -255,9 +235,9 @@ const MarketActivity = () => {
           type="gainers"
           color={green[400]}
         />
-        
+        {/*  
         <MarketSection
-          title="Biggest Losers"
+          title="Losers"
           icon={FaArrowDown}
           data={biggestLosers}
           type="losers"
@@ -271,6 +251,7 @@ const MarketActivity = () => {
           type="traded"
           color={teal[400]}
         />
+        */}
       </Box>
     </Box>
   );

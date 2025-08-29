@@ -9,7 +9,8 @@ import {
   IoSettingsOutline, 
   IoLogOutOutline,
   IoAnalyticsSharp,
-  IoCompassOutline
+  IoCompassOutline,
+  IoTrendingUpOutline
 } from "react-icons/io5";
 import { FaUniversity } from "react-icons/fa";
 import { auth } from "../../../firebaseConfig";
@@ -172,6 +173,19 @@ function DashboardSidebar({ onClose }) {
               sx={getButtonStyle("/dashboard/congress")}
             >
               Congress
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Market Activity" placement="right" arrow>
+            <Button
+              onClick={() => {
+                navigate("/dashboard/market-activity");
+                handleItemClick();
+              }}
+              startIcon={<IoTrendingUpOutline size={20} />}
+              sx={getButtonStyle("/dashboard/market-activity")}
+            >
+              Market Activity
             </Button>
           </Tooltip>
 

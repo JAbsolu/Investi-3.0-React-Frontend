@@ -49,7 +49,7 @@ export const useMarketActivity = () => {
       }
       
       const data = await response.json();
-      const dataArray = Array.isArray(data) ? data.slice(0, 4) : []; // Limit to 4 items
+      const dataArray = Array.isArray(data) ? data : []; // Return all data
       setter(dataArray);
     } catch (err) {
       if (err.name === 'AbortError') {

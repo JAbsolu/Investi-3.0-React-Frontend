@@ -78,84 +78,92 @@ const MarketActivityPage = () => {
     const currentLoading = loading[currentTab?.key];
     const currentError = errors[currentTab?.key];
 
-    // Stock item component
+    // Stock item component (list style)
     const StockItem = ({ stock }) => (
-        <Card
+        <Box
             sx={{
-                backgroundColor: '#0cac990d',
-                border: `1px solid ${grey[800]}`,
+                backgroundColor: 'rgba(20, 184, 166, 0.05)',
                 borderRadius: 2,
                 transition: 'all 0.2s ease',
                 cursor: 'pointer',
+                p: 2,
+                mb: 1.5,
                 '&:hover': {
-                    borderColor: teal[600],
-                    transform: 'translateY(-2px)',
+                    transform: 'translateY(-1px)',
                     boxShadow: `0 4px 12px rgba(20, 184, 166, 0.1)`,
                 }
             }}
         >
-            <CardContent sx={{ p: 3 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                    <Typography 
-                        variant="h5" 
-                        fontWeight="bold" 
-                        color="white"
-                    >
-                        {stock.symbol}
-                    </Typography>
+            <Grid container alignItems="center" spacing={2}>
+                <Grid item xs={12} sm={3} md={2}>
+                    <Box>
+                        <Typography 
+                            variant="h6" 
+                            fontWeight="bold" 
+                            color="white"
+                            sx={{ fontSize: '1rem' }}
+                        >
+                            {stock.symbol}
+                        </Typography>
+                        <Typography 
+                            variant="caption" 
+                            color={teal[400]}
+                            sx={{ fontSize: '0.7rem' }}
+                        >
+                            {stock.exchange}
+                        </Typography>
+                    </Box>
+                </Grid>
+                
+                <Grid item xs={12} sm={5} md={6}>
                     <Typography 
                         variant="body2" 
-                        color={grey[400]}
+                        color={teal[300]}
                         sx={{ 
-                            backgroundColor: grey[800],
-                            px: 1,
-                            py: 0.5,
-                            borderRadius: 1,
-                            fontSize: '0.75rem'
+                            fontSize: '0.85rem',
+                            lineHeight: 1.3,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 1,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
                         }}
                     >
-                        {stock.exchange}
+                        {stock.name}
                     </Typography>
-                </Box>
+                </Grid>
                 
-                <Typography 
-                    variant="body1" 
-                    color={grey[300]}
-                    sx={{ 
-                        mb: 3,
-                        fontSize: '0.95rem',
-                        lineHeight: 1.4
-                    }}
-                >
-                    {stock.name}
-                </Typography>
-                
-                <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Grid item xs={6} sm={2} md={2}>
                     <Typography 
-                        variant="h4" 
+                        variant="h6" 
                         fontWeight="bold" 
                         color="white"
+                        sx={{ fontSize: '1rem' }}
                     >
                         {formatPrice(stock.price)}
                     </Typography>
+                </Grid>
+                
+                <Grid item xs={6} sm={2} md={2}>
                     <Box textAlign="right">
                         <Typography 
-                            variant="h6" 
+                            variant="body2" 
                             color={getChangeColor(stock.change)}
                             fontWeight="bold"
+                            sx={{ fontSize: '0.9rem' }}
                         >
                             {formatPercentage(stock.changesPercentage)}
                         </Typography>
                         <Typography 
-                            variant="body2" 
+                            variant="caption" 
                             color={getChangeColor(stock.change)}
+                            sx={{ fontSize: '0.75rem' }}
                         >
                             {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
                         </Typography>
                     </Box>
-                </Box>
-            </CardContent>
-        </Card>
+                </Grid>
+            </Grid>
+        </Box>
     );
 
     return (
@@ -253,7 +261,7 @@ const MarketActivityPage = () => {
                         <Typography 
                             variant="h4" 
                             fontWeight="bold" 
-                            color={white} 
+                            color={teal[400]} 
                             mb={1}
                             sx={{ fontSize: { xs: '1.8rem', sm: '2.5rem' } }}
                         >
@@ -355,13 +363,11 @@ const MarketActivityPage = () => {
                             Failed to load {currentTab?.label.toLowerCase()}
                         </Alert>
                     ) : currentData && currentData.length > 0 ? (
-                        <Grid container spacing={3}>
+                        <Box>
                             {currentData.map((stock, index) => (
-                                <Grid item xs={12} sm={6} md={4} lg={3} key={stock.symbol || index}>
-                                    <StockItem stock={stock} />
-                                </Grid>
+                                <StockItem key={stock.symbol || index} stock={stock} />
                             ))}
-                        </Grid>
+                        </Box>
                     ) : (
                         <Box 
                             display="flex" 
