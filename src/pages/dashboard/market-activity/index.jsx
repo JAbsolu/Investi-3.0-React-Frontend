@@ -351,7 +351,7 @@ const MarketActivityPage = () => {
                         </Typography>
                         <Typography 
                             variant="body1" 
-                            color={grey[400]} 
+                            color={"#ffffff"} 
                             mb={3}
                             sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
                         >
@@ -364,7 +364,7 @@ const MarketActivityPage = () => {
                     {/* Main Content Layout with Watchlist */}
                     <Grid container spacing={3}>
                         {/* Market Activity Content */}
-                        <Grid item xs={12} lg={9}>
+                        <Grid item xs={12} lg={9.6}>
                             {/* Market Activity Tabs */}
                             <Box sx={{ mb: 4, borderBottom: `1px solid ${teal[800]}` }}>
                                 <Tabs
@@ -475,16 +475,32 @@ const MarketActivityPage = () => {
                             )}
                         </Grid>
 
-                        {/* Watchlist Widget - Hidden on mobile/tablet */}
-                        <Grid item xs={12} lg={3} sx={{ display: { xs: 'none', lg: 'block' } }}>
-                            <WatchlistWidget 
-                                wishlist={wishlist} 
-                                removeFromWishlist={removeFromWishlist} 
-                                handleSearch={handleSearch} 
-                                ticker={null} // No current stock selected in market activity page
-                                marketChange={null}
-                                setCurrentView={() => {}} // Not used in this context
-                            />
+                        {/* Watchlist Widget - Fixed Position */}
+                        <Grid item xs={12} lg={2.4}>
+                            <Box
+                                sx={{
+                                    position: isSmallScreen ? 'relative' : 'sticky',
+                                    top: isSmallScreen ? 0 : 20,
+                                    height: isSmallScreen ? 'auto' : 'calc(100vh - 40px)',
+                                    overflowY: isSmallScreen ? 'visible' : 'auto',
+                                    mt: isSmallScreen ? 3 : 0,
+                                    '&::-webkit-scrollbar': {
+                                        display: 'none'
+                                    },
+                                    scrollbarWidth: 'none',
+                                    '-ms-overflow-style': 'none',
+                                }}
+                            >
+                                <WatchlistWidget 
+                                    wishlist={wishlist} 
+                                    removeFromWishlist={removeFromWishlist} 
+                                    handleSearch={handleSearch} 
+                                    ticker={null} // No current stock selected in market activity page
+                                    marketChange={null}
+                                    setCurrentView={() => {}} // Not used in this context
+                                    isMobile={isSmallScreen}
+                                />
+                            </Box>
                         </Grid>
                     </Grid>
                 </Container>

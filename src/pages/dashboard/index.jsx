@@ -249,10 +249,37 @@ export default function DashboardPage() {
         overflow: "hidden",
         minWidth: 0,
       }}>
+        {/* Fixed Header on Mobile */}
+        {isSmallScreen && (
+          <Box sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
+            backgroundColor: darkBg,
+            borderBottom: `1px solid ${teal[900]}`,
+            px: 2,
+            py: 1.5,
+          }}>
+            <DashboardHeader
+              isSmallScreen={isSmallScreen}
+              mobileOpen={mobileOpen}
+              handleDrawerToggle={handleDrawerToggle}
+              stock={stock}
+              setStock={setStock}
+              handleSearchOnEnter={handleSearchOnEnter}
+              onAnalysis={handleAnalysis}
+              onAddToWishlist={handleAddToWishlist}
+            />
+          </Box>
+        )}
+
         <Box sx={{ 
           flex: 1,
           display: "flex",
           overflow: "hidden",
+          mt: isSmallScreen ? '80px' : 0, // Add top margin on mobile to account for fixed header
         }}>
           <Box sx={{ 
             flex: 1,
@@ -265,17 +292,19 @@ export default function DashboardPage() {
             scrollbarWidth: 'none',
             '-ms-overflow-style': 'none',
           }}>
-            {/* Header with search and actions */}
-            <DashboardHeader
-              isSmallScreen={isSmallScreen}
-              mobileOpen={mobileOpen}
-              handleDrawerToggle={handleDrawerToggle}
-              stock={stock}
-              setStock={setStock}
-              handleSearchOnEnter={handleSearchOnEnter}
-              onAnalysis={handleAnalysis}
-              onAddToWishlist={handleAddToWishlist}
-            />
+            {/* Header with search and actions - Desktop only */}
+            {!isSmallScreen && (
+              <DashboardHeader
+                isSmallScreen={isSmallScreen}
+                mobileOpen={mobileOpen}
+                handleDrawerToggle={handleDrawerToggle}
+                stock={stock}
+                setStock={setStock}
+                handleSearchOnEnter={handleSearchOnEnter}
+                onAnalysis={handleAnalysis}
+                onAddToWishlist={handleAddToWishlist}
+              />
+            )}
             
             <Box>
               <Box sx={{ 
@@ -302,7 +331,10 @@ export default function DashboardPage() {
 
                 {/* Market Activity Section */}
                 <Box sx={{ width: '100%' }}>
-                  <MarketActivity />
+                  <MarketActivity 
+                    wishlist={wishlist} 
+                    addToWishlist={addToWishlistHook} 
+                  />
                 </Box>
 
                 {/* Latest Stock News Section */}

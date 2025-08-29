@@ -1,21 +1,24 @@
 import React from 'react';
 import { 
   Box, Typography, Card, CardContent, CircularProgress, 
-  Button, useMediaQuery, useTheme, Alert 
+  Button, useMediaQuery, useTheme, Alert, IconButton, Tooltip
 } from '@mui/material';
 import { teal, grey, green, red } from '@mui/material/colors';
 import { 
   FaArrowUp, FaArrowDown, FaFire, FaArrowRight,
-  FaRedo 
+  FaRedo, FaPlus, FaCheck
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useMarketActivity } from '../../../hooks/useMarketActivity';
 import { motion } from 'framer-motion';
 
-const MarketActivity = () => {
+const MarketActivity = ({ wishlist = [], addToWishlist }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
+  // State for pausing animation on hover
+  const [isPaused, setIsPaused] = React.useState(false);
   
   const {
     biggestGainers,
@@ -45,17 +48,32 @@ const MarketActivity = () => {
     return change >= 0 ? green[400] : red[400];
   };
 
+  // Check if stock is in wishlist
+  const isInWishlist = (symbol) => {
+    return wishlist.includes(symbol);
+  };
+
+  // Handle add to wishlist
+  const handleAddToWishlist = async (stock) => {
+    if (addToWishlist && !isInWishlist(stock.symbol)) {
+      await addToWishlist(stock.symbol);
+    }
+  };
+
   // Stock item component
   const StockItem = ({ stock, type }) => (
     <Card
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
       sx={{
         backgroundColor: 'rgba(20, 30, 30, 0.4)',
         borderRadius: 2,
         transition: 'all 0.2s ease',
         cursor: 'pointer',
-        minWidth: isMobile ? '200px' : '220px',
-        width: isMobile ? '200px' : '220px',
+        minWidth: isMobile ? '200px' : '250px',
+        width: isMobile ? '200px' : '250px',
         height: '110px',
+        position: 'relative',
         '&:hover': {
           transform: 'translateY(-4px)',
           backgroundColor: 'rgba(20, 30, 30, 0.6)',
@@ -150,7 +168,7 @@ const MarketActivity = () => {
           {title}
         </Typography>
         <Button
-            onClick={() => navigate('/dashboard/market-activity')}
+            onClick={() => navigate('/dashboard/movers')}
             sx={{
                 color: teal[400],
                 textTransform: 'none',
@@ -205,15 +223,15 @@ const MarketActivity = () => {
         >
           <motion.div
             animate={{
-              x: !isMobile ? [0, -50 + '%'] : ""
+              x: !isMobile && !isPaused ? [0, -50 + '%'] : 0
             }}
             transition={{
-              x: !isMobile ? {
+              x: !isMobile && !isPaused ? {
                 repeat: Infinity,
                 repeatType: "loop",
                 duration: 25,
                 ease: "linear",
-              } : "",
+              } : { duration: 0 },
             }}
             style={{
               display: 'flex',
@@ -260,7 +278,7 @@ const MarketActivity = () => {
           {title}
         </Typography>
         <Button
-            onClick={() => navigate('/dashboard/market-activity')}
+            onClick={() => navigate('/dashboard/movers')}
             sx={{
                 color: teal[400],
                 textTransform: 'none',
