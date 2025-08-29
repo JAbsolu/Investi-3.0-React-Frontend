@@ -48,14 +48,15 @@ const MarketActivity = () => {
   const StockItem = ({ stock, type }) => (
     <Card
       sx={{
-        backgroundColor: 'rgba(20, 184, 166, 0.05)',
+        backgroundColor: 'rgba(20, 30, 30, 0.4)',
         borderRadius: 2,
         transition: 'all 0.2s ease',
         cursor: 'pointer',
         minWidth: isMobile ? '260px' : '280px',
         '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: `0 4px 12px rgba(20, 184, 166, 0.1)`,
+          transform: 'translateY(-4px)',
+          backgroundColor: 'rgba(20, 30, 30, 0.6)',
+          boxShadow: `0 8px 25px rgba(0, 0, 0, 0.3)`
         }
       }}
     >
@@ -209,7 +210,7 @@ const MarketActivity = () => {
             },
           }}
         >
-          {data.slice(0, 4).map((stock, index) => (
+          {data.slice(0, 6).map((stock, index) => (
             <StockItem key={stock.symbol || index} stock={stock} type={type} />
           ))}
         </Box>
