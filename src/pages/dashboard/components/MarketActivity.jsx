@@ -142,10 +142,10 @@ const MarketActivity = () => {
         sx={{ px: isMobile ? 1 : 0 }}
       >
         <Typography 
-          variant="h6" 
+          variant="h5" 
           fontWeight="bold" 
-          color={teal[400]}
-          sx={{ fontSize: '1rem' }}
+          color={"#ffffff"}
+          sx={{ fontSize: '1.2rem' }}
         >
           {title}
         </Typography>

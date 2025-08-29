@@ -44,13 +44,12 @@ const LatestStockNews = () => {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FaNewspaper color={teal[400]} size={20} />
             <Typography 
-              variant="h6" 
+              variant="h5" 
               sx={{ 
-                color: teal[300], 
+                color: "#ffffff", 
                 fontWeight: 'bold',
-                fontSize: '2rem'
+                fontSize: '1.2rem'
               }}
             >
               Latest Stock News
@@ -87,13 +86,12 @@ const LatestStockNews = () => {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FaNewspaper color={teal[400]} size={20} />
             <Typography 
-              variant="h6" 
+              variant="h5" 
               sx={{ 
-                color: teal[300], 
+                color: "#ffffff", 
                 fontWeight: 'bold',
-                fontSize: '1.1rem'
+                fontSize: '1.2rem'
               }}
             >
               Latest Stock News
@@ -138,13 +136,12 @@ const LatestStockNews = () => {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FaNewspaper color={teal[400]} size={20} />
             <Typography 
-              variant="h6" 
+              variant="h5" 
               sx={{ 
-                color: teal[300], 
+                color: "#ffffff", 
                 fontWeight: 'bold',
-                fontSize: '1.1rem'
+                fontSize: '1.2rem'
               }}
             >
               Latest Stock News
@@ -189,13 +186,12 @@ const LatestStockNews = () => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <FaNewspaper color={teal[400]} size={20} />
           <Typography 
-            variant="h6" 
+            variant="h5" 
             sx={{ 
-              color: teal[300], 
+              color: "#ffffff", 
               fontWeight: 'bold',
-              fontSize: '1.1rem'
+              fontSize: '1.2rem'
             }}
           >
             Latest Stock News

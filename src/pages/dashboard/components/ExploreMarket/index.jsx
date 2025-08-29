@@ -53,10 +53,10 @@ const ExploreMarket = ({ onToolClick }) => {
       <Typography 
         variant="h5" 
         sx={{ 
-          color: teal[300],
+          color: "#ffffff",
           fontWeight: 600,
           mb: 3,
-          fontSize: '1.25rem'
+          fontSize: '1.2rem'
         }}
       >
         Explore the Market
