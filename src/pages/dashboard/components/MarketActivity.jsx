@@ -231,7 +231,7 @@ const MarketActivity = () => {
             }}
           >
             {/* Render cards twice for seamless loop on desktop, once on mobile */}
-            {(isMobile ? data.slice(0, 6) : [...data.slice(0, 6), ...data.slice(0, 6)]).map((stock, index) => (
+            {(isMobile ? data.slice(0, 20) : [...data.slice(0, 20), ...data.slice(0, 20)]).map((stock, index) => (
               <StockItem key={`${stock.symbol}-${index}` || index} stock={stock} type={type} />
             ))}
           </motion.div>
