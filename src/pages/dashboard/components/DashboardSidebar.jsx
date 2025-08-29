@@ -179,11 +179,11 @@ function DashboardSidebar({ onClose }) {
           <Tooltip title="Movers" placement="right" arrow>
             <Button
               onClick={() => {
-                navigate("/dashboard/market-activity");
+                navigate("/dashboard/movers");
                 handleItemClick();
               }}
               startIcon={<IoTrendingUpOutline size={20} />}
-              sx={getButtonStyle("/dashboard/market-activity")}
+              sx={getButtonStyle("/dashboard/movers")}
             >
               Movers
             </Button>

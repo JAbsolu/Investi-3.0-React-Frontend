@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import News from './pages/dashboard/news';
 import FeaturesPage from "./pages/features";
 import CongressPage from './pages/dashboard/congress';
-import MarketActivityPage from './pages/dashboard/market-activity';
+import MoversPage from './pages/dashboard/movers';
 import SettingsPage from './pages/dashboard/settings';
 
 function App() {
@@ -43,7 +43,7 @@ function App() {
       <Route path="/dashboard" element={userIsAuth ? <DashboardPage /> : <SignIn />} />
       <Route path="/dashboard/news" element={userIsAuth ? <News /> : <SignIn />} />
       <Route path="/dashboard/congress" element={userIsAuth ? <CongressPage /> : <SignIn />} />
-      <Route path="/dashboard/movers" element={userIsAuth ? <MarketActivityPage /> : <SignIn />} />
+      <Route path="/dashboard/movers" element={userIsAuth ? <MoversPage /> : <SignIn />} />
       <Route path="/dashboard/settings" element={userIsAuth ? <SettingsPage /> : <SignIn />} />
     </Routes>
   );

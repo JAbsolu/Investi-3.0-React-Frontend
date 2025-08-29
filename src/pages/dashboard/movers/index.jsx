@@ -22,7 +22,7 @@ const darkBg = "#0d0d0d";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
 const white = "#ffffff";
 
-const MarketActivityPage = () => {
+const MoversPage = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
     
@@ -509,4 +509,4 @@ const MarketActivityPage = () => {
     );
 };
 
-export default MarketActivityPage;
+export default MoversPage;
