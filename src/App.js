@@ -43,7 +43,7 @@ function App() {
       <Route path="/dashboard" element={userIsAuth ? <DashboardPage /> : <SignIn />} />
       <Route path="/dashboard/news" element={userIsAuth ? <News /> : <SignIn />} />
       <Route path="/dashboard/congress" element={userIsAuth ? <CongressPage /> : <SignIn />} />
-      <Route path="/dashboard/market-activity" element={userIsAuth ? <MarketActivityPage /> : <SignIn />} />
+      <Route path="/dashboard/movers" element={userIsAuth ? <MarketActivityPage /> : <SignIn />} />
       <Route path="/dashboard/settings" element={userIsAuth ? <SettingsPage /> : <SignIn />} />
     </Routes>
   );
