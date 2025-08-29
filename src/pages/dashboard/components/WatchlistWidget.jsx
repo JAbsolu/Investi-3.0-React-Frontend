@@ -139,7 +139,7 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
               borderRadius: 2,
               p: isMobile ? 1.5 : 1,
               mb: isMobile ? 1 : 1.5,
-              maxWidth: isMobile ? '90%' : "100%",
+              width: "100%",
               cursor: "pointer",
               border: currentTicker === stockTicker ? `1px solid #0cac990d` : `1px solid transparent`, 
               '&:hover': {
