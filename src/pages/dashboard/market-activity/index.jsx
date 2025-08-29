@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import { 
     Box, Typography, Container, Divider,
@@ -13,6 +13,8 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useMarketActivity } from "../../../hooks/useMarketActivity";
+import { useWishlist } from "../../../hooks/useWishlist";
+import { useAuth } from "../../../hooks/useAuth";
 import WatchlistWidget from "../components/WatchlistWidget";
 
 // Constants for colors matching dashboard
@@ -29,6 +31,8 @@ const MarketActivityPage = () => {
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+    // Custom hooks
+    const { userId } = useAuth();
     const {
         biggestGainers,
         biggestLosers,
@@ -37,6 +41,15 @@ const MarketActivityPage = () => {
         errors,
         refreshAllData
     } = useMarketActivity();
+
+    const {
+        wishlist,
+        loading: wishlistLoading,
+        error: wishlistError,
+        fetchWishlist,
+        addToWishlist: addToWishlistHook,
+        removeFromWishlist
+    } = useWishlist(userId);
 
     // Tab configuration
     const tabs = [
@@ -53,6 +66,14 @@ const MarketActivityPage = () => {
     // Handle tab change
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
+    };
+
+    // Handle stock selection (for potential future use)
+    const handleSearch = async (ticker) => {
+        if (!ticker) return;
+        // Navigate back to dashboard with the selected stock
+        navigate('/dashboard');
+        // You could add additional logic here to set the stock in a global state
     };
 
     // Format price
@@ -78,6 +99,13 @@ const MarketActivityPage = () => {
     const currentData = currentTab?.data || [];
     const currentLoading = loading[currentTab?.key];
     const currentError = errors[currentTab?.key];
+
+    // Effects
+    useEffect(() => {
+        if (userId) {
+            fetchWishlist();
+        }
+    }, [userId, fetchWishlist]);
 
     // Stock item component (list style)
     const StockItem = ({ stock }) => (
@@ -396,7 +424,14 @@ const MarketActivityPage = () => {
 
                         {/* Watchlist Widget - Hidden on mobile/tablet */}
                         <Grid item xs={12} lg={3} sx={{ display: { xs: 'none', lg: 'block' } }}>
-                            <WatchlistWidget />
+                            <WatchlistWidget 
+                                wishlist={wishlist} 
+                                removeFromWishlist={removeFromWishlist} 
+                                handleSearch={handleSearch} 
+                                ticker={null} // No current stock selected in market activity page
+                                marketChange={null}
+                                setCurrentView={() => {}} // Not used in this context
+                            />
                         </Grid>
                     </Grid>
                 </Container>
