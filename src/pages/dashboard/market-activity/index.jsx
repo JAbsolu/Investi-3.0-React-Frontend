@@ -4,12 +4,12 @@ import {
     Box, Typography, Container, Divider,
     useMediaQuery, useTheme, IconButton, Drawer,
     Tabs, Tab, CircularProgress, Alert, Button,
-    Paper, Card, CardContent, Grid
+    Paper, Card, CardContent, Grid, Tooltip
 } from "@mui/material";
 import { teal, grey, green, red } from "@mui/material/colors";
 import { 
     FaBars, FaArrowUp, FaArrowDown, FaFire, FaRedo,
-    FaArrowLeft
+    FaArrowLeft, FaPlus, FaCheck
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useMarketActivity } from "../../../hooks/useMarketActivity";
@@ -95,6 +95,18 @@ const MarketActivityPage = () => {
         return change >= 0 ? green[400] : red[400];
     };
 
+    // Check if stock is in wishlist
+    const isInWishlist = (symbol) => {
+        return wishlist.includes(symbol);
+    };
+
+    // Handle add to wishlist
+    const handleAddToWishlist = async (stock) => {
+        if (addToWishlistHook && !isInWishlist(stock.symbol)) {
+            await addToWishlistHook(stock.symbol);
+        }
+    };
+
     const currentTab = tabs[activeTab];
     const currentData = currentTab?.data || [];
     const currentLoading = loading[currentTab?.key];
@@ -117,12 +129,53 @@ const MarketActivityPage = () => {
                 cursor: 'pointer',
                 p: 2,
                 mb: 1.5,
+                position: 'relative',
                 '&:hover': {
                     transform: 'translateY(-1px)',
                     boxShadow: `0 4px 12px rgba(20, 184, 166, 0.1)`,
                 }
             }}
         >
+            {/* Add to Wishlist Button */}
+            <Box
+                sx={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    zIndex: 1,
+                }}
+            >
+                <Tooltip title={isInWishlist(stock.symbol) ? "Already in watchlist" : "Add to watchlist"}>
+                    <IconButton
+                        size="small"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToWishlist(stock);
+                        }}
+                        disabled={isInWishlist(stock.symbol)}
+                        sx={{
+                            width: 28,
+                            height: 28,
+                            backgroundColor: isInWishlist(stock.symbol) 
+                                ? 'rgba(76, 175, 80, 0.2)' 
+                                : 'rgba(20, 184, 166, 0.2)',
+                            color: isInWishlist(stock.symbol) ? green[400] : teal[400],
+                            '&:hover': {
+                                backgroundColor: isInWishlist(stock.symbol) 
+                                    ? 'rgba(76, 175, 80, 0.3)' 
+                                    : 'rgba(20, 184, 166, 0.3)',
+                            },
+                            '&.Mui-disabled': {
+                                color: green[400],
+                                backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                            }
+                        }}
+                    >
+                        {isInWishlist(stock.symbol) ? <FaCheck size={12} /> : <FaPlus size={12} />}
+                    </IconButton>
+                </Tooltip>
+            </Box>
+
             <Grid container alignItems="center" spacing={2}>
                 <Grid item xs={12} sm={3} md={2}>
                     <Box>
