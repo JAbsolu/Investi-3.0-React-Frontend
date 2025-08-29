@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useMarketActivity } from '../../../hooks/useMarketActivity';
+import { motion } from 'framer-motion';
 
 const MarketActivity = () => {
   const navigate = useNavigate();
@@ -125,7 +126,116 @@ const MarketActivity = () => {
     </Card>
   );
 
-  // Section component
+  // Section component with infinite scroll for gainers
+  const InfiniteScrollSection = ({ title, data, type }) => (
+    <Box mb={4}>
+      <Box 
+        display="flex" 
+        alignItems="center" 
+        justifyContent={'space-between'}
+        mb={2}
+        sx={{ px: isMobile ? 1 : 0 }}
+      >
+        <Typography 
+          variant="h6" 
+          fontWeight="bold" 
+          color={teal[400]}
+          sx={{ fontSize: '1rem' }}
+        >
+          {title}
+        </Typography>
+        <Button
+            onClick={() => navigate('/dashboard/market-activity')}
+            sx={{
+                color: teal[400],
+                textTransform: 'none',
+                fontWeight: 500,
+                '&:hover': {
+                backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                },
+            }}
+            >
+            View More
+        </Button>
+      </Box>
+      
+      {loading[type] ? (
+        <Box 
+          display="flex" 
+          justifyContent="center" 
+          alignItems="center" 
+          minHeight="180px"
+        >
+          <CircularProgress sx={{ color: teal[400] }} size={24} />
+        </Box>
+      ) : errors[type] ? (
+        <Alert 
+          severity="error" 
+          sx={{ 
+            backgroundColor: 'rgba(211, 47, 47, 0.1)',
+            color: 'white',
+            border: `1px solid rgba(211, 47, 47, 0.3)`,
+            '& .MuiAlert-icon': { color: 'rgba(211, 47, 47, 0.8)' }
+          }}
+          action={
+            <Button
+              size="small"
+              onClick={refreshAllData}
+              sx={{ color: teal[400] }}
+            >
+              <FaRedo size={12} />
+            </Button>
+          }
+        >
+          Failed to load {title.toLowerCase()}
+        </Alert>
+      ) : (
+        <Box 
+          sx={{
+            position: 'relative',
+            overflow: 'hidden',
+            width: '100%',
+            height: 'auto'
+          }}
+        >
+          <motion.div
+            animate={{
+              x: !isMobile ? [0, -50 + '%'] : ""
+            }}
+            transition={{
+              x: !isMobile ? {
+                repeat: Infinity,
+                repeatType: "loop",
+                duration: 25,
+                ease: "linear",
+              } : "",
+            }}
+            style={{
+              display: 'flex',
+              gap: '16px',
+              paddingLeft: !isMobile ? '16px' : '0',
+              width: !isMobile ? '200%' : '100%',
+              overflowX: isMobile ? 'auto' : 'visible',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+            sx={{
+              '&::-webkit-scrollbar': {
+                display: 'none',
+              },
+            }}
+          >
+            {/* Render cards twice for seamless loop on desktop, once on mobile */}
+            {(isMobile ? data.slice(0, 6) : [...data.slice(0, 6), ...data.slice(0, 6)]).map((stock, index) => (
+              <StockItem key={`${stock.symbol}-${index}` || index} stock={stock} type={type} />
+            ))}
+          </motion.div>
+        </Box>
+      )}
+    </Box>
+  );
+
+  // Regular section component for other sections
   const MarketSection = ({ title, icon: Icon, data, type, color }) => (
     <Box mb={4}>
       <Box 
@@ -229,12 +339,10 @@ const MarketActivity = () => {
           alignItems: 'stretch'
         }}
       >
-        <MarketSection
+        <InfiniteScrollSection
           title="Biggest Gainers"
-          icon={FaArrowUp}
           data={biggestGainers}
           type="gainers"
-          color={green[400]}
         />
         {/*  
         <MarketSection
