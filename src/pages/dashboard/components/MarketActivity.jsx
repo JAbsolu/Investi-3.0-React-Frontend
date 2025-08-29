@@ -69,14 +69,14 @@ const MarketActivity = () => {
             variant="h6" 
             fontWeight="bold" 
             color="white"
-            sx={{ fontSize: '0.8rem', lineHeight: 1.1 }}
+            sx={{ fontSize: '0.9rem', lineHeight: 1.1 }}
           >
             {stock.symbol}
           </Typography>
           <Typography 
             variant="body2" 
             color={teal[400]}
-            sx={{ fontSize: '0.55rem', lineHeight: 1.1 }}
+            sx={{ fontSize: '0.6rem', lineHeight: 1.1 }}
           >
             {stock.exchange}
           </Typography>
@@ -87,7 +87,7 @@ const MarketActivity = () => {
           color={teal[300]}
           sx={{ 
             mb: 0.3,
-            fontSize: '0.65rem',
+            fontSize: '0.7rem',
             lineHeight: 1.05,
             display: '-webkit-box',
             WebkitLineClamp: 2,
@@ -105,7 +105,7 @@ const MarketActivity = () => {
             variant="h6" 
             fontWeight="bold" 
             color="white"
-            sx={{ fontSize: '0.75rem', lineHeight: 1.1 }}
+            sx={{ fontSize: '0.8rem', lineHeight: 1.1 }}
           >
             {formatPrice(stock.price)}
           </Typography>
@@ -114,14 +114,14 @@ const MarketActivity = () => {
               variant="body2" 
               color={getChangeColor(stock.change)}
               fontWeight="bold"
-              sx={{ fontSize: '0.6rem', lineHeight: 1.05 }}
+              sx={{ fontSize: '0.65rem', lineHeight: 1.05 }}
             >
               {formatPercentage(stock.changesPercentage)}
             </Typography>
             <Typography 
               variant="caption" 
               color={getChangeColor(stock.change)}
-              sx={{ fontSize: '0.5rem', lineHeight: 1.05 }}
+              sx={{ fontSize: '0.55rem', lineHeight: 1.05 }}
             >
               {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
             </Typography>

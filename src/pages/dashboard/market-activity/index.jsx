@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useMarketActivity } from "../../../hooks/useMarketActivity";
+import WatchlistWidget from "../components/WatchlistWidget";
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -240,7 +241,7 @@ const MarketActivityPage = () => {
                     </Box>
                 )}
                 
-                <Container maxWidth="lg" sx={{ mt: isSmallScreen ? 0 : 4, pb: 5 }}>
+                <Container maxWidth="xl" sx={{ mt: isSmallScreen ? 0 : 4, pb: 5 }}>
                     <Box mb={4}>
                         {/* Back Button */}
                         <Button
@@ -279,114 +280,125 @@ const MarketActivityPage = () => {
                         <Divider sx={{ bgcolor: teal[900], opacity: 0.5, my: 3 }} />
                     </Box>
 
-                    {/* Market Activity Tabs */}
-                    <Box sx={{ mb: 4, borderBottom: `1px solid ${teal[800]}` }}>
-                        <Tabs
-                            value={activeTab}
-                            onChange={handleTabChange}
-                            variant={isMobile ? "scrollable" : "standard"}
-                            scrollButtons={isMobile ? "auto" : false}
-                            allowScrollButtonsMobile
-                            sx={{
-                                '& .MuiTab-root': {
-                                    color: grey[500],
-                                    textTransform: 'none',
-                                    fontWeight: 600,
-                                    fontSize: isMobile ? '0.8rem' : '1rem',
-                                    minWidth: isMobile ? 120 : 160,
-                                    '&.Mui-selected': {
-                                        color: teal[300],
-                                    },
-                                },
-                                '& .MuiTabs-indicator': {
-                                    backgroundColor: teal[500],
-                                    height: 3,
-                                },
-                                '& .MuiTabs-scrollButtons': {
-                                    color: teal[400],
-                                },
-                            }}
-                        >
-                            {tabs.map((tab, index) => (
-                                <Tab
-                                    key={tab.key}
-                                    icon={tab.icon}
-                                    iconPosition="start"
-                                    label={tab.label}
+                    {/* Main Content Layout with Watchlist */}
+                    <Grid container spacing={3}>
+                        {/* Market Activity Content */}
+                        <Grid item xs={12} lg={9}>
+                            {/* Market Activity Tabs */}
+                            <Box sx={{ mb: 4, borderBottom: `1px solid ${teal[800]}` }}>
+                                <Tabs
+                                    value={activeTab}
+                                    onChange={handleTabChange}
+                                    variant={isMobile ? "scrollable" : "standard"}
+                                    scrollButtons={isMobile ? "auto" : false}
+                                    allowScrollButtonsMobile
                                     sx={{
-                                        '& .MuiTab-iconWrapper': {
-                                            marginRight: 1,
+                                        '& .MuiTab-root': {
+                                            color: grey[500],
+                                            textTransform: 'none',
+                                            fontWeight: 600,
+                                            fontSize: isMobile ? '0.8rem' : '1rem',
+                                            minWidth: isMobile ? 120 : 160,
+                                            '&.Mui-selected': {
+                                                color: teal[300],
+                                            },
+                                        },
+                                        '& .MuiTabs-indicator': {
+                                            backgroundColor: teal[500],
+                                            height: 3,
+                                        },
+                                        '& .MuiTabs-scrollButtons': {
+                                            color: teal[400],
                                         },
                                     }}
-                                />
-                            ))}
-                        </Tabs>
-                    </Box>
-                    
-                    {/* Market Data Grid */}      
-                    {currentLoading ? (
-                        <Box 
-                            display="flex" 
-                            justifyContent="center" 
-                            alignItems="center" 
-                            minHeight="400px"
-                            sx={{
-                                backgroundColor: 'rgba(20, 30, 20, 0.3)',
-                                borderRadius: '10px',
-                                border: `1px solid ${teal[900]}`,
-                                my: 4,
-                                width: "100%"
-                            }}
-                        >
-                            <CircularProgress sx={{ color: teal[400] }} />
-                        </Box>
-                    ) : currentError ? (
-                        <Alert 
-                            severity="error" 
-                            sx={{ 
-                                backgroundColor: 'rgba(211, 47, 47, 0.1)',
-                                color: 'white',
-                                border: `1px solid rgba(211, 47, 47, 0.3)`,
-                                '& .MuiAlert-icon': { color: 'rgba(211, 47, 47, 0.8)' }
-                            }}
-                            action={
-                                <Button
-                                    size="small"
-                                    onClick={refreshAllData}
-                                    sx={{ color: teal[400] }}
-                                    startIcon={<FaRedo />}
                                 >
-                                    Retry
-                                </Button>
-                            }
-                        >
-                            Failed to load {currentTab?.label.toLowerCase()}
-                        </Alert>
-                    ) : currentData && currentData.length > 0 ? (
-                        <Box>
-                            {currentData.map((stock, index) => (
-                                <StockItem key={stock.symbol || index} stock={stock} />
-                            ))}
-                        </Box>
-                    ) : (
-                        <Box 
-                            display="flex" 
-                            justifyContent="center" 
-                            alignItems="center" 
-                            minHeight="400px"
-                            sx={{
-                                backgroundColor: 'rgba(20, 30, 20, 0.3)',
-                                borderRadius: '10px',
-                                border: `1px solid ${teal[900]}`,
-                                my: 4,
-                                width: "100%"
-                            }}
-                        >
-                            <Typography color={grey[400]}>
-                                No {currentTab?.label.toLowerCase()} data available
-                            </Typography>
-                        </Box>
-                    )}
+                                    {tabs.map((tab, index) => (
+                                        <Tab
+                                            key={tab.key}
+                                            icon={tab.icon}
+                                            iconPosition="start"
+                                            label={tab.label}
+                                            sx={{
+                                                '& .MuiTab-iconWrapper': {
+                                                    marginRight: 1,
+                                                },
+                                            }}
+                                        />
+                                    ))}
+                                </Tabs>
+                            </Box>
+                            
+                            {/* Market Data Grid */}      
+                            {currentLoading ? (
+                                <Box 
+                                    display="flex" 
+                                    justifyContent="center" 
+                                    alignItems="center" 
+                                    minHeight="400px"
+                                    sx={{
+                                        backgroundColor: 'rgba(20, 30, 20, 0.3)',
+                                        borderRadius: '10px',
+                                        border: `1px solid ${teal[900]}`,
+                                        my: 4,
+                                        width: "100%"
+                                    }}
+                                >
+                                    <CircularProgress sx={{ color: teal[400] }} />
+                                </Box>
+                            ) : currentError ? (
+                                <Alert 
+                                    severity="error" 
+                                    sx={{ 
+                                        backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                                        color: 'white',
+                                        border: `1px solid rgba(211, 47, 47, 0.3)`,
+                                        '& .MuiAlert-icon': { color: 'rgba(211, 47, 47, 0.8)' }
+                                    }}
+                                    action={
+                                        <Button
+                                            size="small"
+                                            onClick={refreshAllData}
+                                            sx={{ color: teal[400] }}
+                                            startIcon={<FaRedo />}
+                                        >
+                                            Retry
+                                        </Button>
+                                    }
+                                >
+                                    Failed to load {currentTab?.label.toLowerCase()}
+                                </Alert>
+                            ) : currentData && currentData.length > 0 ? (
+                                <Box>
+                                    {currentData.map((stock, index) => (
+                                        <StockItem key={stock.symbol || index} stock={stock} />
+                                    ))}
+                                </Box>
+                            ) : (
+                                <Box 
+                                    display="flex" 
+                                    justifyContent="center" 
+                                    alignItems="center" 
+                                    minHeight="400px"
+                                    sx={{
+                                        backgroundColor: 'rgba(20, 30, 20, 0.3)',
+                                        borderRadius: '10px',
+                                        border: `1px solid ${teal[900]}`,
+                                        my: 4,
+                                        width: "100%"
+                                    }}
+                                >
+                                    <Typography color={grey[400]}>
+                                        No {currentTab?.label.toLowerCase()} data available
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Grid>
+
+                        {/* Watchlist Widget - Hidden on mobile/tablet */}
+                        <Grid item xs={12} lg={3} sx={{ display: { xs: 'none', lg: 'block' } }}>
+                            <WatchlistWidget />
+                        </Grid>
+                    </Grid>
                 </Container>
             </Box>
         </Box>
