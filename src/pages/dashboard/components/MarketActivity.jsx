@@ -55,7 +55,7 @@ const MarketActivity = () => {
         cursor: 'pointer',
         minWidth: isMobile ? '200px' : '220px',
         width: isMobile ? '200px' : '220px',
-        height: '140px',
+        height: '110px',
         '&:hover': {
           transform: 'translateY(-4px)',
           backgroundColor: 'rgba(20, 30, 30, 0.6)',
@@ -63,20 +63,20 @@ const MarketActivity = () => {
         }
       }}
     >
-      <CardContent sx={{ p: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
+      <CardContent sx={{ p: 1.2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.3}>
           <Typography 
             variant="h6" 
             fontWeight="bold" 
             color="white"
-            sx={{ fontSize: '0.85rem', lineHeight: 1.2 }}
+            sx={{ fontSize: '0.8rem', lineHeight: 1.1 }}
           >
             {stock.symbol}
           </Typography>
           <Typography 
             variant="body2" 
             color={teal[400]}
-            sx={{ fontSize: '0.6rem', lineHeight: 1.2 }}
+            sx={{ fontSize: '0.55rem', lineHeight: 1.1 }}
           >
             {stock.exchange}
           </Typography>
@@ -86,15 +86,15 @@ const MarketActivity = () => {
           variant="body2" 
           color={teal[300]}
           sx={{ 
-            mb: 0.5,
-            fontSize: '0.7rem',
-            lineHeight: 1.1,
+            mb: 0.3,
+            fontSize: '0.65rem',
+            lineHeight: 1.05,
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            minHeight: '28px',
-            maxHeight: '28px'
+            minHeight: '22px',
+            maxHeight: '22px'
           }}
         >
           {stock.name}
@@ -105,23 +105,23 @@ const MarketActivity = () => {
             variant="h6" 
             fontWeight="bold" 
             color="white"
-            sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}
+            sx={{ fontSize: '0.75rem', lineHeight: 1.1 }}
           >
             {formatPrice(stock.price)}
           </Typography>
-          <Box textAlign="right" sx={{ minWidth: '60px' }}>
+          <Box textAlign="right" sx={{ minWidth: '55px' }}>
             <Typography 
               variant="body2" 
               color={getChangeColor(stock.change)}
               fontWeight="bold"
-              sx={{ fontSize: '0.65rem', lineHeight: 1.1 }}
+              sx={{ fontSize: '0.6rem', lineHeight: 1.05 }}
             >
               {formatPercentage(stock.changesPercentage)}
             </Typography>
             <Typography 
               variant="caption" 
               color={getChangeColor(stock.change)}
-              sx={{ fontSize: '0.55rem', lineHeight: 1.1 }}
+              sx={{ fontSize: '0.5rem', lineHeight: 1.05 }}
             >
               {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
             </Typography>
