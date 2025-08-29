@@ -347,7 +347,7 @@ const MarketActivityPage = () => {
                             mb={1}
                             sx={{ fontSize: { xs: '1.8rem', sm: '2.5rem' } }}
                         >
-                            Market Activity
+                            Movers
                         </Typography>
                         <Typography 
                             variant="body1" 
@@ -363,9 +363,9 @@ const MarketActivityPage = () => {
 
                     {/* Main Content Layout with Watchlist */}
                     <Grid container spacing={3}>
-                        {/* Market Activity Content */}
+                        {/* Movers Content */}
                         <Grid item xs={12} lg={9.6}>
-                            {/* Market Activity Tabs */}
+                            {/* Movers Tabs */}
                             <Box sx={{ mb: 4, borderBottom: `1px solid ${teal[800]}` }}>
                                 <Tabs
                                     value={activeTab}
@@ -495,7 +495,7 @@ const MarketActivityPage = () => {
                                     wishlist={wishlist} 
                                     removeFromWishlist={removeFromWishlist} 
                                     handleSearch={handleSearch} 
-                                    ticker={null} // No current stock selected in market activity page
+                                    ticker={null} // No current stock selected in Movers page
                                     marketChange={null}
                                     setCurrentView={() => {}} // Not used in this context
                                     isMobile={isSmallScreen}

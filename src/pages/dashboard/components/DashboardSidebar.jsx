@@ -176,7 +176,7 @@ function DashboardSidebar({ onClose }) {
             </Button>
           </Tooltip>
 
-          <Tooltip title="Market Activity" placement="right" arrow>
+          <Tooltip title="Movers" placement="right" arrow>
             <Button
               onClick={() => {
                 navigate("/dashboard/market-activity");
@@ -185,7 +185,7 @@ function DashboardSidebar({ onClose }) {
               startIcon={<IoTrendingUpOutline size={20} />}
               sx={getButtonStyle("/dashboard/market-activity")}
             >
-              Market Activity
+              Movers
             </Button>
           </Tooltip>
 

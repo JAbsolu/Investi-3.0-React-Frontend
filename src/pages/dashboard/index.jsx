@@ -329,7 +329,7 @@ export default function DashboardPage() {
                   />
                 </Box>
 
-                {/* Market Activity Section */}
+                {/* Movers Section */}
                 <Box sx={{ width: '100%' }}>
                   <MarketActivity 
                     wishlist={wishlist} 
