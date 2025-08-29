@@ -22,6 +22,7 @@ import StockDataView from "./components/StockDataView";
 import TradingStrategies from "./components/TradingStrategies";
 import ExploreMarket from "./components/ExploreMarket";
 import LatestStockNews from "./components/LatestStockNews";
+import MarketActivity from "./components/MarketActivity";
 
 // Constants  
 const darkBg = "#0d0d0d";
@@ -297,6 +298,11 @@ export default function DashboardPage() {
                     setCurrentView={setCurrentView}
                     isSmallScreen={isSmallScreen}
                   />
+                </Box>
+
+                {/* Market Activity Section */}
+                <Box sx={{ width: '100%' }}>
+                  <MarketActivity />
                 </Box>
 
                 {/* Latest Stock News Section */}
