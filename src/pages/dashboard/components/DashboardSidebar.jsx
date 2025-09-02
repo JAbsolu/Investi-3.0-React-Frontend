@@ -10,7 +10,8 @@ import {
   IoLogOutOutline,
   IoAnalyticsSharp,
   IoCompassOutline,
-  IoTrendingUpOutline
+  IoTrendingUpOutline,
+  IoDocumentTextOutline
 } from "react-icons/io5";
 import { FaUniversity } from "react-icons/fa";
 import { auth } from "../../../firebaseConfig";
@@ -186,6 +187,19 @@ function DashboardSidebar({ onClose }) {
               sx={getButtonStyle("/dashboard/movers")}
             >
               Movers
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Financial Statements" placement="right" arrow>
+            <Button
+              onClick={() => {
+                navigate("/dashboard/statements");
+                handleItemClick();
+              }}
+              startIcon={<IoDocumentTextOutline size={20} />}
+              sx={getButtonStyle("/dashboard/statements")}
+            >
+              Statements
             </Button>
           </Tooltip>
 
