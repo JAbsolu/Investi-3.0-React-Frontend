@@ -5,7 +5,9 @@ import {
     TableHead, TableRow, useMediaQuery, useTheme
 } from "@mui/material";
 import { teal, green, red, grey } from "@mui/material/colors";
-import { FaTrendUp, FaTrendDown, FaEquals, FaCalendarAlt, FaBuilding, FaMoneyBillWave, FaBalanceScale } from "react-icons/fa";
+import { FaEquals, FaCalendarAlt, FaBuilding, FaMoneyBillWave, FaBalanceScale } from "react-icons/fa";
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
 const darkBg = "#0d0d0d";
 const white = "#ffffff";
@@ -38,8 +40,8 @@ const BalanceSheetView = ({ data }) => {
     const getTrendIcon = (current, previous) => {
         const change = calculateChange(current, previous);
         if (change === null || Math.abs(change) < 0.1) return { icon: <FaEquals />, color: grey[400] };
-        if (change > 0) return { icon: <FaTrendUp />, color: green[400] };
-        return { icon: <FaTrendDown />, color: red[400] };
+        if (change > 0) return { icon: <TrendingUpIcon />, color: green[400] };
+        return { icon: <TrendingDownIcon />, color: red[400] };
     };
 
     // Calculate financial ratios
@@ -64,7 +66,7 @@ const BalanceSheetView = ({ data }) => {
             { label: 'Total Assets', value: statement.totalAssets, key: 'totalAssets', icon: <FaBuilding /> },
             { label: 'Cash & Equivalents', value: statement.cashAndCashEquivalents, key: 'cashAndCashEquivalents', icon: <FaMoneyBillWave /> },
             { label: 'Total Debt', value: statement.totalDebt, key: 'totalDebt', icon: <FaBalanceScale /> },
-            { label: 'Stockholders Equity', value: statement.totalStockholdersEquity, key: 'totalStockholdersEquity', icon: <FaTrendUp /> },
+            { label: 'Stockholders Equity', value: statement.totalStockholdersEquity, key: 'totalStockholdersEquity', icon: <TrendingDownIcon /> },
             { label: 'Current Ratio', value: ratios.currentRatio, key: 'currentRatio', isCurrency: false, isRatio: true },
         ];
     };
