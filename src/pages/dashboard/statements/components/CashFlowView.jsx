@@ -6,9 +6,11 @@ import {
 } from "@mui/material";
 import { teal, green, red, grey } from "@mui/material/colors";
 import { 
-    FaTrendUp, FaTrendDown, FaEquals, FaCalendarAlt, 
+    FaEquals, FaCalendarAlt, 
     FaChartLine, FaCoins, FaCog, FaExchangeAlt 
 } from "react-icons/fa";
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
 const darkBg = "#0d0d0d";
 const white = "#ffffff";
@@ -41,8 +43,8 @@ const CashFlowView = ({ data }) => {
     const getTrendIcon = (current, previous) => {
         const change = calculateChange(current, previous);
         if (change === null || Math.abs(change) < 0.1) return { icon: <FaEquals />, color: grey[400] };
-        if (change > 0) return { icon: <FaTrendUp />, color: green[400] };
-        return { icon: <FaTrendDown />, color: red[400] };
+        if (change > 0) return { icon: <TrendingUpIcon />, color: green[400] };
+        return { icon: <TrendingDownIcon />, color: red[400] };
     };
 
     // Key metrics to highlight
@@ -69,7 +71,7 @@ const CashFlowView = ({ data }) => {
             label: 'Free Cash Flow', 
             value: statement.freeCashFlow, 
             key: 'freeCashFlow',
-            icon: <FaTrendUp />
+            icon: <TrendingUpIcon />
         },
         { 
             label: 'Net Change in Cash', 
