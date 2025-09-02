@@ -4,7 +4,8 @@ import {
     Box, Typography, Container, Divider,
     useMediaQuery, useTheme, IconButton, Drawer,
     Tabs, Tab, CircularProgress, Alert, Button,
-    TextField, InputAdornment
+    TextField, InputAdornment, Select, MenuItem,
+    FormControl, InputLabel
 } from "@mui/material";
 import { teal, grey, green, red } from "@mui/material/colors";
 import { 
@@ -27,6 +28,7 @@ const StatementsPage = () => {
     const [activeTab, setActiveTab] = useState(0);
     const [ticker, setTicker] = useState("AAPL");
     const [searchInput, setSearchInput] = useState("AAPL");
+    const [period, setPeriod] = useState("annual");
     
     const theme = useTheme();
     const navigate = useNavigate();
@@ -40,6 +42,17 @@ const StatementsPage = () => {
         fetchFinancialStatements,
         refreshAllData
     } = useFinancialStatements();
+
+    // Period options
+    const periodOptions = [
+        { value: 'Q1', label: 'Q1' },
+        { value: 'Q2', label: 'Q2' },
+        { value: 'Q3', label: 'Q3' },
+        { value: 'Q4', label: 'Q4' },
+        { value: 'FY', label: 'FY' },
+        { value: 'annual', label: 'Annual' },
+        { value: 'quarter', label: 'Quarter' },
+    ];
 
     // Tab configuration
     const tabs = [
@@ -87,6 +100,11 @@ const StatementsPage = () => {
         }
     };
 
+    // Handle period change
+    const handlePeriodChange = (event) => {
+        setPeriod(event.target.value);
+    };
+
     const currentTab = tabs[activeTab];
     const currentData = data[currentTab?.key] || [];
     const currentLoading = loading[currentTab?.key];
@@ -95,9 +113,9 @@ const StatementsPage = () => {
     // Effects
     useEffect(() => {
         if (ticker) {
-            fetchFinancialStatements(ticker);
+            fetchFinancialStatements(ticker, period);
         }
-    }, [ticker, fetchFinancialStatements]);
+    }, [ticker, period, fetchFinancialStatements]);
 
     const CurrentComponent = currentTab?.component;
 
@@ -193,82 +211,146 @@ const StatementsPage = () => {
                         </Button>
 
                         <Typography 
-                            variant="h4" 
+                            variant="h5" 
                             fontWeight="bold" 
-                            color={teal[400]} 
+                            color={white} 
                             mb={1}
-                            sx={{ fontSize: { xs: '1.8rem', sm: '2.5rem' } }}
+                            sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
                         >
                             Financial Statements
                         </Typography>
                         <Typography 
-                            variant="body1" 
-                            color={white} 
+                            variant="body2" 
+                            color={grey[300]} 
                             mb={3}
-                            sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
+                            sx={{ fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
                         >
                             Comprehensive financial data and analysis
                         </Typography> 
 
-                        {/* Search Bar */}
-                        <Box sx={{ mb: 3, maxWidth: 400 }}>
-                            <TextField
-                                fullWidth
-                                placeholder="Enter ticker symbol (e.g., AAPL)"
-                                value={searchInput}
-                                onChange={(e) => setSearchInput(e.target.value.toUpperCase())}
-                                onKeyPress={handleSearchOnEnter}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <FaSearch color={teal[400]} />
-                                        </InputAdornment>
-                                    ),
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <Button
-                                                onClick={handleSearch}
-                                                sx={{
-                                                    color: teal[400],
-                                                    minWidth: 'auto',
-                                                    px: 1,
-                                                }}
-                                            >
-                                                Search
-                                            </Button>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                        {/* Search Bar and Period Selector */}
+                        <Box sx={{ 
+                            mb: 3, 
+                            display: 'flex', 
+                            gap: 2, 
+                            flexDirection: { xs: 'column', sm: 'row' },
+                            alignItems: { xs: 'stretch', sm: 'flex-end' }
+                        }}>
+                            <Box sx={{ flex: 1, maxWidth: { xs: '100%', sm: 400 } }}>
+                                <TextField
+                                    fullWidth
+                                    placeholder="Enter ticker symbol (e.g., AAPL)"
+                                    value={searchInput}
+                                    onChange={(e) => setSearchInput(e.target.value.toUpperCase())}
+                                    onKeyPress={handleSearchOnEnter}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <FaSearch color={teal[400]} />
+                                            </InputAdornment>
+                                        ),
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <Button
+                                                    onClick={handleSearch}
+                                                    sx={{
+                                                        color: teal[400],
+                                                        minWidth: 'auto',
+                                                        px: 1,
+                                                    }}
+                                                >
+                                                    Search
+                                                </Button>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                                            color: white,
+                                            '& fieldset': {
+                                                borderColor: teal[800],
+                                            },
+                                            '&:hover fieldset': {
+                                                borderColor: teal[600],
+                                            },
+                                            '&.Mui-focused fieldset': {
+                                                borderColor: teal[400],
+                                            },
+                                        },
+                                    }}
+                                />
+                            </Box>
+
+                            <FormControl sx={{ minWidth: 150 }}>
+                                <InputLabel 
+                                    sx={{ 
+                                        color: grey[400],
+                                        '&.Mui-focused': { color: teal[400] }
+                                    }}
+                                >
+                                    Period
+                                </InputLabel>
+                                <Select
+                                    value={period}
+                                    onChange={handlePeriodChange}
+                                    label="Period"
+                                    sx={{
                                         color: white,
-                                        '& fieldset': {
+                                        '& .MuiOutlinedInput-notchedOutline': {
                                             borderColor: teal[800],
                                         },
-                                        '&:hover fieldset': {
+                                        '&:hover .MuiOutlinedInput-notchedOutline': {
                                             borderColor: teal[600],
                                         },
-                                        '&.Mui-focused fieldset': {
+                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                                             borderColor: teal[400],
                                         },
-                                    },
-                                }}
-                            />
+                                        '& .MuiSvgIcon-root': {
+                                            color: teal[400],
+                                        },
+                                    }}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            sx: {
+                                                backgroundColor: '#1a1a1a',
+                                                color: white,
+                                                '& .MuiMenuItem-root': {
+                                                    '&:hover': {
+                                                        backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                                                    },
+                                                    '&.Mui-selected': {
+                                                        backgroundColor: 'rgba(20, 184, 166, 0.2)',
+                                                        '&:hover': {
+                                                            backgroundColor: 'rgba(20, 184, 166, 0.3)',
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    }}
+                                >
+                                    {periodOptions.map((option) => (
+                                        <MenuItem key={option.value} value={option.value}>
+                                            {option.label}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Box>
                         
                         <Divider sx={{ bgcolor: teal[900], opacity: 0.5, my: 3 }} />
                     </Box>
 
-                    {/* Current Ticker Display */}
+                    {/* Current Ticker and Period Display */}
                     {ticker && (
                         <Box sx={{ mb: 3 }}>
                             <Typography 
-                                variant="h6" 
-                                color={teal[300]}
-                                sx={{ fontSize: '1.1rem' }}
+                                variant="body1" 
+                                color={white}
+                                sx={{ fontSize: '1rem' }}
                             >
-                                Showing data for: <strong>{ticker}</strong>
+                                Showing <strong>{periodOptions.find(p => p.value === period)?.label}</strong> data for: <strong>{ticker}</strong>
                             </Typography>
                         </Box>
                     )}
@@ -346,7 +428,7 @@ const StatementsPage = () => {
                             action={
                                 <Button
                                     size="small"
-                                    onClick={() => refreshAllData(ticker)}
+                                    onClick={() => refreshAllData(ticker, period)}
                                     sx={{ color: teal[400] }}
                                     startIcon={<FaRedo />}
                                 >
