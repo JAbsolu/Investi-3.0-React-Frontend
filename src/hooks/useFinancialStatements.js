@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
 
 export const useFinancialStatements = () => {
   const [data, setData] = useState({
@@ -21,8 +21,11 @@ export const useFinancialStatements = () => {
     cashFlow: null,
   });
 
-  const fetchFinancialStatements = useCallback(async (ticker) => {
+  const fetchFinancialStatements = useCallback(async (ticker, period = 'annual') => {
     if (!ticker) return;
+
+    console.log('Fetching financial statements for:', ticker, 'period:', period);
+    console.log('API_URL:', API_URL);
 
     // Reset previous data
     setData({
@@ -47,15 +50,21 @@ export const useFinancialStatements = () => {
 
     // Fetch all three statements in parallel
     const endpoints = [
-      { key: 'incomeStatement', url: `${baseUrl}fmp/income-statements?ticker=${ticker}` },
-      { key: 'balanceSheet', url: `${baseUrl}fmp/balance-sheet?ticker=${ticker}` },
-      { key: 'cashFlow', url: `${baseUrl}fmp/cash-flow?ticker=${ticker}` },
+      { key: 'incomeStatement', url: `${baseUrl}fmp/income-statements?ticker=${ticker}&period=${period}` },
+      { key: 'balanceSheet', url: `${baseUrl}fmp/balance-sheet?ticker=${ticker}&period=${period}` },
+      { key: 'cashFlow', url: `${baseUrl}fmp/cash-flow?ticker=${ticker}&period=${period}` },
     ];
+
+    console.log('Fetching endpoints:', endpoints);
 
     const fetchPromises = endpoints.map(async ({ key, url }) => {
       try {
+        console.log(`Fetching ${key} from:`, url);
         const response = await fetch(url);
         const result = await response.json();
+
+        console.log(`${key} response status:`, response.status);
+        console.log(`${key} response data:`, result);
 
         if (!response.ok) {
           throw new Error(result.message || `Failed to fetch ${key}`);
@@ -88,9 +97,9 @@ export const useFinancialStatements = () => {
     await Promise.all(fetchPromises);
   }, []);
 
-  const refreshAllData = useCallback((ticker) => {
+  const refreshAllData = useCallback((ticker, period = 'annual') => {
     if (ticker) {
-      fetchFinancialStatements(ticker);
+      fetchFinancialStatements(ticker, period);
     }
   }, [fetchFinancialStatements]);
 
