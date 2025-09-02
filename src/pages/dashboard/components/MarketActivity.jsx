@@ -70,9 +70,9 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
         borderRadius: 2,
         transition: 'all 0.2s ease',
         cursor: 'pointer',
-        minWidth: isMobile ? '200px' : '250px',
-        width: isMobile ? '200px' : '250px',
-        height: '110px',
+        minWidth: isMobile ? '240px' : '280px',
+        width: isMobile ? '240px' : '280px',
+        height: '140px',
         position: 'relative',
         '&:hover': {
           transform: 'translateY(-4px)',
@@ -81,20 +81,20 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
         }
       }}
     >
-      <CardContent sx={{ p: 1.2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.3}>
+      <CardContent sx={{ p: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
           <Typography 
             variant="h6" 
             fontWeight="bold" 
             color="white"
-            sx={{ fontSize: '0.9rem', lineHeight: 1.1 }}
+            sx={{ fontSize: '1.1rem', lineHeight: 1.2 }}
           >
             {stock.symbol}
           </Typography>
           <Typography 
             variant="body2" 
             color={teal[400]}
-            sx={{ fontSize: '0.6rem', lineHeight: 1.1 }}
+            sx={{ fontSize: '0.75rem', lineHeight: 1.2 }}
           >
             {stock.exchange}
           </Typography>
@@ -104,15 +104,15 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
           variant="body2" 
           color={teal[300]}
           sx={{ 
-            mb: 0.3,
-            fontSize: '0.7rem',
-            lineHeight: 1.05,
+            mb: 0.5,
+            fontSize: '0.85rem',
+            lineHeight: 1.15,
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            minHeight: '22px',
-            maxHeight: '22px'
+            minHeight: '28px',
+            maxHeight: '28px'
           }}
         >
           {stock.name}
@@ -123,23 +123,23 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
             variant="h6" 
             fontWeight="bold" 
             color="white"
-            sx={{ fontSize: '0.8rem', lineHeight: 1.1 }}
+            sx={{ fontSize: '1rem', lineHeight: 1.2 }}
           >
             {formatPrice(stock.price)}
           </Typography>
-          <Box textAlign="right" sx={{ minWidth: '55px' }}>
+          <Box textAlign="right" sx={{ minWidth: '65px' }}>
             <Typography 
               variant="body2" 
               color={getChangeColor(stock.change)}
               fontWeight="bold"
-              sx={{ fontSize: '0.65rem', lineHeight: 1.05 }}
+              sx={{ fontSize: '0.8rem', lineHeight: 1.15 }}
             >
               {formatPercentage(stock.changesPercentage)}
             </Typography>
             <Typography 
               variant="caption" 
               color={getChangeColor(stock.change)}
-              sx={{ fontSize: '0.55rem', lineHeight: 1.05 }}
+              sx={{ fontSize: '0.7rem', lineHeight: 1.15 }}
             >
               {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
             </Typography>

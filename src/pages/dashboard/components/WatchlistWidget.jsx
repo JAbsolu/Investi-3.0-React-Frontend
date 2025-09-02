@@ -87,8 +87,8 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
     
     if (!stock) return (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <CircularProgress size={14} sx={{ color: teal[400] }} />
-        <Typography fontSize="0.8rem" color={grey[500]}>Loading...</Typography>
+        <CircularProgress size={12} sx={{ color: teal[400] }} />
+        <Typography fontSize="0.65rem" color={grey[500]}>Loading...</Typography>
       </Box>
     );
     
@@ -99,11 +99,12 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
           <IoTrendingDown color={red[400]} />
         }
         <Typography 
-          variant="body1" 
+          variant="body2" 
           fontWeight="bold"
           sx={{ 
             color: stock.tngoLast > stock.prevClose ? teal[400] : red[400],
-            letterSpacing: 0.5
+            letterSpacing: 0.3,
+            fontSize: '0.75rem'
           }}>
           ${stock.tngoLast?.toFixed(2)}
         </Typography>
@@ -116,14 +117,14 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
       sx={{
         width: '100%',
         height: isMobile ? 'auto' : '100vh',
-        padding: isMobile ? 0 : "2em 0.5em",
+        padding: isMobile ? 0 : "1em 0.5em",
         overflowY: "auto",
         background: isMobile ? 'transparent' : 'inherit',
         // borderLeft: isMobile ? 'none' : `1px solid ${teal[500]}`,
       }}
     >
       {!isMobile && (
-        <h2 className="font-semibold text-base mb-2"
+        <h2 className="font-semibold text-sm mb-1"
           style={{ color: teal[300] }}
         >                      
             Watchlist
@@ -137,15 +138,15 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
             sx={{
               backgroundColor: currentTicker === stockTicker ? cardActiveBg : '#0cac990d',
               borderRadius: 2,
-              p: isMobile ? 1.5 : 1,
-              mb: isMobile ? 1 : 1.5,
+              p: isMobile ? 0.8 : 0.6,
+              mb: isMobile ? 0.8 : 1,
               width: "100%",
               cursor: "pointer",
               border: currentTicker === stockTicker ? `1px solid #0cac990d` : `1px solid transparent`, 
               '&:hover': {
-                transform: 'translateY(-3px)',
+                transform: 'translateY(-2px)',
                 backgroundColor: '#0cac990d',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                boxShadow: '0 3px 8px rgba(0,0,0,0.12)',
                 borderColor: teal[500]
               },
               transition: 'all 0.2s ease',
@@ -159,13 +160,13 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
               display: "flex", 
               justifyContent: "space-between", 
               alignItems: "center", 
-              p: 1.5,
+              p: 0.8,
               borderBottom: `1px solid ${grey[900]}`
             }}>
               <Typography 
-                variant="body1" 
+                variant="body2" 
                 fontWeight="600"
-                sx={{ color: grey[100] }}
+                sx={{ color: grey[100], fontSize: '0.8rem' }}
               >
                 {stockTicker}
               </Typography>
@@ -175,8 +176,8 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
                   removeFromWishlist(stockTicker);
                 }}
                 sx={{
-                  width: 20,
-                  height: 20,
+                  width: 16,
+                  height: 16,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -188,7 +189,7 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
                 }}
               >
                 <RxCross2 
-                  fontSize={16} 
+                  fontSize={12} 
                   style={{ 
                     color: grey[400],
                     transition: 'all 0.2s ease',
@@ -201,7 +202,7 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
             </Box>
             
             <Box sx={{ 
-              p: 1.5, 
+              p: 0.8, 
               display: 'flex', 
               justifyContent: 'space-between',
               alignItems: 'center'
@@ -209,9 +210,9 @@ const WatchlistWidget = ({ wishlist, removeFromWishlist, handleSearch, ticker: c
               <Typography 
                 sx={{ 
                   fontWeight: "bold",
-                  fontSize: '0.9rem',
+                  fontSize: '0.7rem',
                   color: grey[300],
-                  letterSpacing: 0.5
+                  letterSpacing: 0.3
                 }}
               >
                 Price
