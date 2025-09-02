@@ -208,7 +208,6 @@ const BalanceSheetView = ({ data }) => {
                     <Card
                         sx={{
                             background: 'rgba(20, 30, 20, 0.3)',
-                            border: `1px solid ${teal[900]}`,
                             borderRadius: '12px',
                             height: 'fit-content'
                         }}
@@ -342,7 +341,6 @@ const BalanceSheetView = ({ data }) => {
                     <Card
                         sx={{
                             background: 'rgba(20, 30, 20, 0.3)',
-                            border: `1px solid ${teal[900]}`,
                             borderRadius: '12px',
                             height: 'fit-content'
                         }}
