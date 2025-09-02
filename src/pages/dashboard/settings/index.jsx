@@ -132,43 +132,6 @@ const SettingsPage = () => {
                 )}
                 
                 <Container maxWidth="lg" sx={{ mt: isSmallScreen ? 0 : 4, pb: 5 }}>
-                    <Box mb={4}>
-                        {/* Back Button */}
-                        <Button
-                            onClick={() => navigate('/dashboard')}
-                            startIcon={<FaArrowLeft />}
-                            sx={{
-                                color: teal[400],
-                                textTransform: 'none',
-                                mb: 2,
-                                '&:hover': {
-                                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
-                                },
-                            }}
-                        >
-                            Back to Dashboard
-                        </Button>
-
-                        <Typography 
-                            variant="h5" 
-                            fontWeight="bold" 
-                            color={white} 
-                            mb={1}
-                            sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
-                        >
-                            Settings
-                        </Typography>
-                        <Typography 
-                            variant="body2" 
-                            color={grey[300]} 
-                            mb={3}
-                            sx={{ fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
-                        >
-                            Manage your account settings and preferences
-                        </Typography> 
-                        
-                        <Divider sx={{ bgcolor: teal[900], opacity: 0.5, my: 3 }} />
-                    </Box>
 
                     {/* User Profile Section */}
                     <Card
@@ -176,7 +139,7 @@ const SettingsPage = () => {
                             background: 'rgba(20, 30, 20, 0.3)',
                             borderRadius: '12px',
                             mb: 4,
-                            maxWidth: 600
+                            minWidth: '100%',
                         }}
                     >
                         <CardContent sx={{ p: 4 }}>
