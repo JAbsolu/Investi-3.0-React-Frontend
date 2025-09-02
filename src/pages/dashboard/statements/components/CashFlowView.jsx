@@ -152,7 +152,6 @@ const CashFlowView = ({ data }) => {
                             <Card
                                 sx={{
                                     background: 'rgba(20, 184, 166, 0.05)',
-                                    border: `1px solid ${teal[800]}`,
                                     borderRadius: '12px',
                                     height: '120px',
                                 }}
@@ -207,7 +206,6 @@ const CashFlowView = ({ data }) => {
             <Card
                 sx={{
                     background: 'rgba(20, 30, 20, 0.3)',
-                    border: `1px solid ${teal[900]}`,
                     borderRadius: '12px',
                 }}
             >

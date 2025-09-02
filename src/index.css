@@ -9,11 +9,22 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 12pt; /* Global regular text size */
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Global H1 styles */
+h1, .MuiTypography-h1 {
+  font-size: 3rem !important;
+}
+
+/* Ensure regular text maintains 12pt size */
+p, span, div, .MuiTypography-body1, .MuiTypography-body2 {
+  font-size: 12pt;
 }
 
 @media screen and (max-width: 600px) {
@@ -27,5 +38,10 @@ code {
   
   .MuiButton-root {
     font-size: 85% !important; /* Reduce button text */
+  }
+  
+  /* Keep h1 readable on mobile but smaller */
+  h1, .MuiTypography-h1 {
+    font-size: 2.5rem !important;
   }
 }
