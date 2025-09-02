@@ -4,10 +4,10 @@ import { signOut } from "firebase/auth";
 import { green, grey, teal, red } from "@mui/material/colors";
 import { 
   IoHomeSharp, 
-  IoNewspaperOutline, 
-  IoChatbubbleEllipsesOutline,
+  // IoNewspaperOutline, 
+  // IoChatbubbleEllipsesOutline,
   IoSettingsOutline, 
-  IoLogOutOutline,
+  // IoLogOutOutline,
   IoAnalyticsSharp,
   IoCompassOutline,
   IoTrendingUpOutline,
@@ -226,7 +226,7 @@ function DashboardSidebar({ onClose }) {
           }} />
           
           {/* Sign Out Button integrated into main navigation */}
-          <Tooltip title="Sign Out" placement="right" arrow>
+          {/* <Tooltip title="Sign Out" placement="right" arrow>
             <Button
               onClick={handleSignOut}
               startIcon={<IoLogOutOutline size={20} />}
@@ -260,7 +260,7 @@ function DashboardSidebar({ onClose }) {
             >
               Sign Out
             </Button>
-          </Tooltip>
+          </Tooltip> */}
         </Box>
       </Box>
 
