@@ -72,7 +72,7 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
         cursor: 'pointer',
         minWidth: isMobile ? '240px' : '280px',
         width: isMobile ? '240px' : '280px',
-        height: '140px',
+        height: '100px',
         position: 'relative',
         '&:hover': {
           transform: 'translateY(-4px)',
@@ -87,14 +87,14 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
             variant="h6" 
             fontWeight="bold" 
             color="white"
-            sx={{ fontSize: '1.1rem', lineHeight: 1.2 }}
+            sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}
           >
             {stock.symbol}
           </Typography>
           <Typography 
             variant="body2" 
             color={teal[400]}
-            sx={{ fontSize: '0.75rem', lineHeight: 1.2 }}
+            sx={{ fontSize: '0.7rem', lineHeight: 1.2 }}
           >
             {stock.exchange}
           </Typography>
@@ -127,6 +127,7 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
           >
             {formatPrice(stock.price)}
           </Typography>
+
           <Box textAlign="right" sx={{ minWidth: '65px' }}>
             <Typography 
               variant="body2" 
@@ -136,13 +137,7 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
             >
               {formatPercentage(stock.changesPercentage)}
             </Typography>
-            <Typography 
-              variant="caption" 
-              color={getChangeColor(stock.change)}
-              sx={{ fontSize: '0.7rem', lineHeight: 1.15 }}
-            >
-              {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
-            </Typography>
+            
           </Box>
         </Box>
       </CardContent>
@@ -324,8 +319,8 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
         </Alert>
       ) : (
         <Box 
-          display="flex" 
-          gap={2}
+          display="flex"
+          gap={1}
           sx={{
             overflowX: 'auto',
             flexDirection: 'row',
@@ -363,7 +358,7 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
         }}
       >
         <InfiniteScrollSection
-          title="Biggest Gainers"
+          title="Daily Movers"
           data={biggestGainers}
           type="gainers"
         />

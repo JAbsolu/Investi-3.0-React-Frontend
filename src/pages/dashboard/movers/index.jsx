@@ -92,86 +92,74 @@ const MoversPage = () => {
         <Box
             sx={{
                 backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '100%',
+                height: "5em",
                 borderRadius: 2,
                 transition: 'all 0.2s ease',
+                // maxWidth: isMobile ? "100%" : "20em",
                 cursor: 'pointer',
                 p: 2,
-                mb: 1.5,
+                mb: 1,
                 '&:hover': {
                     transform: 'translateY(-1px)',
-                    boxShadow: `0 4px 12px rgba(20, 184, 166, 0.1)`,
+                    boxShadow: `0 4px 2px rgba(3, 15, 14, 0.1)`,
                 }
             }}
         >
-            <Grid container alignItems="center" spacing={2}>
-                <Grid item xs={12} sm={3} md={2}>
-                    <Box>
-                        <Typography 
-                            variant="h6" 
-                            fontWeight="bold" 
-                            color="white"
-                            sx={{ fontSize: '1rem' }}
-                        >
-                            {stock.symbol}
-                        </Typography>
-                        <Typography 
-                            variant="caption" 
-                            color={teal[400]}
-                            sx={{ fontSize: '0.7rem' }}
-                        >
-                            {stock.exchange}
-                        </Typography>
-                    </Box>
-                </Grid>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxWidth: "70%", textWrap: 'wrap' }}>
+                <Typography 
+                    variant="h6" 
+                    fontWeight="bold" 
+                    color="white"
+                    sx={{ fontSize: '0.85rem' }}
+                >
+                    {stock.symbol}
+                </Typography>
+                 <Typography 
+                variant="body2" 
+                color={teal[300]}
+                sx={{ 
+                    fontSize: '0.85rem',
+                    lineHeight: 1.3,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 1,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                }}
+            >
+                {stock.name}
+            </Typography>
+                {/* <Typography 
+                    variant="caption" 
+                    color={teal[400]}
+                    sx={{ fontSize: '0.7rem' }}
+                >
+                    {stock.exchange}
+                </Typography> */}
+            </Box>
                 
-                <Grid item xs={12} sm={5} md={6}>
-                    <Typography 
-                        variant="body2" 
-                        color={teal[300]}
-                        sx={{ 
-                            fontSize: '0.85rem',
-                            lineHeight: 1.3,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 1,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                        }}
-                    >
-                        {stock.name}
-                    </Typography>
-                </Grid>
-                
-                <Grid item xs={6} sm={2} md={2}>
-                    <Typography 
-                        variant="h6" 
-                        fontWeight="bold" 
-                        color="white"
-                        sx={{ fontSize: '1rem' }}
-                    >
-                        {formatPrice(stock.price)}
-                    </Typography>
-                </Grid>
-                
-                <Grid item xs={6} sm={2} md={2}>
-                    <Box textAlign="right">
-                        <Typography 
-                            variant="body2" 
-                            color={getChangeColor(stock.change)}
-                            fontWeight="bold"
-                            sx={{ fontSize: '0.9rem' }}
-                        >
-                            {formatPercentage(stock.changesPercentage)}
-                        </Typography>
-                        <Typography 
-                            variant="caption" 
-                            color={getChangeColor(stock.change)}
-                            sx={{ fontSize: '0.75rem' }}
-                        >
-                            {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
-                        </Typography>
-                    </Box>
-                </Grid>
-            </Grid>
+            <Box textAlign="right" sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxWidth: "70%" }}>
+                <Typography 
+                    variant="h6" 
+                    fontWeight="bold" 
+                    color="white"
+                    sx={{ fontSize: '1rem' }}
+                >
+                    {formatPrice(stock.price)}
+                </Typography>
+                <Typography 
+                    variant="body2" 
+                    color={getChangeColor(stock.change)}
+                    fontWeight="bold"
+                    sx={{ fontSize: '0.9rem' }}
+                >
+                    {formatPercentage(stock.changesPercentage)}
+                </Typography>
+            </Box>
         </Box>
     );
 
@@ -249,10 +237,10 @@ const MoversPage = () => {
                     </Box>
                 )}
                 
-                <Container maxWidth="xl" sx={{ mt: isSmallScreen ? 0 : 4, pb: 5 }}>
-                    <Box mb={4}>
+                <Container maxWidth="xl" sx={{ mt: isSmallScreen ? 0 : 2, pb: 5 }}>
+                    <Box mb={2}>
                         {/* Back Button */}
-                        <Button
+                        {/* <Button
                             onClick={() => navigate('/dashboard')}
                             startIcon={<FaArrowLeft />}
                             sx={{
@@ -265,7 +253,7 @@ const MoversPage = () => {
                             }}
                         >
                             Back to Dashboard
-                        </Button>
+                        </Button> */}
 
                         <Typography 
                             variant="h4" 
@@ -285,7 +273,7 @@ const MoversPage = () => {
                             Explore the most active stocks in today's market
                         </Typography> 
                         
-                        <Divider sx={{ bgcolor: teal[900], opacity: 0.5, my: 3 }} />
+                        {/* <Divider sx={{ bgcolor: teal[900], opacity: 0.5, my: 3 }} /> */}
                     </Box>
 
                     {/* Movers Tabs */}
