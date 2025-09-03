@@ -135,22 +135,43 @@ const BalanceSheetView = ({ data }) => {
     return (
         <Box>
             {/* Key Metrics Cards */}
-            <Grid container spacing={2} mb={4}>
-                {keyMetrics.map((metric) => {
-                    const trend = previousPeriod ? getTrendIcon(metric.value, previousPeriod[metric.key]) : null;
-                    const change = previousPeriod ? calculateChange(metric.value, previousPeriod[metric.key]) : null;
-                    
-                    return (
-                        <Grid item xs={12} sm={6} md={isMobile ? 6 : 2.4} key={metric.key}>
+            {isMobile ? (
+                <Box 
+                    sx={{ 
+                        display: 'flex',
+                        overflowX: 'auto',
+                        gap: 2,
+                        mb: 4,
+                        pb: 1,
+                        '&::-webkit-scrollbar': {
+                            height: 6,
+                        },
+                        '&::-webkit-scrollbar-track': {
+                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                            borderRadius: 3,
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                            backgroundColor: teal[400],
+                            borderRadius: 3,
+                        },
+                    }}
+                >
+                    {keyMetrics.map((metric) => {
+                        const trend = previousPeriod ? getTrendIcon(metric.value, previousPeriod[metric.key]) : null;
+                        const change = previousPeriod ? calculateChange(metric.value, previousPeriod[metric.key]) : null;
+                        
+                        return (
                             <Card
+                                key={metric.key}
                                 sx={{
                                     background: 'rgba(20, 184, 166, 0.05)',
-                                    // border: `1px solid ${teal[800]}`,
                                     borderRadius: '12px',
                                     height: '120px',
+                                    minWidth: '200px',
+                                    flexShrink: 0,
                                 }}
                             >
-                                <CardContent sx={{ p: 2, minWidth: '13.4em', '&:last-child': { pb: 2 } }}>
+                                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                                     <Box display="flex" alignItems="center" gap={1} mb={0.5}>
                                         <Box sx={{ color: teal[400], fontSize: '0.8rem' }}>
                                             {metric.icon}
@@ -167,7 +188,7 @@ const BalanceSheetView = ({ data }) => {
                                         variant="h6"
                                         color={white}
                                         fontWeight="bold"
-                                        fontSize={isMobile ? '0.9rem' : '1.1rem'}
+                                        fontSize="0.9rem"
                                         mb={1}
                                     >
                                         {metric.isRatio 
@@ -196,10 +217,75 @@ const BalanceSheetView = ({ data }) => {
                                     )}
                                 </CardContent>
                             </Card>
-                        </Grid>
-                    );
-                })}
-            </Grid>
+                        );
+                    })}
+                </Box>
+            ) : (
+                <Grid container spacing={2} mb={4}>
+                    {keyMetrics.map((metric) => {
+                        const trend = previousPeriod ? getTrendIcon(metric.value, previousPeriod[metric.key]) : null;
+                        const change = previousPeriod ? calculateChange(metric.value, previousPeriod[metric.key]) : null;
+                        
+                        return (
+                            <Grid item xs={12} sm={6} md={2.4} key={metric.key}>
+                                <Card
+                                    sx={{
+                                        background: 'rgba(20, 184, 166, 0.05)',
+                                        borderRadius: '12px',
+                                        height: '120px',
+                                    }}
+                                >
+                                    <CardContent sx={{ p: 2, minWidth: '13.4em', '&:last-child': { pb: 2 } }}>
+                                        <Box display="flex" alignItems="center" gap={1} mb={0.5}>
+                                            <Box sx={{ color: teal[400], fontSize: '0.8rem' }}>
+                                                {metric.icon}
+                                            </Box>
+                                            <Typography
+                                                variant="body2"
+                                                color={grey[400]}
+                                                fontSize="0.8rem"
+                                            >
+                                                {metric.label}
+                                            </Typography>
+                                        </Box>
+                                        <Typography
+                                            variant="h6"
+                                            color={white}
+                                            fontWeight="bold"
+                                            fontSize="1.1rem"
+                                            mb={1}
+                                        >
+                                            {metric.isRatio 
+                                                ? (metric.value?.toFixed(2) || 'N/A')
+                                                : metric.isCurrency === false 
+                                                    ? (metric.value?.toFixed(2) || 'N/A')
+                                                    : formatCurrency(metric.value)
+                                            }
+                                        </Typography>
+                                        {trend && change !== null && (
+                                            <Box display="flex" alignItems="center" gap={0.5}>
+                                                <Box sx={{ color: trend.color, fontSize: '0.7rem' }}>
+                                                    {trend.icon}
+                                                </Box>
+                                                <Typography
+                                                    variant="caption"
+                                                    sx={{ 
+                                                        color: trend.color,
+                                                        fontSize: '0.7rem',
+                                                        fontWeight: 'medium'
+                                                    }}
+                                                >
+                                                    {Math.abs(change).toFixed(1)}%
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        );
+                    })}
+                </Grid>
+            )}
 
             {/* Balance Sheet Sections */}
             <Grid container spacing={3}>
