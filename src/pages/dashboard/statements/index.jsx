@@ -193,9 +193,9 @@ const StatementsPage = () => {
                 )}
                 
                 <Container maxWidth="xl" sx={{ mt: isSmallScreen ? 0 : 4, pb: 5 }}>
-                    <Box mb={4}>
+                    <Box mb={1}>
                         {/* Back Button */}
-                        <Button
+                        {/* <Button
                             onClick={() => navigate('/dashboard')}
                             startIcon={<FaArrowLeft />}
                             sx={{
@@ -208,14 +208,14 @@ const StatementsPage = () => {
                             }}
                         >
                             Back to Dashboard
-                        </Button>
+                        </Button> */}
 
                         <Typography 
                             variant="h5" 
                             fontWeight="bold" 
                             color={white} 
                             mb={1}
-                            sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}
+                            sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}
                         >
                             Financial Statements
                         </Typography>
@@ -230,7 +230,7 @@ const StatementsPage = () => {
 
                         {/* Search Bar and Period Selector */}
                         <Box sx={{ 
-                            mb: 3, 
+                            mb: 0, 
                             display: 'flex', 
                             gap: 2, 
                             flexDirection: { xs: 'column', sm: 'row' },
@@ -266,8 +266,10 @@ const StatementsPage = () => {
                                     }}
                                     sx={{
                                         '& .MuiOutlinedInput-root': {
-                                            backgroundColor: 'rgba(20, 184, 166, 0.05)',
-                                            color: white,
+                                            // backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                                            color: '#b1afafff',
+                                            fontSize: isMobile ? '12pt' : '10pt',
+                                            height: '3.4em',
                                             '& fieldset': {
                                                 borderColor: teal[800],
                                             },
@@ -286,7 +288,7 @@ const StatementsPage = () => {
                                 <InputLabel 
                                     sx={{ 
                                         color: grey[400],
-                                        '&.Mui-focused': { color: teal[400] }
+                                        '&.Mui-focused': { color: teal[400] },
                                     }}
                                 >
                                     Period
@@ -297,6 +299,8 @@ const StatementsPage = () => {
                                     label="Period"
                                     sx={{
                                         color: white,
+                                        height: '3.4em',
+                                        fontSize: isMobile ? '12pt' : '10pt',
                                         '& .MuiOutlinedInput-notchedOutline': {
                                             borderColor: teal[800],
                                         },
@@ -339,24 +343,11 @@ const StatementsPage = () => {
                             </FormControl>
                         </Box>
                         
-                        <Divider sx={{ bgcolor: teal[900], opacity: 0.5, my: 3 }} />
+                        {/* <Divider sx={{ bgcolor: teal[900], opacity: 0.5, my: 3 }} /> */}
                     </Box>
 
-                    {/* Current Ticker and Period Display */}
-                    {ticker && (
-                        <Box sx={{ mb: 3 }}>
-                            <Typography 
-                                variant="body1" 
-                                color={white}
-                                sx={{ fontSize: '1rem' }}
-                            >
-                                Showing <strong>{periodOptions.find(p => p.value === period)?.label}</strong> data for: <strong>{ticker}</strong>
-                            </Typography>
-                        </Box>
-                    )}
-
                     {/* Financial Statement Tabs */}
-                    <Box sx={{ mb: 4, borderBottom: `1px solid ${teal[800]}` }}>
+                    <Box sx={{ mb: 2, borderBottom: `1px solid ${teal[800]}` }}>
                         <Tabs
                             value={activeTab}
                             onChange={handleTabChange}
@@ -439,7 +430,21 @@ const StatementsPage = () => {
                             Failed to load {currentTab?.label.toLowerCase()}: {currentError}
                         </Alert>
                     ) : currentData && currentData.length > 0 ? (
-                        <CurrentComponent data={currentData} />
+                        <>
+                            {/* Current Ticker and Period Display */}
+                            {ticker && (
+                            <Box sx={{ mb: 1 }}>
+                                <Typography 
+                                    variant="body1" 
+                                    color={white}
+                                    sx={{ fontSize: '1rem', mb: 3 }}
+                                >
+                                    Showing <strong>{periodOptions.find(p => p.value === period)?.label}</strong> data for: <strong>{ticker}</strong>
+                                </Typography>
+                                <CurrentComponent data={currentData} />
+                            </Box>
+                            )}
+                        </>
                     ) : (
                         <Box 
                             display="flex" 
