@@ -174,15 +174,30 @@ const CongressPage = () => {
             '-ms-overflow-style': 'none',
           }}>
             <Container maxWidth="xl" sx={{ py: 3, flex: 1, display: 'flex', flexDirection: 'column' }}>
-              {/* Mobile Header with Hamburger */}
+              {/* Sticky Mobile Header */}
               {isSmallScreen && (
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Box 
+                  sx={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 1100,
+                    backgroundColor: darkBg,
+                    borderBottom: `1px solid ${teal[800]}`,
+                    px: 2,
+                    py: 1.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    mx: -2,
+                    mb: 2
+                  }}
+                >
                   <IconButton
                     color="inherit"
                     aria-label="open drawer"
                     edge="start"
                     onClick={handleDrawerToggle}
-                    sx={{ mr: 2, color: teal[400] }}
+                    sx={{ color: teal[400] }}
                   >
                     <FaBars />
                   </IconButton>

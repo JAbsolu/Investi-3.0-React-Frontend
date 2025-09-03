@@ -235,17 +235,28 @@ const News = () => {
                     scrollbarWidth: 'none',
                     '-ms-overflow-style': 'none',
                 }}>
-                {/* Mobile nav toggle - only visible on mobile */}
+                {/* Sticky Mobile Header - only visible on mobile */}
                 {isSmallScreen && (
-                    <Box px={2} pt={2}>
+                    <Box 
+                        sx={{
+                            position: 'sticky',
+                            top: 0,
+                            zIndex: 1100,
+                            backgroundColor: darkBg,
+                            borderBottom: `1px solid ${teal[800]}`,
+                            px: 2,
+                            py: 1.5,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2
+                        }}
+                    >
                         <IconButton
                             color="inherit"
                             aria-label="open drawer"
                             edge="start"
                             onClick={handleDrawerToggle}
                             sx={{ 
-                                mb: 2, 
-                                display: { md: 'none' },
                                 color: teal[400],
                                 '&:hover': { 
                                     backgroundColor: 'rgba(0, 128, 128, 0.1)',
@@ -254,21 +265,32 @@ const News = () => {
                         >
                             <FaBars />
                         </IconButton>
+                        <Typography 
+                            variant="h6" 
+                            fontWeight="bold" 
+                            color={white}
+                            sx={{ fontSize: '1.2rem' }}
+                        >
+                            Financial News
+                        </Typography>
                     </Box>
                 )}
                 
                 <Container maxWidth="lg" sx={{ mt: isSmallScreen ? 0 : 4, pb: 5 }}>
                     <Box mb={3}>
-                        <Typography 
-                            variant="h5" 
-                            fontWeight="bold" 
-                            color={white} 
-                            mb={1}
-                            px={1}
-                            sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem' } }}
-                        >
-                            Financial News
-                        </Typography>
+                        {/* Desktop Title */}
+                        {!isSmallScreen && (
+                            <Typography 
+                                variant="h5" 
+                                fontWeight="bold" 
+                                color={white} 
+                                mb={1}
+                                px={1}
+                                sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem' } }}
+                            >
+                                Financial News
+                            </Typography>
+                        )}
                         <Typography 
                             variant="body1" 
                             color={grey[400]} 

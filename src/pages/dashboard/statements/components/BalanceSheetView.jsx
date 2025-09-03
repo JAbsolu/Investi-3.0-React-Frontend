@@ -166,7 +166,7 @@ const BalanceSheetView = ({ data }) => {
                                 sx={{
                                     background: 'rgba(20, 184, 166, 0.05)',
                                     borderRadius: '12px',
-                                    height: '120px',
+                                    // height: '120px',
                                     minWidth: '200px',
                                     flexShrink: 0,
                                 }}

@@ -215,17 +215,28 @@ const MoversPage = () => {
                     scrollbarWidth: 'none',
                     '-ms-overflow-style': 'none',
                 }}>
-                {/* Mobile nav toggle - only visible on mobile */}
+                {/* Sticky Mobile Header - only visible on mobile */}
                 {isSmallScreen && (
-                    <Box px={2} pt={2}>
+                    <Box 
+                        sx={{
+                            position: 'sticky',
+                            top: 0,
+                            zIndex: 1100,
+                            backgroundColor: darkBg,
+                            borderBottom: `1px solid ${teal[800]}`,
+                            px: 2,
+                            py: 1.5,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2
+                        }}
+                    >
                         <IconButton
                             color="inherit"
                             aria-label="open drawer"
                             edge="start"
                             onClick={handleDrawerToggle}
                             sx={{ 
-                                mb: 2, 
-                                display: { md: 'none' },
                                 color: teal[400],
                                 '&:hover': { 
                                     backgroundColor: 'rgba(0, 128, 128, 0.1)',
@@ -234,6 +245,14 @@ const MoversPage = () => {
                         >
                             <FaBars />
                         </IconButton>
+                        <Typography 
+                            variant="h6" 
+                            fontWeight="bold" 
+                            color={teal[400]}
+                            sx={{ fontSize: '1.2rem' }}
+                        >
+                            Movers
+                        </Typography>
                     </Box>
                 )}
                 
@@ -255,15 +274,18 @@ const MoversPage = () => {
                             Back to Dashboard
                         </Button> */}
 
-                        <Typography 
-                            variant="h4" 
-                            fontWeight="bold" 
-                            color={teal[400]} 
-                            mb={1}
-                            sx={{ fontSize: { xs: '1.8rem', sm: '2.5rem' } }}
-                        >
-                            Movers
-                        </Typography>
+                        {/* Desktop Title */}
+                        {!isSmallScreen && (
+                            <Typography 
+                                variant="h4" 
+                                fontWeight="bold" 
+                                color={teal[400]} 
+                                mb={1}
+                                sx={{ fontSize: { xs: '1.8rem', sm: '2.5rem' } }}
+                            >
+                                Movers
+                            </Typography>
+                        )}
                         <Typography 
                             variant="body1" 
                             color={"#ffffff"} 
