@@ -80,12 +80,12 @@ const IncomeStatementView = ({ data }) => {
                             <Card
                                 sx={{
                                     background: 'rgba(20, 184, 166, 0.05)',
-                                    border: `1px solid ${teal[800]}`,
+                                    // border: `1px solid ${teal[800]}`,
                                     borderRadius: '12px',
                                     height: '120px',
                                 }}
                             >
-                                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 }, minWidth: '13.4em' }}>
                                     <Typography
                                         variant="body2"
                                         color={grey[400]}

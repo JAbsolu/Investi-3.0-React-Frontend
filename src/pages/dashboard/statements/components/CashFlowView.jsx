@@ -156,7 +156,7 @@ const CashFlowView = ({ data }) => {
                                     height: '120px',
                                 }}
                             >
-                                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 }, minWidth: '13.4em' }}>
                                     <Box display="flex" alignItems="center" gap={1} mb={0.5}>
                                         <Box sx={{ color: teal[400], fontSize: '0.8rem' }}>
                                             {metric.icon}
