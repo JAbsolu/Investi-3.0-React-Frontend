@@ -66,13 +66,16 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       sx={{
-        backgroundColor: 'rgba(20, 30, 30, 0.4)',
+        // backgroundColor: 'rgba(20, 30, 30, 0.4)',
+        backgroundColor: 'transparent',
         borderRadius: 2,
+        border: `1px solid ${teal[500]}`,
         transition: 'all 0.2s ease',
         cursor: 'pointer',
         minWidth: isMobile ? '240px' : '280px',
         width: isMobile ? '240px' : '280px',
-        height: '100px',
+        height: '120px',
+        mt: 1,
         position: 'relative',
         '&:hover': {
           transform: 'translateY(-4px)',
@@ -93,7 +96,8 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
           </Typography>
           <Typography 
             variant="body2" 
-            color={teal[400]}
+            // color={teal[400]}
+            color='white'
             sx={{ fontSize: '0.7rem', lineHeight: 1.2 }}
           >
             {stock.exchange}
@@ -146,7 +150,7 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
 
   // Section component with infinite scroll for gainers
   const InfiniteScrollSection = ({ title, data, type }) => (
-    <Box mb={4}>
+    <Box mb={2}>
       <Box 
         display="flex" 
         alignItems="center" 

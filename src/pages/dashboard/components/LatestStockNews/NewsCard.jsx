@@ -87,7 +87,7 @@ const NewsCard = ({ newsItem }) => {
             }}
           >
             <img
-              src={image}
+              src={image || "/image/market.jpg"}
               alt={title}
               onError={() => setImageError(true)}
               style={{
