@@ -124,11 +124,8 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
         return (
             <Box>
                 {/* Stock Chart */}
-                <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                <Card sx={{ mb: 1, backgroundColor: 'transparent' }}>
                     <CardContent>
-                        <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
-                            Price Chart
-                        </Typography>
                         {stock?.symbol && (
                             <StockChart ticker={stock.symbol} />
                         )}
@@ -137,64 +134,64 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
 
                 {/* Key Metrics */}
                 {quote && (
-                    <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                    <Card sx={{ mb: 1, backgroundColor: 'transparent' }}>
                         <CardContent>
-                            <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
+                            <Typography variant="h6" color='white' mb={2}>
                                 Key Metrics
                             </Typography>
-                            <Grid container spacing={2}>
+                            <Grid container spacing={6}>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body2" color={grey[400]}>Open</Typography>
-                                        <Typography variant="h6" color={white}>{formatCurrency(quote.open)}</Typography>
+                                        <Typography variant="body1" color={grey[400]}>Open</Typography>
+                                        <Typography variant="p" color={white}>{formatCurrency(quote.open)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body2" color={grey[400]}>Day High</Typography>
-                                        <Typography variant="h6" color={white}>{formatCurrency(quote.dayHigh)}</Typography>
+                                        <Typography variant="body1" color={grey[400]}>Day High</Typography>
+                                        <Typography variant="p" color={white}>{formatCurrency(quote.dayHigh)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body2" color={grey[400]}>Day Low</Typography>
-                                        <Typography variant="h6" color={white}>{formatCurrency(quote.dayLow)}</Typography>
+                                        <Typography variant="body1" color={grey[400]}>Day Low</Typography>
+                                        <Typography variant="p" color={white}>{formatCurrency(quote.dayLow)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body2" color={grey[400]}>52W High</Typography>
-                                        <Typography variant="h6" color={white}>{formatCurrency(quote.yearHigh)}</Typography>
+                                        <Typography variant="body1" color={grey[400]}>52W High</Typography>
+                                        <Typography variant="p" color={white}>{formatCurrency(quote.yearHigh)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body2" color={grey[400]}>52W Low</Typography>
-                                        <Typography variant="h6" color={white}>{formatCurrency(quote.yearLow)}</Typography>
+                                        <Typography variant="body1" color={grey[400]}>52W Low</Typography>
+                                        <Typography variant="p" color={white}>{formatCurrency(quote.yearLow)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body2" color={grey[400]}>Volume</Typography>
-                                        <Typography variant="h6" color={white}>{formatNumber(quote.volume)}</Typography>
+                                        <Typography variant="body1" color={grey[400]}>Volume</Typography>
+                                        <Typography variant="p" color={white}>{formatNumber(quote.volume)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body2" color={grey[400]}>Market Cap</Typography>
-                                        <Typography variant="h6" color={white}>{formatCurrency(quote.marketCap)}</Typography>
+                                        <Typography variant="body1" color={grey[400]}>Market Cap</Typography>
+                                        <Typography variant="p" color={white}>{formatCurrency(quote.marketCap)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body2" color={grey[400]}>50D Avg</Typography>
-                                        <Typography variant="h6" color={white}>{formatCurrency(quote.priceAvg50)}</Typography>
+                                        <Typography variant="body1" color={grey[400]}>50D Avg</Typography>
+                                        <Typography variant="p" color={white}>{formatCurrency(quote.priceAvg50)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body2" color={grey[400]}>200D Avg</Typography>
-                                        <Typography variant="h6" color={white}>{formatCurrency(quote.priceAvg200)}</Typography>
+                                        <Typography variant="body1" color={grey[400]}>200D Avg</Typography>
+                                        <Typography variant="hp6" color={white}>{formatCurrency(quote.priceAvg200)}</Typography>
                                     </Box>
                                 </Grid>
                             </Grid>
@@ -204,9 +201,9 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
 
                 {/* Price Performance */}
                 {priceChange && (
-                    <Card sx={{ backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                    <Card sx={{ backgroundColor: 'transparent' }}>
                         <CardContent>
-                            <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
+                            <Typography variant="h6" color='white'  mb={1}>
                                 Price Performance
                             </Typography>
                             <Grid container spacing={2}>
