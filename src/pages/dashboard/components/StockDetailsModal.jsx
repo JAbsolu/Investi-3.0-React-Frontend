@@ -134,7 +134,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
 
                 {/* Key Metrics */}
                 {quote && (
-                    <Card sx={{ mb: 1, backgroundColor: 'transparent' }}>
+                    <Card sx={{ mb: 1, backgroundColor: 'transparent', boxShadow: 'none' }}>
                         <CardContent>
                             <Typography variant="h6" color='white' mb={2}>
                                 Key Metrics
@@ -201,7 +201,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
 
                 {/* Price Performance */}
                 {priceChange && (
-                    <Card sx={{ backgroundColor: 'transparent' }}>
+                    <Card sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
                         <CardContent>
                             <Typography variant="h6" color='white'  mb={1}>
                                 Price Performance
