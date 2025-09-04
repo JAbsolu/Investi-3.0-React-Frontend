@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import {
     Dialog, DialogContent, DialogTitle, Box, Typography, IconButton,
     Tabs, Tab, Card, CardContent, Grid, Chip, Button, CircularProgress,
-    Alert, Avatar, Divider, useMediaQuery, useTheme, Link
+    Alert, Avatar, Divider, useMediaQuery, useTheme, Link, TextField,
+    InputAdornment
 } from '@mui/material';
 import { teal, green, red, grey, blue } from '@mui/material/colors';
 import {
     FaTimes, FaPlus, FaCheck, FaExternalLinkAlt, FaBuilding,
     FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaGlobe,
-    FaChartLine, FaArrowUp, FaArrowDown, FaStar, FaNewspaper
+    FaChartLine, FaArrowUp, FaArrowDown, FaStar, FaNewspaper, FaRobot,
+    FaSearch
 } from 'react-icons/fa';
 import StockChart from './stockChart';
 
@@ -16,7 +18,7 @@ import StockChart from './stockChart';
 const darkBg = "#0d0d0d";
 const white = "#ffffff";
 
-const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist }) => {
+const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist, triggerAIAnalysis = false }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [activeTab, setActiveTab] = useState(0);
@@ -24,16 +26,51 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
     const [data, setData] = useState({});
     const [selectedNews, setSelectedNews] = useState(null);
     const [newsModalOpen, setNewsModalOpen] = useState(false);
+    const [searchTicker, setSearchTicker] = useState('');
+    const [currentStock, setCurrentStock] = useState(stock);
 
     // Check if stock is in wishlist
-    const isInWishlist = stock && wishlist.includes(stock.symbol);
+    const isInWishlist = currentStock && wishlist.includes(currentStock.symbol);
 
     // Handle add to wishlist
     const handleAddToWishlist = async () => {
-        if (addToWishlist && stock && !isInWishlist) {
-            await addToWishlist(stock.symbol);
+        if (addToWishlist && currentStock && !isInWishlist) {
+            await addToWishlist(currentStock.symbol);
         }
     };
+
+    // Handle stock search
+    const handleStockSearch = async () => {
+        if (!searchTicker.trim()) return;
+        
+        const newStock = {
+            symbol: searchTicker.toUpperCase(),
+            name: searchTicker.toUpperCase()
+        };
+        
+        setCurrentStock(newStock);
+        setSearchTicker('');
+        setData({}); // Clear previous data
+    };
+
+    // Handle Enter key press in search
+    const handleSearchKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handleStockSearch();
+        }
+    };
+
+    // Update current stock when prop changes
+    useEffect(() => {
+        setCurrentStock(stock);
+    }, [stock]);
+
+    // Auto-switch to Analysis tab when AI analysis is triggered
+    useEffect(() => {
+        if (triggerAIAnalysis && open) {
+            setActiveTab(2); // Analysis tab is index 2
+        }
+    }, [triggerAIAnalysis, open]);
 
     // Fetch data for different endpoints
     const fetchData = async (endpoint, key) => {
@@ -53,17 +90,18 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
 
     // Fetch all data when modal opens
     useEffect(() => {
-        if (open && stock?.symbol) {
-            fetchData(`/fmp/profile?ticker=${stock.symbol}`, 'profile');
-            fetchData(`/fmp/quote?ticker=${stock.symbol}`, 'quote');
-            fetchData(`/fmp/ten-year-price-change?ticker=${stock.symbol}`, 'priceChange');
-            fetchData(`/fmp/grades?ticker=${stock.symbol}`, 'grades');
-            fetchData(`/fmp/historical-grades?ticker=${stock.symbol}`, 'historicalGrades');
-            fetchData(`/fmp/grades-news?ticker=${stock.symbol}&limit=10`, 'gradesNews');
-            fetchData(`/fmp/price-target?ticker=${stock.symbol}`, 'priceTarget');
-            fetchData(`/fmp/search-stock-news?ticker=${stock.symbol}`, 'stockNews');
+        if (open && currentStock?.symbol) {
+            fetchData(`/fmp/profile?ticker=${currentStock.symbol}`, 'profile');
+            fetchData(`/fmp/quote?ticker=${currentStock.symbol}`, 'quote');
+            fetchData(`/fmp/ten-year-price-change?ticker=${currentStock.symbol}`, 'priceChange');
+            fetchData(`/fmp/grades?ticker=${currentStock.symbol}`, 'grades');
+            fetchData(`/fmp/historical-grades?ticker=${currentStock.symbol}`, 'historicalGrades');
+            fetchData(`/fmp/grades-news?ticker=${currentStock.symbol}&limit=10`, 'gradesNews');
+            fetchData(`/fmp/price-target?ticker=${currentStock.symbol}`, 'priceTarget');
+            fetchData(`/fmp/search-stock-news?ticker=${currentStock.symbol}`, 'stockNews');
+            fetchData(`/analysis?ticker=${currentStock.symbol}`, 'aiAnalysis');
         }
-    }, [open, stock?.symbol]);
+    }, [open, currentStock?.symbol]);
 
     // Format currency
     const formatCurrency = (value) => {
@@ -116,6 +154,17 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
         </div>
     );
 
+    // Stock Logo Component
+    const StockLogo = ({ ticker, size = 24 }) => {
+        const profile = data.profile?.[0];
+        return profile?.image ? (
+            <Avatar 
+                src={profile.image} 
+                sx={{ width: size, height: size, mr: 1 }}
+            />
+        ) : null;
+    };
+
     // Overview Tab Component
     const OverviewTab = () => {
         const quote = data.quote?.[0];
@@ -123,11 +172,68 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
 
         return (
             <Box>
+                {/* Search Bar */}
+                <Card sx={{ mb: 2, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                    <CardContent sx={{ py: 2 }}>
+                        <TextField
+                            fullWidth
+                            size="small"
+                            placeholder="Search for another ticker symbol..."
+                            value={searchTicker}
+                            onChange={(e) => setSearchTicker(e.target.value)}
+                            onKeyPress={handleSearchKeyPress}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <FaSearch color={teal[400]} />
+                                    </InputAdornment>
+                                ),
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <Button
+                                            size="small"
+                                            onClick={handleStockSearch}
+                                            sx={{
+                                                color: teal[400],
+                                                minWidth: 'auto',
+                                                p: 1
+                                            }}
+                                        >
+                                            Search
+                                        </Button>
+                                    </InputAdornment>
+                                ),
+                                sx: {
+                                    backgroundColor: darkBg,
+                                    color: white,
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: teal[800]
+                                    },
+                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: teal[600]
+                                    },
+                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: teal[400]
+                                    }
+                                }
+                            }}
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    color: white
+                                },
+                                '& .MuiInputBase-input::placeholder': {
+                                    color: grey[500]
+                                }
+                            }}
+                        />
+                    </CardContent>
+                </Card>
+
                 {/* Stock Chart */}
                 <Card sx={{ mb: 1, backgroundColor: 'transparent' }}>
                     <CardContent>
-                        {stock?.symbol && (
-                            <StockChart ticker={stock.symbol} />
+                        {currentStock?.symbol && (
+                            <StockChart ticker={currentStock.symbol} />
                         )}
                     </CardContent>
                 </Card>
@@ -391,9 +497,118 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
         const historicalGrades = data.historicalGrades?.[0];
         const gradesNews = data.gradesNews;
         const priceTarget = data.priceTarget?.[0];
+        const aiAnalysis = data.aiAnalysis;
 
         return (
             <Box>
+                {/* AI Analysis Section */}
+                <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                    <CardContent>
+                        <Box display="flex" alignItems="center" gap={2} mb={2}>
+                            <FaRobot color={teal[400]} size={20} />
+                            <Typography variant="h6" color={teal[300]} fontWeight="bold">
+                                AI Analysis
+                            </Typography>
+                        </Box>
+                        
+                        {loading.aiAnalysis ? (
+                            <Box display="flex" justifyContent="center" py={4}>
+                                <CircularProgress sx={{ color: teal[400] }} />
+                            </Box>
+                        ) : aiAnalysis?.error ? (
+                            <Alert severity="error" sx={{ 
+                                backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                                color: 'white'
+                            }}>
+                                {aiAnalysis.error}
+                            </Alert>
+                        ) : aiAnalysis ? (
+                            <Box>
+                                {/* AI Summary */}
+                                {aiAnalysis.summary && (
+                                    <Box mb={3}>
+                                        <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
+                                            Executive Summary
+                                        </Typography>
+                                        <Typography variant="body2" color={grey[300]} sx={{ lineHeight: 1.6 }}>
+                                            {aiAnalysis.summary}
+                                        </Typography>
+                                    </Box>
+                                )}
+
+                                {/* Investment Recommendation */}
+                                {aiAnalysis.recommendation && (
+                                    <Box mb={3}>
+                                        <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
+                                            Investment Recommendation
+                                        </Typography>
+                                        <Box display="flex" alignItems="center" gap={2} mb={1}>
+                                            <Chip
+                                                label={aiAnalysis.recommendation.rating}
+                                                sx={{
+                                                    backgroundColor: getGradeColor(aiAnalysis.recommendation.rating),
+                                                    color: 'white',
+                                                    fontWeight: 'bold'
+                                                }}
+                                            />
+                                            {aiAnalysis.recommendation.confidence && (
+                                                <Typography variant="body2" color={grey[400]}>
+                                                    Confidence: {aiAnalysis.recommendation.confidence}%
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                        <Typography variant="body2" color={grey[300]} sx={{ lineHeight: 1.6 }}>
+                                            {aiAnalysis.recommendation.reasoning}
+                                        </Typography>
+                                    </Box>
+                                )}
+
+                                {/* AI Price Targets */}
+                                {aiAnalysis.priceTargets && (
+                                    <Box>
+                                        <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
+                                            AI Price Targets
+                                        </Typography>
+                                        <Grid container spacing={2}>
+                                            {aiAnalysis.priceTargets.bearCase && (
+                                                <Grid item xs={4}>
+                                                    <Box textAlign="center">
+                                                        <Typography variant="body2" color={red[400]}>Bear Case</Typography>
+                                                        <Typography variant="h6" color={white}>
+                                                            {formatCurrency(aiAnalysis.priceTargets.bearCase)}
+                                                        </Typography>
+                                                    </Box>
+                                                </Grid>
+                                            )}
+                                            {aiAnalysis.priceTargets.baseCase && (
+                                                <Grid item xs={4}>
+                                                    <Box textAlign="center">
+                                                        <Typography variant="body2" color={grey[400]}>Base Case</Typography>
+                                                        <Typography variant="h6" color={white}>
+                                                            {formatCurrency(aiAnalysis.priceTargets.baseCase)}
+                                                        </Typography>
+                                                    </Box>
+                                                </Grid>
+                                            )}
+                                            {aiAnalysis.priceTargets.bullCase && (
+                                                <Grid item xs={4}>
+                                                    <Box textAlign="center">
+                                                        <Typography variant="body2" color={green[400]}>Bull Case</Typography>
+                                                        <Typography variant="h6" color={white}>
+                                                            {formatCurrency(aiAnalysis.priceTargets.bullCase)}
+                                                        </Typography>
+                                                    </Box>
+                                                </Grid>
+                                            )}
+                                        </Grid>
+                                    </Box>
+                                )}
+                            </Box>
+                        ) : (
+                            <Typography color={grey[400]}>AI analysis not available</Typography>
+                        )}
+                    </CardContent>
+                </Card>
                 {/* Current Grades */}
                 <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
                     <CardContent>
@@ -607,7 +822,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
                 <Card sx={{ backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
                     <CardContent>
                         <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
-                            Latest {stock?.symbol} News
+                            Latest {currentStock?.symbol} News
                         </Typography>
                         {loading.stockNews ? (
                             <Box display="flex" justifyContent="center" py={4}>
@@ -756,7 +971,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
         </Dialog>
     );
 
-    if (!stock) return null;
+    if (!currentStock) return null;
 
     return (
         <>
@@ -785,25 +1000,26 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
                 }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Box display="flex" alignItems="center" gap={2}>
+                            <StockLogo ticker={currentStock.symbol} size={40} />
                             <Box>
                                 <Typography variant="h5" color={white} fontWeight="bold">
-                                    {stock.symbol}
+                                    {currentStock.symbol}
                                 </Typography>
                                 <Typography variant="body2" color={grey[400]}>
-                                    {stock.name}
+                                    {currentStock.name}
                                 </Typography>
                             </Box>
                             <Box textAlign="right">
                                 <Typography variant="h6" color={white} fontWeight="bold">
-                                    ${stock.price?.toFixed(2) || 'N/A'}
+                                    ${currentStock.price?.toFixed(2) || 'N/A'}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
-                                    color={getChangeColor(stock.change)}
+                                    color={getChangeColor(currentStock.change)}
                                     fontWeight="bold"
                                 >
-                                    {stock.changesPercentage !== null && stock.changesPercentage !== undefined
-                                        ? `${stock.change >= 0 ? '+' : ''}${Number(stock.changesPercentage).toFixed(2)}%`
+                                    {currentStock.changesPercentage !== null && currentStock.changesPercentage !== undefined
+                                        ? `${currentStock.change >= 0 ? '+' : ''}${Number(currentStock.changesPercentage).toFixed(2)}%`
                                         : 'N/A'
                                     }
                                 </Typography>

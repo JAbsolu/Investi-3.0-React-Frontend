@@ -16,7 +16,9 @@ import { teal, grey } from '@mui/material/colors';
 import { FaUniversity, FaLandmark, FaRedo, FaExternalLinkAlt, FaTimes, FaBars } from 'react-icons/fa';
 import CongressSection from './components/CongressSection';
 import { useCongressData } from '../../../hooks/useCongressData';
+import { useWishlist } from '../../../hooks/useWishlist';
 import DashboardSidebar from '../components/DashboardSidebar';
+import StockDetailsModal from '../components/StockDetailsModal';
 
 // Constants matching dashboard background
 const darkBg = "#0d0d0d";
@@ -38,13 +40,17 @@ const CongressPage = () => {
     clearSearchResults
   } = useCongressData();
   
+  const { wishlist, addToWishlist } = useWishlist();
+  
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   
-  // State for mobile sidebar and tab navigation
+  // State for mobile sidebar, tab navigation, and stock modal
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0); // 0 = Senate, 1 = House
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [stockModalOpen, setStockModalOpen] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -75,6 +81,22 @@ const CongressPage = () => {
 
   const handleClearSearch = (chamber, searchType) => {
     clearSearchResults(chamber, searchType);
+  };
+
+  // Handle stock click
+  const handleStockClick = (symbol) => {
+    if (symbol) {
+      setSelectedStock({
+        symbol: symbol,
+        name: symbol
+      });
+      setStockModalOpen(true);
+    }
+  };
+
+  const handleCloseStockModal = () => {
+    setStockModalOpen(false);
+    setSelectedStock(null);
   };
 
   // Get current data based on active tab
@@ -334,12 +356,24 @@ const CongressPage = () => {
                   searchErrors={searchErrors}
                   onSearch={handleSearch}
                   onClearSearch={handleClearSearch}
+                  onStockClick={handleStockClick}
                 />
               </Box>
             </Container>
           </Box>
         </Box>
       </Box>
+
+      {/* Stock Details Modal */}
+      {selectedStock && (
+        <StockDetailsModal
+          open={stockModalOpen}
+          onClose={handleCloseStockModal}
+          stock={selectedStock}
+          wishlist={wishlist}
+          addToWishlist={addToWishlist}
+        />
+      )}
     </Box>
   );
 };

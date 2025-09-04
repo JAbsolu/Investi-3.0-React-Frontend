@@ -34,6 +34,7 @@ const CongressSection = ({
   searchErrors = {},
   onSearch,
   onClearSearch,
+  onStockClick,
   chamber = 'senate' // 'senate' or 'house'
 }) => {
   const [activeTab, setActiveTab] = useState(0);
