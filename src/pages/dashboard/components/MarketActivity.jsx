@@ -11,6 +11,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useMarketActivity } from '../../../hooks/useMarketActivity';
 import { motion } from 'framer-motion';
+import StockDetailsModal from './StockDetailsModal';
 
 const MarketActivity = ({ wishlist = [], addToWishlist }) => {
   const navigate = useNavigate();
@@ -20,6 +21,10 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
   // State for pausing animation on hover
   const [isPaused, setIsPaused] = React.useState(false);
   
+  // State for stock details modal
+  const [selectedStock, setSelectedStock] = React.useState(null);
+  const [modalOpen, setModalOpen] = React.useState(false);
+  
   const {
     biggestGainers,
     biggestLosers,
@@ -28,6 +33,18 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
     errors,
     refreshAllData
   } = useMarketActivity();
+
+  // Handle stock click
+  const handleStockClick = (stock) => {
+    setSelectedStock(stock);
+    setModalOpen(true);
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setSelectedStock(null);
+  };
 
   // Format price
   const formatPrice = (price) => {
@@ -63,6 +80,7 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
   // Stock item component
   const StockItem = ({ stock, type }) => (
     <Card
+      onClick={() => handleStockClick(stock)}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       sx={{
@@ -384,6 +402,15 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
         />
         */}
       </Box>
+
+      {/* Stock Details Modal */}
+      <StockDetailsModal
+        open={modalOpen}
+        onClose={handleModalClose}
+        stock={selectedStock}
+        wishlist={wishlist}
+        addToWishlist={addToWishlist}
+      />
     </Box>
   );
 };
