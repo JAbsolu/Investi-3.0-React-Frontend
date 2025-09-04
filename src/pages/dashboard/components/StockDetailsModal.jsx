@@ -112,7 +112,22 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
             const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
             const response = await fetch(`${API_URL}/analysis?ticker=${currentStock.symbol}`);
             const result = await response.json();
-            setData(prev => ({ ...prev, aiAnalysis: result }));
+            
+            // Handle the new response format with HTML analysis
+            if (result.data && result.data.analysis) {
+                setData(prev => ({ 
+                    ...prev, 
+                    aiAnalysis: {
+                        htmlContent: result.data.analysis,
+                        ticker: result.data.ticker,
+                        timestamp: result.data.timestamp,
+                        format: result.data.format || 'html'
+                    }
+                }));
+            } else {
+                // Fallback for old format
+                setData(prev => ({ ...prev, aiAnalysis: result }));
+            }
             setActiveTab(2); // Switch to Analysis tab
         } catch (error) {
             console.error('Error fetching AI analysis:', error);
@@ -574,84 +589,135 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             </Alert>
                         ) : data.aiAnalysis ? (
                             <Box>
-                                {/* AI Summary */}
-                                {data.aiAnalysis.summary && (
-                                    <Box mb={3}>
-                                        <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
-                                            Executive Summary
-                                        </Typography>
-                                        <Typography variant="body2" color={grey[300]} sx={{ lineHeight: 1.6, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
-                                            {data.aiAnalysis.summary}
-                                        </Typography>
-                                    </Box>
-                                )}
-
-                                {/* Investment Recommendation */}
-                                {data.aiAnalysis.recommendation && (
-                                    <Box mb={3}>
-                                        <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
-                                            Investment Recommendation
-                                        </Typography>
-                                        <Box display="flex" alignItems="center" gap={2} mb={1} flexWrap="wrap">
-                                            <Chip
-                                                label={data.aiAnalysis.recommendation.rating}
-                                                sx={{
-                                                    backgroundColor: getGradeColor(data.aiAnalysis.recommendation.rating),
-                                                    color: 'white',
-                                                    fontWeight: 'bold',
-                                                    fontSize: { xs: '0.75rem', sm: '0.875rem' }
-                                                }}
-                                            />
-                                            {data.aiAnalysis.recommendation.confidence && (
-                                                <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
-                                                    Confidence: {data.aiAnalysis.recommendation.confidence}%
+                                {/* HTML Content Analysis */}
+                                {data.aiAnalysis.htmlContent && data.aiAnalysis.format === 'html' ? (
+                                    <Box
+                                        dangerouslySetInnerHTML={{ __html: data.aiAnalysis.htmlContent }}
+                                        sx={{
+                                            color: grey[300],
+                                            '& h1, & h2, & h3, & h4, & h5, & h6': {
+                                                color: teal[300],
+                                                fontWeight: 'bold',
+                                                marginBottom: 1,
+                                                marginTop: 2
+                                            },
+                                            '& h3': {
+                                                fontSize: { xs: '1rem', sm: '1.125rem' },
+                                                color: teal[400]
+                                            },
+                                            '& p': {
+                                                marginBottom: 2,
+                                                lineHeight: 1.6,
+                                                fontSize: { xs: '0.875rem', sm: '1rem' },
+                                                color: grey[300]
+                                            },
+                                            '& span': {
+                                                fontWeight: 'inherit'
+                                            },
+                                            '& span[style*="color: #ef4444"]': {
+                                                color: `${red[400]} !important`,
+                                                fontWeight: 'bold'
+                                            },
+                                            '& span[style*="font-weight: bold"]': {
+                                                fontWeight: 'bold'
+                                            },
+                                            '& span[style*="font-size: 2rem"]': {
+                                                fontSize: { xs: '1.5rem', sm: '2rem' } + ' !important'
+                                            }
+                                        }}
+                                    />
+                                ) : (
+                                    // Legacy format support
+                                    <>
+                                        {/* AI Summary */}
+                                        {data.aiAnalysis.summary && (
+                                            <Box mb={3}>
+                                                <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
+                                                    Executive Summary
                                                 </Typography>
-                                            )}
-                                        </Box>
-                                        <Typography variant="body2" color={grey[300]} sx={{ lineHeight: 1.6, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
-                                            {data.aiAnalysis.recommendation.reasoning}
-                                        </Typography>
-                                    </Box>
+                                                <Typography variant="body2" color={grey[300]} sx={{ lineHeight: 1.6, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                                                    {data.aiAnalysis.summary}
+                                                </Typography>
+                                            </Box>
+                                        )}
+
+                                        {/* Investment Recommendation */}
+                                        {data.aiAnalysis.recommendation && (
+                                            <Box mb={3}>
+                                                <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
+                                                    Investment Recommendation
+                                                </Typography>
+                                                <Box display="flex" alignItems="center" gap={2} mb={1} flexWrap="wrap">
+                                                    <Chip
+                                                        label={data.aiAnalysis.recommendation.rating}
+                                                        sx={{
+                                                            backgroundColor: getGradeColor(data.aiAnalysis.recommendation.rating),
+                                                            color: 'white',
+                                                            fontWeight: 'bold',
+                                                            fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                                                        }}
+                                                    />
+                                                    {data.aiAnalysis.recommendation.confidence && (
+                                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                                                            Confidence: {data.aiAnalysis.recommendation.confidence}%
+                                                        </Typography>
+                                                    )}
+                                                </Box>
+                                                <Typography variant="body2" color={grey[300]} sx={{ lineHeight: 1.6, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                                                    {data.aiAnalysis.recommendation.reasoning}
+                                                </Typography>
+                                            </Box>
+                                        )}
+
+                                        {/* AI Price Targets */}
+                                        {data.aiAnalysis.priceTargets && (
+                                            <Box>
+                                                <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
+                                                    AI Price Targets
+                                                </Typography>
+                                                <Grid container spacing={{ xs: 1, sm: 2 }}>
+                                                    {data.aiAnalysis.priceTargets.bearCase && (
+                                                        <Grid item xs={4}>
+                                                            <Box textAlign="center">
+                                                                <Typography variant="body2" color={red[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Bear Case</Typography>
+                                                                <Typography variant="h6" color={white} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                                                                    {formatCurrency(data.aiAnalysis.priceTargets.bearCase)}
+                                                                </Typography>
+                                                            </Box>
+                                                        </Grid>
+                                                    )}
+                                                    {data.aiAnalysis.priceTargets.baseCase && (
+                                                        <Grid item xs={4}>
+                                                            <Box textAlign="center">
+                                                                <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Base Case</Typography>
+                                                                <Typography variant="h6" color={white} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                                                                    {formatCurrency(data.aiAnalysis.priceTargets.baseCase)}
+                                                                </Typography>
+                                                            </Box>
+                                                        </Grid>
+                                                    )}
+                                                    {data.aiAnalysis.priceTargets.bullCase && (
+                                                        <Grid item xs={4}>
+                                                            <Box textAlign="center">
+                                                                <Typography variant="body2" color={green[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Bull Case</Typography>
+                                                                <Typography variant="h6" color={white} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                                                                    {formatCurrency(data.aiAnalysis.priceTargets.bullCase)}
+                                                                </Typography>
+                                                            </Box>
+                                                        </Grid>
+                                                    )}
+                                                </Grid>
+                                            </Box>
+                                        )}
+                                    </>
                                 )}
 
-                                {/* AI Price Targets */}
-                                {data.aiAnalysis.priceTargets && (
-                                    <Box>
-                                        <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
-                                            AI Price Targets
+                                {/* Timestamp */}
+                                {data.aiAnalysis.timestamp && (
+                                    <Box mt={3} pt={2} borderTop={`1px solid ${grey[800]}`}>
+                                        <Typography variant="caption" color={grey[500]} sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem' } }}>
+                                            Analysis generated on {new Date(data.aiAnalysis.timestamp).toLocaleString()}
                                         </Typography>
-                                        <Grid container spacing={{ xs: 1, sm: 2 }}>
-                                            {data.aiAnalysis.priceTargets.bearCase && (
-                                                <Grid item xs={4}>
-                                                    <Box textAlign="center">
-                                                        <Typography variant="body2" color={red[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Bear Case</Typography>
-                                                        <Typography variant="h6" color={white} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                                                            {formatCurrency(data.aiAnalysis.priceTargets.bearCase)}
-                                                        </Typography>
-                                                    </Box>
-                                                </Grid>
-                                            )}
-                                            {data.aiAnalysis.priceTargets.baseCase && (
-                                                <Grid item xs={4}>
-                                                    <Box textAlign="center">
-                                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Base Case</Typography>
-                                                        <Typography variant="h6" color={white} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                                                            {formatCurrency(data.aiAnalysis.priceTargets.baseCase)}
-                                                        </Typography>
-                                                    </Box>
-                                                </Grid>
-                                            )}
-                                            {data.aiAnalysis.priceTargets.bullCase && (
-                                                <Grid item xs={4}>
-                                                    <Box textAlign="center">
-                                                        <Typography variant="body2" color={green[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Bull Case</Typography>
-                                                        <Typography variant="h6" color={white} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                                                            {formatCurrency(data.aiAnalysis.priceTargets.bullCase)}
-                                                        </Typography>
-                                                    </Box>
-                                                </Grid>
-                                            )}
-                                        </Grid>
                                     </Box>
                                 )}
                             </Box>
