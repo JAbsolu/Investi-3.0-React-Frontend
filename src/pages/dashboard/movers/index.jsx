@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import DashboardSidebar from "../components/DashboardSidebar";
+import StockDetailsModal from "../components/StockDetailsModal";
 import { 
     Box, Typography, Container, Divider,
     useMediaQuery, useTheme, IconButton, Drawer,
@@ -13,6 +14,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useMarketActivity } from "../../../hooks/useMarketActivity";
+import { useWishlist } from "../../../hooks/useWishlist";
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -22,6 +24,8 @@ const white = "#ffffff";
 const MoversPage = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
+    const [selectedStock, setSelectedStock] = useState(null);
+    const [stockModalOpen, setStockModalOpen] = useState(false);
     
     const theme = useTheme();
     const navigate = useNavigate();
@@ -38,6 +42,8 @@ const MoversPage = () => {
         refreshAllData
     } = useMarketActivity();
 
+    const { wishlist, addToWishlist } = useWishlist();
+
     // Tab configuration
     const tabs = [
         { label: 'Biggest Gainers', icon: <FaArrowUp />, key: 'gainers', data: biggestGainers },
@@ -48,6 +54,23 @@ const MoversPage = () => {
     // Toggle drawer for mobile
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
+    };
+
+    // Handle stock click
+    const handleStockClick = (stock) => {
+        setSelectedStock({
+            symbol: stock.symbol,
+            name: stock.name || stock.symbol,
+            price: stock.price,
+            change: stock.change,
+            changesPercentage: stock.changesPercentage
+        });
+        setStockModalOpen(true);
+    };
+
+    const handleCloseStockModal = () => {
+        setStockModalOpen(false);
+        setSelectedStock(null);
     };
 
     // Handle tab change
@@ -90,6 +113,7 @@ const MoversPage = () => {
     // Stock item component (list style)
     const StockItem = ({ stock }) => (
         <Box
+            onClick={() => handleStockClick(stock)}
             sx={{
                 backgroundColor: 'rgba(20, 184, 166, 0.05)',
                 display: 'flex',
@@ -99,13 +123,13 @@ const MoversPage = () => {
                 height: "5em",
                 borderRadius: 2,
                 transition: 'all 0.2s ease',
-                // maxWidth: isMobile ? "100%" : "20em",
                 cursor: 'pointer',
                 p: 2,
                 mb: 1,
                 '&:hover': {
-                    transform: 'translateY(-1px)',
-                    boxShadow: `0 4px 2px rgba(3, 15, 14, 0.1)`,
+                    transform: 'translateY(-2px)',
+                    boxShadow: `0 6px 12px rgba(20, 184, 166, 0.2)`,
+                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
                 }
             }}
         >

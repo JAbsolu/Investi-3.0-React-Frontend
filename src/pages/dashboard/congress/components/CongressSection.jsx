@@ -253,7 +253,7 @@ const CongressSection = ({
         <Box sx={{ display: 'flex', flexDirection: 'column', height: constrained ? '100%' : 'auto' }}>
           <Box sx={{ flex: constrained ? 1 : 'none', overflow: constrained ? 'auto' : 'visible' }}>
             {paginatedData.map((transaction, index) => (
-              <TransactionCard key={index} transaction={transaction} />
+              <TransactionCard key={index} transaction={transaction} onStockClick={onStockClick} />
             ))}
           </Box>
           {totalPages > 1 && (
@@ -289,6 +289,7 @@ const CongressSection = ({
             title={title} 
             isCompact={isCompact} 
             constrained={constrained}
+            onStockClick={onStockClick}
           />
         </Box>
         {totalPages > 1 && (

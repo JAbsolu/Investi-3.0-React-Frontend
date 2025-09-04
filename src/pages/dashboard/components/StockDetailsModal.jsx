@@ -99,9 +99,28 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
             fetchData(`/fmp/grades-news?ticker=${currentStock.symbol}&limit=10`, 'gradesNews');
             fetchData(`/fmp/price-target?ticker=${currentStock.symbol}`, 'priceTarget');
             fetchData(`/fmp/search-stock-news?ticker=${currentStock.symbol}`, 'stockNews');
-            fetchData(`/analysis?ticker=${currentStock.symbol}`, 'aiAnalysis');
+            // Don't auto-fetch AI analysis
         }
     }, [open, currentStock?.symbol]);
+
+    // Handle AI Analysis
+    const handleAIAnalysis = async () => {
+        if (!currentStock?.symbol) return;
+        
+        setLoading(prev => ({ ...prev, aiAnalysis: true }));
+        try {
+            const API_URL = process.env.REACT_APP_API_URL || "https://www.investii.site";
+            const response = await fetch(`${API_URL}/analysis?ticker=${currentStock.symbol}`);
+            const result = await response.json();
+            setData(prev => ({ ...prev, aiAnalysis: result }));
+            setActiveTab(2); // Switch to Analysis tab
+        } catch (error) {
+            console.error('Error fetching AI analysis:', error);
+            setData(prev => ({ ...prev, aiAnalysis: { error: 'Failed to fetch AI analysis. Please try again later.' } }));
+        } finally {
+            setLoading(prev => ({ ...prev, aiAnalysis: false }));
+        }
+    };
 
     // Format currency
     const formatCurrency = (value) => {
@@ -160,7 +179,13 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
         return profile?.image ? (
             <Avatar 
                 src={profile.image} 
-                sx={{ width: size, height: size, mr: 1 }}
+                sx={{ 
+                    width: size, 
+                    height: size, 
+                    mr: 1,
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    padding: 0.5
+                }}
             />
         ) : null;
     };
@@ -174,7 +199,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
             <Box>
                 {/* Search Bar */}
                 <Card sx={{ mb: 2, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
-                    <CardContent sx={{ py: 2 }}>
+                    <CardContent sx={{ py: { xs: 1.5, sm: 2 } }}>
                         <TextField
                             fullWidth
                             size="small"
@@ -196,7 +221,8 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                             sx={{
                                                 color: teal[400],
                                                 minWidth: 'auto',
-                                                p: 1
+                                                p: { xs: 0.5, sm: 1 },
+                                                fontSize: { xs: '0.75rem', sm: '0.875rem' }
                                             }}
                                         >
                                             Search
@@ -219,7 +245,8 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             }}
                             sx={{
                                 '& .MuiInputBase-input': {
-                                    color: white
+                                    color: white,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' }
                                 },
                                 '& .MuiInputBase-input::placeholder': {
                                     color: grey[500]
@@ -245,59 +272,59 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             <Typography variant="h6" color='white' mb={2}>
                                 Key Metrics
                             </Typography>
-                            <Grid container spacing={6}>
+                            <Grid container spacing={{ xs: 2, sm: 3, md: 6 }}>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body1" color={grey[400]}>Open</Typography>
-                                        <Typography variant="p" color={white}>{formatCurrency(quote.open)}</Typography>
+                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Open</Typography>
+                                        <Typography variant="body1" color={white} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>{formatCurrency(quote.open)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body1" color={grey[400]}>Day High</Typography>
-                                        <Typography variant="p" color={white}>{formatCurrency(quote.dayHigh)}</Typography>
+                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Day High</Typography>
+                                        <Typography variant="body1" color={white} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>{formatCurrency(quote.dayHigh)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body1" color={grey[400]}>Day Low</Typography>
-                                        <Typography variant="p" color={white}>{formatCurrency(quote.dayLow)}</Typography>
+                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Day Low</Typography>
+                                        <Typography variant="body1" color={white} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>{formatCurrency(quote.dayLow)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body1" color={grey[400]}>52W High</Typography>
-                                        <Typography variant="p" color={white}>{formatCurrency(quote.yearHigh)}</Typography>
+                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>52W High</Typography>
+                                        <Typography variant="body1" color={white} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>{formatCurrency(quote.yearHigh)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body1" color={grey[400]}>52W Low</Typography>
-                                        <Typography variant="p" color={white}>{formatCurrency(quote.yearLow)}</Typography>
+                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>52W Low</Typography>
+                                        <Typography variant="body1" color={white} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>{formatCurrency(quote.yearLow)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body1" color={grey[400]}>Volume</Typography>
-                                        <Typography variant="p" color={white}>{formatNumber(quote.volume)}</Typography>
+                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Volume</Typography>
+                                        <Typography variant="body1" color={white} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>{formatNumber(quote.volume)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body1" color={grey[400]}>Market Cap</Typography>
-                                        <Typography variant="p" color={white}>{formatCurrency(quote.marketCap)}</Typography>
+                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Market Cap</Typography>
+                                        <Typography variant="body1" color={white} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>{formatCurrency(quote.marketCap)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body1" color={grey[400]}>50D Avg</Typography>
-                                        <Typography variant="p" color={white}>{formatCurrency(quote.priceAvg50)}</Typography>
+                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>50D Avg</Typography>
+                                        <Typography variant="body1" color={white} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>{formatCurrency(quote.priceAvg50)}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item xs={6} sm={4}>
                                     <Box>
-                                        <Typography variant="body1" color={grey[400]}>200D Avg</Typography>
-                                        <Typography variant="hp6" color={white}>{formatCurrency(quote.priceAvg200)}</Typography>
+                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>200D Avg</Typography>
+                                        <Typography variant="body1" color={white} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>{formatCurrency(quote.priceAvg200)}</Typography>
                                     </Box>
                                 </Grid>
                             </Grid>
@@ -309,22 +336,23 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {priceChange && (
                     <Card sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
                         <CardContent>
-                            <Typography variant="h6" color='white'  mb={1}>
+                            <Typography variant="h6" color='white' mb={1}>
                                 Price Performance
                             </Typography>
-                            <Grid container spacing={2}>
+                            <Grid container spacing={{ xs: 1, sm: 2 }}>
                                 {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
                                     <Grid item xs={6} sm={4} md={3} key={period}>
-                                        <Box textAlign="center" p={1} sx={{ 
+                                        <Box textAlign="center" p={{ xs: 0.5, sm: 1 }} sx={{ 
                                             backgroundColor: 'rgba(20, 184, 166, 0.05)',
                                             borderRadius: 1,
                                             border: `1px solid ${teal[800]}`
                                         }}>
-                                            <Typography variant="body2" color={grey[400]}>{period}</Typography>
+                                            <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{period}</Typography>
                                             <Typography 
-                                                variant="h6" 
+                                                variant={isMobile ? "body1" : "h6"}
                                                 color={getChangeColor(change || 0)}
                                                 fontWeight="bold"
+                                                sx={{ fontSize: { xs: '0.875rem', sm: '1.25rem' } }}
                                             >
                                                 {change !== null && change !== undefined && !isNaN(change) 
                                                     ? `${change >= 0 ? '+' : ''}${Number(change).toFixed(2)}%`
@@ -504,98 +532,121 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {/* AI Analysis Section */}
                 <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
                     <CardContent>
-                        <Box display="flex" alignItems="center" gap={2} mb={2}>
-                            <FaRobot color={teal[400]} size={20} />
-                            <Typography variant="h6" color={teal[300]} fontWeight="bold">
-                                AI Analysis
-                            </Typography>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                            <Box display="flex" alignItems="center" gap={2}>
+                                <FaRobot color={teal[400]} size={20} />
+                                <Typography variant="h6" color={teal[300]} fontWeight="bold">
+                                    AI Analysis
+                                </Typography>
+                            </Box>
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={handleAIAnalysis}
+                                disabled={loading.aiAnalysis}
+                                startIcon={loading.aiAnalysis ? <CircularProgress size={16} sx={{ color: teal[400] }} /> : <FaRobot />}
+                                sx={{
+                                    color: teal[400],
+                                    borderColor: teal[400],
+                                    backgroundColor: 'transparent',
+                                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                                    minWidth: { xs: 'auto', sm: 120 },
+                                    px: { xs: 1, sm: 2 },
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(20, 184, 166, 0.1)'
+                                    }
+                                }}
+                            >
+                                {loading.aiAnalysis ? 'Analyzing...' : 'Get Analysis'}
+                            </Button>
                         </Box>
                         
                         {loading.aiAnalysis ? (
                             <Box display="flex" justifyContent="center" py={4}>
                                 <CircularProgress sx={{ color: teal[400] }} />
                             </Box>
-                        ) : aiAnalysis?.error ? (
+                        ) : data.aiAnalysis?.error ? (
                             <Alert severity="error" sx={{ 
                                 backgroundColor: 'rgba(211, 47, 47, 0.1)',
                                 color: 'white'
                             }}>
-                                {aiAnalysis.error}
+                                {data.aiAnalysis.error}
                             </Alert>
-                        ) : aiAnalysis ? (
+                        ) : data.aiAnalysis ? (
                             <Box>
                                 {/* AI Summary */}
-                                {aiAnalysis.summary && (
+                                {data.aiAnalysis.summary && (
                                     <Box mb={3}>
                                         <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
                                             Executive Summary
                                         </Typography>
-                                        <Typography variant="body2" color={grey[300]} sx={{ lineHeight: 1.6 }}>
-                                            {aiAnalysis.summary}
+                                        <Typography variant="body2" color={grey[300]} sx={{ lineHeight: 1.6, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                                            {data.aiAnalysis.summary}
                                         </Typography>
                                     </Box>
                                 )}
 
                                 {/* Investment Recommendation */}
-                                {aiAnalysis.recommendation && (
+                                {data.aiAnalysis.recommendation && (
                                     <Box mb={3}>
                                         <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
                                             Investment Recommendation
                                         </Typography>
-                                        <Box display="flex" alignItems="center" gap={2} mb={1}>
+                                        <Box display="flex" alignItems="center" gap={2} mb={1} flexWrap="wrap">
                                             <Chip
-                                                label={aiAnalysis.recommendation.rating}
+                                                label={data.aiAnalysis.recommendation.rating}
                                                 sx={{
-                                                    backgroundColor: getGradeColor(aiAnalysis.recommendation.rating),
+                                                    backgroundColor: getGradeColor(data.aiAnalysis.recommendation.rating),
                                                     color: 'white',
-                                                    fontWeight: 'bold'
+                                                    fontWeight: 'bold',
+                                                    fontSize: { xs: '0.75rem', sm: '0.875rem' }
                                                 }}
                                             />
-                                            {aiAnalysis.recommendation.confidence && (
-                                                <Typography variant="body2" color={grey[400]}>
-                                                    Confidence: {aiAnalysis.recommendation.confidence}%
+                                            {data.aiAnalysis.recommendation.confidence && (
+                                                <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                                                    Confidence: {data.aiAnalysis.recommendation.confidence}%
                                                 </Typography>
                                             )}
                                         </Box>
-                                        <Typography variant="body2" color={grey[300]} sx={{ lineHeight: 1.6 }}>
-                                            {aiAnalysis.recommendation.reasoning}
+                                        <Typography variant="body2" color={grey[300]} sx={{ lineHeight: 1.6, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                                            {data.aiAnalysis.recommendation.reasoning}
                                         </Typography>
                                     </Box>
                                 )}
 
                                 {/* AI Price Targets */}
-                                {aiAnalysis.priceTargets && (
+                                {data.aiAnalysis.priceTargets && (
                                     <Box>
                                         <Typography variant="body1" color={teal[300]} fontWeight="bold" mb={1}>
                                             AI Price Targets
                                         </Typography>
-                                        <Grid container spacing={2}>
-                                            {aiAnalysis.priceTargets.bearCase && (
+                                        <Grid container spacing={{ xs: 1, sm: 2 }}>
+                                            {data.aiAnalysis.priceTargets.bearCase && (
                                                 <Grid item xs={4}>
                                                     <Box textAlign="center">
-                                                        <Typography variant="body2" color={red[400]}>Bear Case</Typography>
-                                                        <Typography variant="h6" color={white}>
-                                                            {formatCurrency(aiAnalysis.priceTargets.bearCase)}
+                                                        <Typography variant="body2" color={red[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Bear Case</Typography>
+                                                        <Typography variant="h6" color={white} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                                                            {formatCurrency(data.aiAnalysis.priceTargets.bearCase)}
                                                         </Typography>
                                                     </Box>
                                                 </Grid>
                                             )}
-                                            {aiAnalysis.priceTargets.baseCase && (
+                                            {data.aiAnalysis.priceTargets.baseCase && (
                                                 <Grid item xs={4}>
                                                     <Box textAlign="center">
-                                                        <Typography variant="body2" color={grey[400]}>Base Case</Typography>
-                                                        <Typography variant="h6" color={white}>
-                                                            {formatCurrency(aiAnalysis.priceTargets.baseCase)}
+                                                        <Typography variant="body2" color={grey[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Base Case</Typography>
+                                                        <Typography variant="h6" color={white} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                                                            {formatCurrency(data.aiAnalysis.priceTargets.baseCase)}
                                                         </Typography>
                                                     </Box>
                                                 </Grid>
                                             )}
-                                            {aiAnalysis.priceTargets.bullCase && (
+                                            {data.aiAnalysis.priceTargets.bullCase && (
                                                 <Grid item xs={4}>
                                                     <Box textAlign="center">
-                                                        <Typography variant="body2" color={green[400]}>Bull Case</Typography>
-                                                        <Typography variant="h6" color={white}>
-                                                            {formatCurrency(aiAnalysis.priceTargets.bullCase)}
+                                                        <Typography variant="body2" color={green[400]} sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>Bull Case</Typography>
+                                                        <Typography variant="h6" color={white} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                                                            {formatCurrency(data.aiAnalysis.priceTargets.bullCase)}
                                                         </Typography>
                                                     </Box>
                                                 </Grid>
@@ -605,7 +656,9 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                 )}
                             </Box>
                         ) : (
-                            <Typography color={grey[400]}>AI analysis not available</Typography>
+                            <Typography color={grey[400]} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                                Click "Get Analysis" to see AI-powered insights for {currentStock?.symbol}
+                            </Typography>
                         )}
                     </CardContent>
                 </Card>
@@ -996,36 +1049,39 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                     position: 'sticky',
                     top: 0,
                     zIndex: 1,
-                    backgroundColor: darkBg
+                    backgroundColor: darkBg,
+                    p: { xs: 2, sm: 3 }
                 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Box display="flex" alignItems="center" gap={2}>
-                            <StockLogo ticker={currentStock.symbol} size={40} />
-                            <Box>
-                                <Typography variant="h5" color={white} fontWeight="bold">
+                    <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
+                        <Box display="flex" alignItems="center" gap={2} flex={1} minWidth={0}>
+                            <StockLogo ticker={currentStock.symbol} size={isMobile ? 32 : 40} />
+                            <Box flex={1} minWidth={0}>
+                                <Typography variant={isMobile ? "h6" : "h5"} color={white} fontWeight="bold" noWrap>
                                     {currentStock.symbol}
                                 </Typography>
-                                <Typography variant="body2" color={grey[400]}>
+                                <Typography variant="body2" color={grey[400]} noWrap>
                                     {currentStock.name}
                                 </Typography>
                             </Box>
-                            <Box textAlign="right">
-                                <Typography variant="h6" color={white} fontWeight="bold">
-                                    ${currentStock.price?.toFixed(2) || 'N/A'}
-                                </Typography>
-                                <Typography 
-                                    variant="body2" 
-                                    color={getChangeColor(currentStock.change)}
-                                    fontWeight="bold"
-                                >
-                                    {currentStock.changesPercentage !== null && currentStock.changesPercentage !== undefined
-                                        ? `${currentStock.change >= 0 ? '+' : ''}${Number(currentStock.changesPercentage).toFixed(2)}%`
-                                        : 'N/A'
-                                    }
-                                </Typography>
-                            </Box>
+                            {currentStock.price && (
+                                <Box textAlign="right" sx={{ display: { xs: 'none', sm: 'block' } }}>
+                                    <Typography variant="h6" color={white} fontWeight="bold">
+                                        ${currentStock.price?.toFixed(2) || 'N/A'}
+                                    </Typography>
+                                    <Typography 
+                                        variant="body2" 
+                                        color={getChangeColor(currentStock.change)}
+                                        fontWeight="bold"
+                                    >
+                                        {currentStock.changesPercentage !== null && currentStock.changesPercentage !== undefined
+                                            ? `${currentStock.change >= 0 ? '+' : ''}${Number(currentStock.changesPercentage).toFixed(2)}%`
+                                            : 'N/A'
+                                        }
+                                    </Typography>
+                                </Box>
+                            )}
                         </Box>
-                        <Box display="flex" alignItems="center" gap={1}>
+                        <Box display="flex" alignItems="center" gap={1} flexShrink={0}>
                             <Button
                                 variant={isInWishlist ? "contained" : "outlined"}
                                 size="small"
@@ -1036,17 +1092,40 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                     color: isInWishlist ? white : teal[400],
                                     borderColor: teal[400],
                                     backgroundColor: isInWishlist ? teal[600] : 'transparent',
+                                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                                    minWidth: { xs: 'auto', sm: 120 },
+                                    px: { xs: 1, sm: 2 },
                                     '&:hover': {
                                         backgroundColor: isInWishlist ? teal[700] : 'rgba(20, 184, 166, 0.1)'
                                     }
                                 }}
                             >
-                                {isInWishlist ? 'In Watchlist' : 'Add to Watchlist'}
+                                {isMobile ? (isInWishlist ? 'Added' : 'Add') : (isInWishlist ? 'In Watchlist' : 'Add to Watchlist')}
                             </Button>
                             <IconButton onClick={onClose} sx={{ color: grey[400] }}>
                                 <FaTimes />
                             </IconButton>
                         </Box>
+                        {/* Mobile price display */}
+                        {currentStock.price && (
+                            <Box sx={{ display: { xs: 'flex', sm: 'none' }, width: '100%', justifyContent: 'center', mt: 1 }}>
+                                <Box textAlign="center">
+                                    <Typography variant="h6" color={white} fontWeight="bold">
+                                        ${currentStock.price?.toFixed(2) || 'N/A'}
+                                    </Typography>
+                                    <Typography 
+                                        variant="body2" 
+                                        color={getChangeColor(currentStock.change)}
+                                        fontWeight="bold"
+                                    >
+                                        {currentStock.changesPercentage !== null && currentStock.changesPercentage !== undefined
+                                            ? `${currentStock.change >= 0 ? '+' : ''}${Number(currentStock.changesPercentage).toFixed(2)}%`
+                                            : 'N/A'
+                                        }
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        )}
                     </Box>
                 </DialogTitle>
 
@@ -1055,9 +1134,14 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                     <Tabs 
                         value={activeTab} 
                         onChange={(e, newValue) => setActiveTab(newValue)}
+                        variant={isMobile ? "fullWidth" : "standard"}
                         sx={{
                             '& .MuiTab-root': {
                                 color: grey[400],
+                                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                                minWidth: { xs: 60, sm: 90 },
+                                minHeight: { xs: 40, sm: 48 },
+                                padding: { xs: '6px 8px', sm: '12px 16px' },
                                 '&.Mui-selected': {
                                     color: teal[400]
                                 }
@@ -1075,7 +1159,23 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 </Box>
 
                 {/* Content */}
-                <DialogContent sx={{ p: 3, overflow: 'auto' }}>
+                <DialogContent sx={{ 
+                    p: { xs: 2, sm: 3 }, 
+                    overflow: 'auto',
+                    '&::-webkit-scrollbar': {
+                        width: '6px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        background: darkBg,
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        background: teal[800],
+                        borderRadius: '3px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                        background: teal[600],
+                    }
+                }}>
                     <TabPanel value={activeTab} index={0}>
                         <OverviewTab />
                     </TabPanel>

@@ -15,7 +15,7 @@ import {
 import { teal, red, grey } from '@mui/material/colors';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
-const TransactionTable = ({ transactions, title, isCompact = false, constrained = false }) => {
+const TransactionTable = ({ transactions, title, isCompact = false, constrained = false, onStockClick }) => {
   const [orderBy, setOrderBy] = useState('disclosureDate');
   const [order, setOrder] = useState('desc');
 
@@ -170,11 +170,17 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                     <Chip
                       label={transaction.symbol}
                       size="small"
+                      onClick={() => onStockClick && onStockClick(transaction.symbol)}
                       sx={{
                         backgroundColor: teal[600],
                         color: 'white',
                         fontWeight: 'bold',
                         fontSize: '0.75rem',
+                        cursor: onStockClick ? 'pointer' : 'default',
+                        '&:hover': onStockClick ? {
+                          backgroundColor: teal[500],
+                          transform: 'scale(1.05)'
+                        } : {}
                       }}
                     />
                   )}
