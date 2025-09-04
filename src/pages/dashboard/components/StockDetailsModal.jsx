@@ -97,7 +97,8 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
 
     // Get change color
     const getChangeColor = (change) => {
-        return change >= 0 ? green[400] : red[400];
+        if (change === null || change === undefined || isNaN(change)) return grey[400];
+        return Number(change) >= 0 ? green[400] : red[400];
     };
 
     // Get grade color
@@ -219,10 +220,13 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
                                             <Typography variant="body2" color={grey[400]}>{period}</Typography>
                                             <Typography 
                                                 variant="h6" 
-                                                color={getChangeColor(change)}
+                                                color={getChangeColor(change || 0)}
                                                 fontWeight="bold"
                                             >
-                                                {change >= 0 ? '+' : ''}{change?.toFixed(2)}%
+                                                {change !== null && change !== undefined && !isNaN(change) 
+                                                    ? `${change >= 0 ? '+' : ''}${Number(change).toFixed(2)}%`
+                                                    : 'N/A'
+                                                }
                                             </Typography>
                                         </Box>
                                     </Grid>
@@ -794,14 +798,17 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist 
                             </Box>
                             <Box textAlign="right">
                                 <Typography variant="h6" color={white} fontWeight="bold">
-                                    ${stock.price?.toFixed(2)}
+                                    ${stock.price?.toFixed(2) || 'N/A'}
                                 </Typography>
                                 <Typography 
                                     variant="body2" 
                                     color={getChangeColor(stock.change)}
                                     fontWeight="bold"
                                 >
-                                    {stock.change >= 0 ? '+' : ''}{stock.changesPercentage?.toFixed(2)}%
+                                    {stock.changesPercentage !== null && stock.changesPercentage !== undefined
+                                        ? `${stock.change >= 0 ? '+' : ''}${Number(stock.changesPercentage).toFixed(2)}%`
+                                        : 'N/A'
+                                    }
                                 </Typography>
                             </Box>
                         </Box>
