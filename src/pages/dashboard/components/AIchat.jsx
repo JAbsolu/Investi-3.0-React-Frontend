@@ -3,7 +3,8 @@ import {
   Box, Typography, TextField, Button, Paper, Avatar, IconButton,
   useMediaQuery, useTheme, Divider, CircularProgress, InputAdornment
 } from '@mui/material';
-import { FaPaperPlane, FaRobot, FaUser, FaTimes } from 'react-icons/fa';
+import { FaPaperPlane, FaUser, FaTimes } from 'react-icons/fa';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { green, teal, grey } from '@mui/material/colors';
 
 // Constants for colors matching dashboard
@@ -137,7 +138,7 @@ const AiChat = ({ isOpen, onClose, stockSymbol, fullPage = false }) => {
         }}
       >
         <Box display="flex" alignItems="center" gap={1.5}>
-          <FaRobot style={{ color: teal[400], fontSize: 20 }} />
+          <AutoAwesomeIcon style={{ color: teal[400], fontSize: 20 }} />
           <Typography 
             variant="subtitle1" 
             sx={{ 
@@ -159,7 +160,7 @@ const AiChat = ({ isOpen, onClose, stockSymbol, fullPage = false }) => {
         {messages.map((msg, i) => (
           <Box key={i} display="flex" alignItems="flex-start" mb={2}>
             <Avatar sx={{ bgcolor: msg.sender === 'user' ? green[500] : teal[500], mr: 2 }}>
-              {msg.sender === 'user' ? <FaUser /> : <FaRobot />}
+              {msg.sender === 'user' ? <FaUser /> : <AutoAwesomeIcon />}
             </Avatar>
             <Paper sx={{ p: 1.5, backgroundColor: msg.sender === 'user' ? green[900] : teal[900], color: white }}>
               <Typography variant="body2">{msg.text}</Typography>
