@@ -5,13 +5,23 @@ import {
   Typography, 
   Box, 
   Chip,
-  CardActionArea
+  CardActionArea,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  IconButton,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import { teal, grey } from '@mui/material/colors';
-import { FaExternalLinkAlt, FaCalendarAlt } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaCalendarAlt, FaTimes } from 'react-icons/fa';
 
 const NewsCard = ({ newsItem }) => {
   const [imageError, setImageError] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const {
     symbol,
@@ -25,6 +35,10 @@ const NewsCard = ({ newsItem }) => {
   } = newsItem;
 
   const handleCardClick = () => {
+    setModalOpen(true);
+  };
+
+  const handleReadFullArticle = () => {
     if (url) {
       window.open(url, '_blank', 'noopener,noreferrer');
     }
@@ -49,22 +63,23 @@ const NewsCard = ({ newsItem }) => {
   };
 
   return (
-    <Card
-      sx={{
-        height: '100%',
-        backgroundColor: 'rgba(20, 30, 30, 0.4)',
-        border: `1px solid rgba(${teal[500]}, 0.3)`,
-        borderRadius: 2,
-        transition: 'all 0.3s ease',
-        cursor: 'pointer',
-        '&:hover': {
-           borderColor: `rgba(${teal[500]}, 0.6)`,
-           backgroundColor: 'rgba(20, 30, 30, 0.6)',
-           transform: 'translateY(-4px)',
-           boxShadow: `0 8px 25px rgba(0, 0, 0, 0.3)`
-        },
-      }}
-    >
+    <>
+      <Card
+        sx={{
+          height: '100%',
+          backgroundColor: 'rgba(20, 30, 30, 0.4)',
+          border: `1px solid rgba(${teal[500]}, 0.3)`,
+          borderRadius: 2,
+          transition: 'all 0.3s ease',
+          cursor: 'pointer',
+          '&:hover': {
+             borderColor: `rgba(${teal[500]}, 0.6)`,
+             backgroundColor: 'rgba(20, 30, 30, 0.6)',
+             transform: 'translateY(-4px)',
+             boxShadow: `0 8px 25px rgba(0, 0, 0, 0.3)`
+          },
+        }}
+      >
       <CardActionArea 
         onClick={handleCardClick}
         sx={{ 
@@ -241,6 +256,90 @@ const NewsCard = ({ newsItem }) => {
         </CardContent>
       </CardActionArea>
     </Card>
+
+    {/* News Modal */}
+    <Dialog
+      open={modalOpen}
+      onClose={() => setModalOpen(false)}
+      maxWidth="md"
+      fullWidth
+      fullScreen={isMobile}
+      PaperProps={{
+        sx: {
+          backgroundColor: '#0d0d0d',
+          color: '#ffffff',
+          borderRadius: isMobile ? 0 : 2
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        borderBottom: `1px solid ${teal[800]}`,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <Typography variant="h6" color="#ffffff">News Article</Typography>
+        <IconButton onClick={() => setModalOpen(false)} sx={{ color: grey[400] }}>
+          <FaTimes />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent sx={{ p: 3 }}>
+        <Box>
+          {image && !imageError && (
+            <Box 
+              component="img"
+              src={image}
+              alt={title}
+              onError={() => setImageError(true)}
+              sx={{
+                width: '100%',
+                height: 200,
+                objectFit: 'cover',
+                borderRadius: 1,
+                mb: 2
+              }}
+            />
+          )}
+          <Typography variant="h5" color="#ffffff" fontWeight="bold" mb={2}>
+            {title}
+          </Typography>
+          <Box display="flex" gap={2} mb={2}>
+            <Typography variant="body2" color={teal[400]}>
+              {publisher || site}
+            </Typography>
+            <Typography variant="body2" color={grey[400]}>
+              {formatDate(publishedDate)}
+            </Typography>
+            {symbol && (
+              <Chip
+                label={symbol}
+                size="small"
+                sx={{
+                  backgroundColor: teal[600],
+                  color: 'white',
+                  fontSize: '0.7rem'
+                }}
+              />
+            )}
+          </Box>
+          <Typography variant="body1" color={grey[300]} mb={3} sx={{ lineHeight: 1.6 }}>
+            {text}
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleReadFullArticle}
+            startIcon={<FaExternalLinkAlt />}
+            sx={{
+              backgroundColor: teal[600],
+              '&:hover': { backgroundColor: teal[700] }
+            }}
+          >
+            Read Full Article
+          </Button>
+        </Box>
+      </DialogContent>
+    </Dialog>
+  </>
   );
 };
 
