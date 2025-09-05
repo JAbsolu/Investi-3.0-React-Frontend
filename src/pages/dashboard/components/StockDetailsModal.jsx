@@ -273,6 +273,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 </Card>
 
                 {/* Stock Chart */}
+                <>
                 <Card sx={{ mb: 1, backgroundColor: 'transparent' }}>
                     <CardContent>
                         {currentStock?.symbol && (
@@ -280,9 +281,12 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                         )}
                     </CardContent>
                 </Card>
+                <Divider sx={{ my: 2, backgroundColor: teal[800] }} />
+                </>
 
                 {/* Key Metrics */}
                 {quote && (
+                    <>
                     <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                         <CardContent>
                             <Grid container spacing={8}>
@@ -343,11 +347,13 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             </Grid>
                         </CardContent>
                     </Card>
+                    <Divider sx={{ my: 2, backgroundColor: teal[800] }} />
+                    </>
                 )}
 
                 {/* Price Performance */}
                 {priceChange && (
-                    <Card sx={{ backgroundColor: 'transparent' }}>
+                    <Card sx={{ backgroundColor: 'transparent', mt: 0, borderRadius: 0, shadow: 'none' }}>
                         <CardContent>
                             <Grid container spacing={2}>
                                 {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
@@ -423,11 +429,11 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             </Box>
                         </Box>
                         
-                        <Typography variant="body1" color={grey[300]} mb={2} sx={{ lineHeight: 1.6 }}>
+                        <Typography variant="body1" color={grey[300]} mb={4} sx={{ lineHeight: 1.6 }}>
                             {profile.description}
                         </Typography>
 
-                        <Divider sx={{ my: 2, backgroundColor: teal[800] }} />
+                        <Divider sx={{ mb: 3, mt:3,  backgroundColor: teal[800] }} />
 
                         <Grid container spacing={3}>
                             <Grid item xs={12} sm={6}>
@@ -476,9 +482,9 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                         </Grid>
                     </CardContent>
                 </Card>
-
+                <Divider sx={{ mt: 0, mb:2, backgroundColor: teal[800] }} />
                 {/* Financial Metrics */}
-                <Card sx={{ backgroundColor: 'transparent' }}>
+                <Card sx={{ backgroundColor: 'transparent', mt:0, boxShadow: 'none' }}>
                     <CardContent>
                         <Grid container spacing={3}>
                             <Grid item xs={6} sm={4}>
@@ -721,11 +727,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {/* Current Grades */}
                 <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                     <CardContent>
-                       {grades?.length < 1 && (
-                           <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
-                               Recent Analyst Ratings
-                           </Typography>
-                       )}
                         {loading.grades ? (
                             <Box display="flex" justifyContent="center" py={2}>
                                 <CircularProgress sx={{ color: teal[400] }} size={24} />
@@ -863,11 +864,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {/* Grade News */}
                 <Card sx={{ backgroundColor: 'transparent' }}>
                     <CardContent>
-                        {gradesNews?.length < 1 && (
-                            <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
-                                Recent Rating News
-                            </Typography>
-                        )}
                         {loading.gradesNews ? (
                             <Box display="flex" justifyContent="center" py={2}>
                                 <CircularProgress sx={{ color: teal[400] }} size={24} />
