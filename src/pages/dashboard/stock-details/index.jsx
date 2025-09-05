@@ -260,9 +260,9 @@ const StockDetailsPage = () => {
             {/* Main Content */}
             <Box sx={{ 
                 flexGrow: 1, 
-                ml: isMobile ? 0 : '280px',
+                ml: 0 ,
                 minHeight: '100vh',
-                width: isMobile ? '100%' : 'calc(100% - 280px)',
+                width: '100%',
                 maxWidth: '100%'
             }}>
                 {/* Header */}
