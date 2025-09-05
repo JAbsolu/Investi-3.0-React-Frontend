@@ -285,7 +285,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {quote && (
                     <Card sx={{ mb: 1, backgroundColor: 'transparent', boxShadow: 'none' }}>
                         <CardContent>
-                            <Typography variant="h6" color='white' mb={2}>
+                            <Typography variant="h6" color={teal[400]} fontWeight={600} mb={2}>
                                 Key Metrics
                             </Typography>
                             <Grid container spacing={{ xs: 2, sm: 3, md: 6 }}>
@@ -352,7 +352,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {priceChange && (
                     <Card sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
                         <CardContent>
-                            <Typography variant="h6" color='white' mb={1}>
+                            <Typography variant="h6" color={teal[400]} fontWeight={600} mb={1}>
                                 Price Performance
                             </Typography>
                             <Grid container spacing={{ xs: 1, sm: 2 }}>
@@ -573,7 +573,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                     }
                                 }}
                             >
-                                {loading.aiAnalysis ? 'Analyzing...' : 'Get Analysis'}
+                                {loading.aiAnalysis ? 'Analyzing...' : 'Get Full AI Analysis'}
                             </Button>
                         </Box>
                         
