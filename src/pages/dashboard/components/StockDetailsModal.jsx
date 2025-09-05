@@ -285,9 +285,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {quote && (
                     <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                         <CardContent>
-                            <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
-                                Key Metrics
-                            </Typography>
                             <Grid container spacing={8}>
                                 <Grid item xs={6} sm={4} md={3}>
                                     <Box>
@@ -352,9 +349,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {priceChange && (
                     <Card sx={{ backgroundColor: 'transparent' }}>
                         <CardContent>
-                            <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
-                                Price Performance
-                            </Typography>
                             <Grid container spacing={2}>
                                 {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
                                     <Grid item xs={6} sm={4} md={4} key={period}>
@@ -412,9 +406,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {/* Company Overview */}
                 <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                     <CardContent>
-                        <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
-                            Company Profile
-                        </Typography>
                         <Box display="flex" alignItems="center" gap={2} mb={2}>
                             {profile.image && (
                                 <Avatar 
@@ -489,9 +480,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {/* Financial Metrics */}
                 <Card sx={{ backgroundColor: 'transparent' }}>
                     <CardContent>
-                        <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
-                            Financial Metrics
-                        </Typography>
                         <Grid container spacing={3}>
                             <Grid item xs={6} sm={4}>
                                 <Box>
@@ -733,9 +721,11 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {/* Current Grades */}
                 <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                     <CardContent>
-                        <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
-                            Recent Analyst Ratings
-                        </Typography>
+                       {grades?.length < 1 && (
+                           <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
+                               Recent Analyst Ratings
+                           </Typography>
+                       )}
                         {loading.grades ? (
                             <Box display="flex" justifyContent="center" py={2}>
                                 <CircularProgress sx={{ color: teal[400] }} size={24} />
@@ -873,9 +863,11 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {/* Grade News */}
                 <Card sx={{ backgroundColor: 'transparent' }}>
                     <CardContent>
-                        <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
-                            Recent Rating News
-                        </Typography>
+                        {gradesNews?.length < 1 && (
+                            <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
+                                Recent Rating News
+                            </Typography>
+                        )}
                         {loading.gradesNews ? (
                             <Box display="flex" justifyContent="center" py={2}>
                                 <CircularProgress sx={{ color: teal[400] }} size={24} />
@@ -942,9 +934,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
             <Box>
                 <Card sx={{ backgroundColor: 'transparent' }}>
                     <CardContent>
-                        <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
-                            Latest {currentStock?.symbol} News
-                        </Typography>
                         {loading.stockNews ? (
                             <Box display="flex" justifyContent="center" py={4}>
                                 <CircularProgress sx={{ color: teal[400] }} />
