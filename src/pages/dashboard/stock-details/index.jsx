@@ -608,7 +608,7 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
     return (
         <Box>
             {/* Stock Chart */}
-            <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+            <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                 <CardContent>
                     {currentTicker && (
                         <StockChart ticker={currentTicker} />
@@ -618,64 +618,64 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
 
             {/* Key Metrics */}
             {quote && (
-                <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                     <CardContent>
                         <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
                             Key Metrics
                         </Typography>
-                        <Grid container spacing={4}>
+                        <Grid container spacing={8}>
                             <Grid item xs={6} sm={4} md={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>Open</Typography>
-                                    <Typography variant="h6" color={white}>{formatCurrency(quote.open)}</Typography>
+                                    <Typography variant="body1" color={grey[400]} mb={1}>Open</Typography>
+                                    <Typography variant="body2" color={white}>{formatCurrency(quote.open)}</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={4} md={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>Day High</Typography>
-                                    <Typography variant="h6" color={white}>{formatCurrency(quote.dayHigh)}</Typography>
+                                    <Typography variant="body1" color={grey[400]} mb={1}>Day High</Typography>
+                                    <Typography variant="body2" color={white}>{formatCurrency(quote.dayHigh)}</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={4} md={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>Day Low</Typography>
-                                    <Typography variant="h6" color={white}>{formatCurrency(quote.dayLow)}</Typography>
+                                    <Typography variant="body1" color={grey[400]} mb={1}>Day Low</Typography>
+                                    <Typography variant="body2" color={white}>{formatCurrency(quote.dayLow)}</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={4} md={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>52W High</Typography>
-                                    <Typography variant="h6" color={white}>{formatCurrency(quote.yearHigh)}</Typography>
+                                    <Typography variant="body1" color={grey[400]} mb={1}>52W High</Typography>
+                                    <Typography variant="body2" color={white}>{formatCurrency(quote.yearHigh)}</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={4} md={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>52W Low</Typography>
-                                    <Typography variant="h6" color={white}>{formatCurrency(quote.yearLow)}</Typography>
+                                    <Typography variant="body1" color={grey[400]} mb={1}>52W Low</Typography>
+                                    <Typography variant="body2" color={white}>{formatCurrency(quote.yearLow)}</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={4} md={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>Volume</Typography>
-                                    <Typography variant="h6" color={white}>{formatNumber(quote.volume)}</Typography>
+                                    <Typography variant="body1" color={grey[400]} mb={1}>Volume</Typography>
+                                    <Typography variant="body2" color={white}>{formatNumber(quote.volume)}</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={4} md={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>Market Cap</Typography>
-                                    <Typography variant="h6" color={white}>{formatCurrency(quote.marketCap)}</Typography>
+                                    <Typography variant="body1" color={grey[400]} mb={1}>Market Cap</Typography>
+                                    <Typography variant="body2" color={white}>{formatCurrency(quote.marketCap)}</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={4} md={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>50D Avg</Typography>
-                                    <Typography variant="h6" color={white}>{formatCurrency(quote.priceAvg50)}</Typography>
+                                    <Typography variant="body1" color={grey[400]} mb={1}>50D Avg</Typography>
+                                    <Typography variant="body2" color={white}>{formatCurrency(quote.priceAvg50)}</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={4} md={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>200D Avg</Typography>
-                                    <Typography variant="h6" color={white}>{formatCurrency(quote.priceAvg200)}</Typography>
+                                    <Typography variant="body1" color={grey[400]} mb={1}>200D Avg</Typography>
+                                    <Typography variant="body2" color={white}>{formatCurrency(quote.priceAvg200)}</Typography>
                                 </Box>
                             </Grid>
                         </Grid>
@@ -685,22 +685,23 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
 
             {/* Price Performance */}
             {priceChange && (
-                <Card sx={{ backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                <Card sx={{ backgroundColor: 'transparent' }}>
                     <CardContent>
                         <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
                             Price Performance
                         </Typography>
-                        <Grid container spacing={3}>
+                        <Grid container spacing={2}>
                             {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
-                                <Grid item xs={6} sm={4} md={3} key={period}>
-                                    <Box textAlign="center" p={2} sx={{ 
-                                        backgroundColor: 'rgba(20, 184, 166, 0.05)',
-                                        borderRadius: 2,
-                                        border: `1px solid ${teal[800]}`
+                                <Grid item xs={6} sm={4} md={4} key={period}>
+                                    <Box sx={{ 
+                                        backgroundColor: 'transparent',
+                                        // borderRadius: 2,
+                                        // border: `1px solid ${teal[400]}`,
+                                        minWidth: '6em'
                                     }}>
                                         <Typography variant="body2" color={grey[400]} mb={1}>{period}</Typography>
                                         <Typography 
-                                            variant="h5"
+                                            variant="body1"
                                             color={getChangeColor(change || 0)}
                                             fontWeight="bold"
                                         >
