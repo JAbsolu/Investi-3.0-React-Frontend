@@ -152,6 +152,19 @@ function DashboardSidebar({ onClose }) {
             </Button>
           </Tooltip>
 
+          <Tooltip title="AI Research Analysis" placement="right" arrow>
+            <Button
+              onClick={() => {
+                navigate("/dashboard/stock-details");
+                handleItemClick();
+              }}
+              startIcon={<IoSearchOutline size={20} />}
+              sx={getButtonStyle("/dashboard/stock-details")}
+            >
+              AI Research
+            </Button>
+          </Tooltip>
+
           <Tooltip title="Discover News" placement="right" arrow>
             <Button
               onClick={() => {
@@ -188,19 +201,6 @@ function DashboardSidebar({ onClose }) {
               sx={getButtonStyle("/dashboard/movers")}
             >
               Movers
-            </Button>
-          </Tooltip>
-
-          <Tooltip title="AI Research Analysis" placement="right" arrow>
-            <Button
-              onClick={() => {
-                navigate("/dashboard/stock-details");
-                handleItemClick();
-              }}
-              startIcon={<IoSearchOutline size={20} />}
-              sx={getButtonStyle("/dashboard/stock-details")}
-            >
-              AI Research
             </Button>
           </Tooltip>
 
