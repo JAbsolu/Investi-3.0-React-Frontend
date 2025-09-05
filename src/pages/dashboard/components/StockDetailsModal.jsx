@@ -870,7 +870,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 )}
 
                 {/* Grade News */}
-                <Card sx={{ backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                <Card sx={{ backgroundColor: 'transparent' }}>
                     <CardContent>
                         <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
                             Recent Rating News
