@@ -9,9 +9,10 @@ import { teal, green, red, grey, blue } from '@mui/material/colors';
 import {
     FaTimes, FaPlus, FaCheck, FaExternalLinkAlt, FaBuilding,
     FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaGlobe,
-    FaChartLine, FaArrowUp, FaArrowDown, FaStar, FaNewspaper, FaRobot,
+    FaChartLine, FaArrowUp, FaArrowDown, FaStar, FaNewspaper,
     FaSearch
 } from 'react-icons/fa';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StockChart from './stockChart';
 
 // Constants
@@ -545,11 +546,11 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
         return (
             <Box>
                 {/* AI Analysis Section */}
-                <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                     <CardContent>
                         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                             <Box display="flex" alignItems="center" gap={2}>
-                                <FaRobot color={teal[400]} size={20} />
+                                <AutoAwesomeIcon sx={{ color: teal[400] }}size={20} />
                                 <Typography variant="h6" color={teal[300]} fontWeight="bold">
                                     AI Analysis
                                 </Typography>
@@ -559,7 +560,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                 size="small"
                                 onClick={handleAIAnalysis}
                                 disabled={loading.aiAnalysis}
-                                startIcon={loading.aiAnalysis ? <CircularProgress size={16} sx={{ color: teal[400] }} /> : <FaRobot />}
+                                startIcon={loading.aiAnalysis ? <CircularProgress size={16} sx={{ color: teal[400] }} /> : <AutoAwesomeIcon />}
                                 sx={{
                                     color: teal[400],
                                     borderColor: teal[400],
@@ -729,7 +730,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                     </CardContent>
                 </Card>
                 {/* Current Grades */}
-                <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                     <CardContent>
                         <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
                             Recent Analyst Ratings
@@ -760,7 +761,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
 
                 {/* Historical Ratings Distribution */}
                 {historicalGrades && (
-                    <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                    <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                         <CardContent>
                             <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
                                 Analyst Consensus
@@ -813,7 +814,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
 
                 {/* Price Targets */}
                 {priceTarget && (
-                    <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                    <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                         <CardContent>
                             <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
                                 Price Targets
