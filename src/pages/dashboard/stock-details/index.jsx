@@ -4,7 +4,8 @@ import DashboardSidebar from '../components/DashboardSidebar';
 import {
     Box, Typography, Container, TextField, Button, InputAdornment,
     Tabs, Tab, Card, CardContent, Grid, CircularProgress, Alert,
-    useMediaQuery, useTheme, IconButton, Drawer, Avatar, Chip, Link, Divider
+    useMediaQuery, useTheme, IconButton, Drawer, Avatar, Chip, Link, Divider,
+    Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import { teal, grey, green, red } from '@mui/material/colors';
 import {
@@ -14,6 +15,9 @@ import {
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StockChart from '../components/stockChart';
 import { useWishlist } from '../../../hooks/useWishlist';
+import { useAuth } from '../../../hooks/useAuth';
+import { ref, get, child } from "firebase/database";
+import { database } from "../../../firebaseConfig";
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -24,7 +28,8 @@ const StockDetailsPage = () => {
     const { ticker: urlTicker } = useParams();
     const navigate = useNavigate();
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+    const { user } = useAuth();
     
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
@@ -34,11 +39,46 @@ const StockDetailsPage = () => {
     const [currentTicker, setCurrentTicker] = useState(urlTicker || '');
     const [selectedNews, setSelectedNews] = useState(null);
     const [newsModalOpen, setNewsModalOpen] = useState(false);
+    const [lastSearchedStock, setLastSearchedStock] = useState(null);
+    const [showLastSearchDialog, setShowLastSearchDialog] = useState(false);
     
     const { wishlist, addToWishlist } = useWishlist();
 
     // Check if stock is in wishlist
     const isInWishlist = currentTicker && wishlist.includes(currentTicker);
+
+    // Fetch last searched stock from Firebase
+    const fetchLastSearchedStock = async () => {
+        if (!user) return;
+        
+        try {
+            const dbRef = ref(database);
+            const snapshot = await get(child(dbRef, `users/${user.uid}/lastSearch`));
+            if (snapshot.exists()) {
+                const lastSearchData = snapshot.val();
+                setLastSearchedStock(lastSearchData.ticker);
+                setShowLastSearchDialog(true);
+            }
+        } catch (error) {
+            console.error('Error fetching last searched stock:', error);
+        }
+    };
+
+    // Handle last search dialog response
+    const handleLastSearchResponse = (useLastSearch) => {
+        setShowLastSearchDialog(false);
+        if (useLastSearch && lastSearchedStock) {
+            setCurrentTicker(lastSearchedStock);
+            navigate(`/dashboard/stock-details/${lastSearchedStock}`);
+        }
+    };
+
+    // Check for last searched stock on page load (when no ticker in URL)
+    useEffect(() => {
+        if (!urlTicker && user) {
+            fetchLastSearchedStock();
+        }
+    }, [urlTicker, user]);
 
     // Handle add to wishlist
     const handleAddToWishlist = async () => {
@@ -221,7 +261,9 @@ const StockDetailsPage = () => {
             <Box sx={{ 
                 flexGrow: 1, 
                 ml: isMobile ? 0 : '280px',
-                minHeight: '100vh'
+                minHeight: '100vh',
+                width: isMobile ? '100%' : 'calc(100% - 280px)',
+                maxWidth: '100%'
             }}>
                 {/* Header */}
                 <Box sx={{
@@ -231,25 +273,44 @@ const StockDetailsPage = () => {
                     background: 'rgba(13, 13, 13, 0.95)',
                     backdropFilter: 'blur(10px)',
                     borderBottom: `1px solid ${teal[800]}`,
-                    p: { xs: 2, sm: 3 }
+                    p: { xs: 1, sm: 2, md: 3 },
+                    width: '100%'
                 }}>
-                    <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <Box display="flex" alignItems="center" gap={2}>
+                    <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap={2}>
+                        <Box display="flex" alignItems="center" gap={2} flex={1} minWidth={0}>
                             {isMobile && (
                                 <IconButton 
                                     onClick={() => setSidebarOpen(true)}
-                                    sx={{ color: white }}
+                                    sx={{ color: white, flexShrink: 0 }}
                                 >
                                     <FaBars />
                                 </IconButton>
                             )}
-                            <Box display="flex" alignItems="center" gap={2}>
-                                <StockLogo ticker={currentTicker} size={32} />
-                                <Box>
-                                    <Typography variant="h5" color={white} fontWeight="bold">
-                                        {currentTicker ? `${currentTicker} Stock Analysis` : 'Stock Analysis'}
+                            <Box display="flex" alignItems="center" gap={2} minWidth={0} flex={1}>
+                                <StockLogo ticker={currentTicker} size={isMobile ? 24 : 32} />
+                                <Box minWidth={0} flex={1}>
+                                    <Typography 
+                                        variant={isMobile ? "h6" : "h5"} 
+                                        color={white} 
+                                        fontWeight="bold"
+                                        sx={{ 
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
+                                        }}
+                                    >
+                                        {currentTicker ? `${currentTicker} Stock Analysis` : 'AI Research Analysis'}
                                     </Typography>
-                                    <Typography variant="body2" color={grey[400]}>
+                                    <Typography 
+                                        variant="body2" 
+                                        color={grey[400]}
+                                        sx={{ 
+                                            display: { xs: 'none', sm: 'block' },
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
+                                        }}
+                                    >
                                         Comprehensive stock research and analysis
                                     </Typography>
                                 </Box>
@@ -257,11 +318,11 @@ const StockDetailsPage = () => {
                         </Box>
 
                         {/* Quick Actions */}
-                        <Box display="flex" alignItems="center" gap={2}>
-                            {currentTicker && (
+                        {currentTicker && (
+                            <Box display="flex" alignItems="center" gap={2} flexShrink={0}>
                                 <Button
                                     variant={isInWishlist ? "contained" : "outlined"}
-                                    size="small"
+                                    size={isMobile ? "small" : "medium"}
                                     onClick={handleAddToWishlist}
                                     disabled={isInWishlist}
                                     sx={{
@@ -270,20 +331,22 @@ const StockDetailsPage = () => {
                                         backgroundColor: isInWishlist ? teal[400] : 'transparent',
                                         '&:hover': {
                                             backgroundColor: isInWishlist ? teal[600] : 'rgba(20, 184, 166, 0.1)'
-                                        }
+                                        },
+                                        fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                                        px: { xs: 1, sm: 2 }
                                     }}
                                 >
                                     {isInWishlist ? 'In Watchlist' : 'Add to Watchlist'}
                                 </Button>
-                            )}
-                        </Box>
+                            </Box>
+                        )}
                     </Box>
 
                     {/* Search Bar */}
-                    <Box mt={3}>
+                    <Box mt={2} width="100%">
                         <TextField
                             fullWidth
-                            size="medium"
+                            size={isMobile ? "small" : "medium"}
                             placeholder="Search for any stock ticker symbol (e.g., AAPL, TSLA, MSFT)..."
                             value={searchTicker}
                             onChange={(e) => setSearchTicker(e.target.value)}
@@ -301,7 +364,7 @@ const StockDetailsPage = () => {
                                             sx={{
                                                 color: teal[400],
                                                 minWidth: 'auto',
-                                                p: 2
+                                                p: isMobile ? 1 : 2
                                             }}
                                         >
                                             Search
@@ -326,7 +389,7 @@ const StockDetailsPage = () => {
                             sx={{
                                 '& .MuiInputBase-input': {
                                     color: white,
-                                    fontSize: '1rem'
+                                    fontSize: isMobile ? '0.875rem' : '1rem'
                                 },
                                 '& .MuiInputBase-input::placeholder': {
                                     color: grey[500]
@@ -337,7 +400,12 @@ const StockDetailsPage = () => {
                 </Box>
 
                 {/* Content */}
-                <Container maxWidth="xl" sx={{ py: 4 }}>
+                <Box sx={{ 
+                    p: { xs: 1, sm: 2, md: 3 },
+                    width: '100%',
+                    maxWidth: '100%',
+                    overflow: 'hidden'
+                }}>
                     {!currentTicker ? (
                         // Welcome State
                         <Box 
@@ -347,6 +415,7 @@ const StockDetailsPage = () => {
                             justifyContent="center" 
                             minHeight="60vh"
                             textAlign="center"
+                            px={2}
                         >
                             <FaSearch size={64} color={teal[400]} style={{ marginBottom: 24 }} />
                             <Typography variant="h4" color={white} fontWeight="bold" mb={2}>
@@ -380,22 +449,34 @@ const StockDetailsPage = () => {
                         </Box>
                     ) : (
                         // Stock Analysis Content
-                        <Box>
+                        <Box width="100%">
                             {/* Tabs */}
-                            <Card sx={{ mb: 3, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                            <Card sx={{ 
+                                mb: 3, 
+                                backgroundColor: 'rgba(20, 30, 20, 0.3)',
+                                width: '100%'
+                            }}>
                                 <Tabs
                                     value={activeTab}
                                     onChange={(e, newValue) => setActiveTab(newValue)}
+                                    variant={isMobile ? "scrollable" : "fullWidth"}
+                                    scrollButtons={isMobile ? "auto" : false}
+                                    allowScrollButtonsMobile
                                     sx={{
                                         '& .MuiTab-root': {
                                             color: grey[400],
                                             fontWeight: 'bold',
+                                            fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                                            minWidth: isMobile ? 80 : 120,
                                             '&.Mui-selected': {
                                                 color: teal[400]
                                             }
                                         },
                                         '& .MuiTabs-indicator': {
                                             backgroundColor: teal[400]
+                                        },
+                                        '& .MuiTabs-scrollButtons': {
+                                            color: teal[400]
                                         }
                                     }}
                                 >
@@ -448,8 +529,73 @@ const StockDetailsPage = () => {
                             </TabPanel>
                         </Box>
                     )}
-                </Container>
+                </Box>
             </Box>
+
+            {/* Last Searched Stock Dialog */}
+            <Dialog
+                open={showLastSearchDialog}
+                onClose={() => setShowLastSearchDialog(false)}
+                maxWidth="sm"
+                fullWidth
+                sx={{
+                    '& .MuiDialog-paper': {
+                        background: darkGradient,
+                        border: `1px solid ${teal[800]}`,
+                        borderRadius: 3
+                    }
+                }}
+            >
+                <DialogTitle sx={{ color: white, textAlign: 'center' }}>
+                    <Typography variant="h5" fontWeight="bold" color={teal[300]}>
+                        Welcome Back!
+                    </Typography>
+                </DialogTitle>
+                <DialogContent sx={{ textAlign: 'center', py: 3 }}>
+                    <Typography variant="body1" color={grey[300]} mb={2}>
+                        Would you like to continue viewing the analysis for your last searched stock?
+                    </Typography>
+                    <Chip
+                        label={lastSearchedStock}
+                        sx={{
+                            backgroundColor: teal[700],
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '1.1rem',
+                            py: 2,
+                            px: 1
+                        }}
+                    />
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: 'center', pb: 3, gap: 2 }}>
+                    <Button
+                        onClick={() => handleLastSearchResponse(false)}
+                        variant="outlined"
+                        sx={{
+                            color: grey[400],
+                            borderColor: grey[600],
+                            '&:hover': {
+                                backgroundColor: 'rgba(75, 85, 99, 0.1)'
+                            }
+                        }}
+                    >
+                        No, Thanks
+                    </Button>
+                    <Button
+                        onClick={() => handleLastSearchResponse(true)}
+                        variant="contained"
+                        sx={{
+                            backgroundColor: teal[600],
+                            color: 'white',
+                            '&:hover': {
+                                backgroundColor: teal[700]
+                            }
+                        }}
+                    >
+                        Yes, Show {lastSearchedStock}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

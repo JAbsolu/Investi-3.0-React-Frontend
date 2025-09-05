@@ -191,7 +191,7 @@ function DashboardSidebar({ onClose }) {
             </Button>
           </Tooltip>
 
-          <Tooltip title="Stock Analysis" placement="right" arrow>
+          <Tooltip title="AI Research Analysis" placement="right" arrow>
             <Button
               onClick={() => {
                 navigate("/dashboard/stock-details");
@@ -200,7 +200,7 @@ function DashboardSidebar({ onClose }) {
               startIcon={<IoSearchOutline size={20} />}
               sx={getButtonStyle("/dashboard/stock-details")}
             >
-              Stock Analysis
+              AI Research
             </Button>
           </Tooltip>
 
