@@ -209,7 +209,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
     // Overview Tab Component
     const OverviewTab = () => {
         const quote = data.quote?.[0];
-        const priceChange = data.priceChange;
+        const priceChange = data.priceChange?.[0]; // Access first item in array
 
         return (
             <Box>
