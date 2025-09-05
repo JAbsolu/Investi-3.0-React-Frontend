@@ -290,7 +290,7 @@ const StockDetailsPage = () => {
                                 <StockLogo ticker={currentTicker} size={isMobile ? 24 : 32} />
                                 <Box minWidth={0} flex={1}>
                                     <Typography 
-                                        variant={isMobile ? "h6" : "h5"} 
+                                        variant={isMobile ? "h6" : "h6"} 
                                         color={white} 
                                         fontWeight="bold"
                                         sx={{ 
@@ -547,7 +547,7 @@ const StockDetailsPage = () => {
                 }}
             >
                 <DialogTitle sx={{ color: white, textAlign: 'center' }}>
-                    <Typography variant="h5" fontWeight="bold" color={teal[300]}>
+                    <Typography variant="h6" fontWeight="bold" color={teal[300]}>
                         Welcome Back!
                     </Typography>
                 </DialogTitle>
@@ -759,7 +759,7 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
                         )}
                         <Box>
                             <Typography variant="h4" color={white} fontWeight="bold" mb={1}>
-                                {profile.companyName}
+                                {profile.companyName} ({profile.symbol})
                             </Typography>
                             <Typography variant="h6" color={grey[400]}>
                                 {profile.sector} • {profile.industry}
@@ -767,7 +767,7 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
                         </Box>
                     </Box>
                     
-                    <Typography variant="body1" color={grey[300]} mb={3} sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
+                    <Typography variant="body2" color={grey[300]} mb={3} sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
                         {profile.description}
                     </Typography>
 
@@ -824,44 +824,44 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
             {/* Financial Metrics */}
             <Card sx={{ backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
                 <CardContent>
-                    <Typography variant="h5" color={teal[300]} fontWeight="bold" mb={3}>
+                    <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                         Financial Metrics
                     </Typography>
-                    <Grid container spacing={4}>
+                    <Grid container spacing={6}>
                         <Grid item xs={6} sm={4}>
                             <Box>
                                 <Typography variant="body2" color={grey[400]} mb={1}>Market Cap</Typography>
-                                <Typography variant="h5" color={white} fontWeight="bold">{formatCurrency(profile.marketCap)}</Typography>
+                                <Typography variant="hbody15" color={white} fontWeight="bold">{formatCurrency(profile.marketCap)}</Typography>
                             </Box>
                         </Grid>
                         <Grid item xs={6} sm={4}>
                             <Box>
                                 <Typography variant="body2" color={grey[400]} mb={1}>Beta</Typography>
-                                <Typography variant="h5" color={white} fontWeight="bold">{profile.beta?.toFixed(2) || 'N/A'}</Typography>
+                                <Typography variant="body1" color={white} fontWeight="bold">{profile.beta?.toFixed(2) || 'N/A'}</Typography>
                             </Box>
                         </Grid>
                         <Grid item xs={6} sm={4}>
                             <Box>
                                 <Typography variant="body2" color={grey[400]} mb={1}>Dividend</Typography>
-                                <Typography variant="h5" color={white} fontWeight="bold">{formatCurrency(profile.lastDividend)}</Typography>
+                                <Typography variant="body1" color={white} fontWeight="bold">{formatCurrency(profile.lastDividend)}</Typography>
                             </Box>
                         </Grid>
                         <Grid item xs={6} sm={4}>
                             <Box>
                                 <Typography variant="body2" color={grey[400]} mb={1}>52W Range</Typography>
-                                <Typography variant="h5" color={white} fontWeight="bold">{profile.range}</Typography>
+                                <Typography variant="body1" color={white} fontWeight="bold">{profile.range}</Typography>
                             </Box>
                         </Grid>
                         <Grid item xs={6} sm={4}>
                             <Box>
                                 <Typography variant="body2" color={grey[400]} mb={1}>Volume</Typography>
-                                <Typography variant="h5" color={white} fontWeight="bold">{formatNumber(profile.volume)}</Typography>
+                                <Typography variant="body1" color={white} fontWeight="bold">{formatNumber(profile.volume)}</Typography>
                             </Box>
                         </Grid>
                         <Grid item xs={6} sm={4}>
                             <Box>
                                 <Typography variant="body2" color={grey[400]} mb={1}>Avg Volume</Typography>
-                                <Typography variant="h5" color={white} fontWeight="bold">{formatNumber(profile.averageVolume)}</Typography>
+                                <Typography variant="body1" color={white} fontWeight="bold">{formatNumber(profile.averageVolume)}</Typography>
                             </Box>
                         </Grid>
                     </Grid>
@@ -887,7 +887,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                     <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
                         <Box display="flex" alignItems="center" gap={2}>
                             <AutoAwesomeIcon sx={{ color: teal[400], fontSize: 28 }} />
-                            <Typography variant="h5" color={teal[300]} fontWeight="bold">
+                            <Typography variant="h6" color={teal[300]} fontWeight="bold">
                                 AI Analysis
                             </Typography>
                         </Box>
@@ -898,17 +898,17 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                             disabled={loading.aiAnalysis}
                             startIcon={loading.aiAnalysis ? <CircularProgress size={20} sx={{ color: teal[400] }} /> : <AutoAwesomeIcon />}
                             sx={{
-                                color: teal[400],
+                                color: loading.aiAnalysis ? 'white' : teal[400],
                                 borderColor: teal[400],
                                 backgroundColor: 'transparent',
-                                px: 3,
-                                py: 1.5,
+                                px: 2,
+                                py: 1,
                                 '&:hover': {
                                     backgroundColor: 'rgba(20, 184, 166, 0.1)'
                                 }
                             }}
                         >
-                            {loading.aiAnalysis ? 'Analyzing...' : 'Get Full AI Analysis'}
+                            {loading.aiAnalysis ? 'Generating AI Analysis...' : 'Get Full AI Analysis'}
                         </Button>
                     </Box>
                     
@@ -932,7 +932,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                                     sx={{
                                         color: grey[300],
                                         fontSize: '1.1rem',
-                                        '& h1, & h2, & h3, & h4, & h5, & h6': {
+                                        '& h1, & h2, & h3, & h4, & h6, & h6': {
                                             color: teal[300],
                                             fontWeight: 'bold',
                                             marginBottom: 2,
@@ -945,7 +945,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                                         '& p': {
                                             marginBottom: 2,
                                             lineHeight: 1.8,
-                                            fontSize: '1.1rem',
+                                            fontSize: '1opt',
                                             color: grey[300]
                                         },
                                         '& span': {
@@ -1066,9 +1066,9 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
             </Card>
 
             {/* Current Grades */}
-            <Card sx={{ mb: 4, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+            <Card sx={{ mb: 2, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
                 <CardContent>
-                    <Typography variant="h5" color={teal[300]} fontWeight="bold" mb={3}>
+                    <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                         Recent Analyst Ratings
                     </Typography>
                     {loading.grades ? (
@@ -1084,7 +1084,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                                     sx={{
                                         backgroundColor: getGradeColor(grade.newGrade),
                                         color: 'white',
-                                        fontSize: '0.9rem',
+                                        fontSize: '10pt',
                                         py: 2,
                                         px: 1
                                     }}
@@ -1101,45 +1101,45 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
             {historicalGrades && (
                 <Card sx={{ mb: 4, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
                     <CardContent>
-                        <Typography variant="h5" color={teal[300]} fontWeight="bold" mb={3}>
+                        <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                             Analyst Consensus
                         </Typography>
                         <Grid container spacing={3}>
                             <Grid item xs={6} sm={2.4}>
-                                <Box textAlign="center" p={3} sx={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2 }}>
-                                    <Typography variant="h3" color={green[400]} fontWeight="bold">
+                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2 }}>
+                                    <Typography variant="h5" color={green[400]} fontWeight="bold">
                                         {historicalGrades.analystRatingsStrongBuy}
                                     </Typography>
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Buy</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={2.4}>
-                                <Box textAlign="center" p={3} sx={{ backgroundColor: 'rgba(34, 197, 94, 0.05)', borderRadius: 2 }}>
-                                    <Typography variant="h3" color={green[300]} fontWeight="bold">
+                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.05)', borderRadius: 2 }}>
+                                    <Typography variant="h5" color={green[300]} fontWeight="bold">
                                         {historicalGrades.analystRatingsBuy}
                                     </Typography>
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Buy</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={2.4}>
-                                <Box textAlign="center" p={3} sx={{ backgroundColor: 'rgba(156, 163, 175, 0.1)', borderRadius: 2 }}>
-                                    <Typography variant="h3" color={grey[400]} fontWeight="bold">
+                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(156, 163, 175, 0.1)', borderRadius: 2 }}>
+                                    <Typography variant="h5" color={grey[400]} fontWeight="bold">
                                         {historicalGrades.analystRatingsHold}
                                     </Typography>
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Hold</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={2.4}>
-                                <Box textAlign="center" p={3} sx={{ backgroundColor: 'rgba(239, 68, 68, 0.05)', borderRadius: 2 }}>
-                                    <Typography variant="h3" color={red[300]} fontWeight="bold">
+                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(239, 68, 68, 0.05)', borderRadius: 2 }}>
+                                    <Typography variant="h5" color={red[300]} fontWeight="bold">
                                         {historicalGrades.analystRatingsSell}
                                     </Typography>
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Sell</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={6} sm={2.4}>
-                                <Box textAlign="center" p={3} sx={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: 2 }}>
-                                    <Typography variant="h3" color={red[400]} fontWeight="bold">
+                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: 2 }}>
+                                    <Typography variant="h5" color={red[400]} fontWeight="bold">
                                         {historicalGrades.analystRatingsStrongSell}
                                     </Typography>
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Sell</Typography>
@@ -1154,14 +1154,14 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
             {priceTarget && (
                 <Card sx={{ mb: 4, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
                     <CardContent>
-                        <Typography variant="h5" color={teal[300]} fontWeight="bold" mb={3}>
+                        <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                             Price Targets
                         </Typography>
                         <Grid container spacing={4}>
                             <Grid item xs={6} sm={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>Last Month</Typography>
-                                    <Typography variant="h4" color={white} fontWeight="bold">
+                                    <Typography variant="body2" color={grey[400]} mb={1} sx={{ minWidth: '7em' }}>Last Month</Typography>
+                                    <Typography variant="h6" color={white} fontWeight="bold">
                                         {formatCurrency(priceTarget.lastMonthAvgPriceTarget)}
                                     </Typography>
                                     <Typography variant="body2" color={grey[500]}>
@@ -1171,8 +1171,8 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                             </Grid>
                             <Grid item xs={6} sm={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>Last Quarter</Typography>
-                                    <Typography variant="h4" color={white} fontWeight="bold">
+                                    <Typography variant="body2" color={grey[400]} mb={1} sx={{ minWidth: '7em' }}>Last Quarter</Typography>
+                                    <Typography variant="h6" color={white} fontWeight="bold">
                                         {formatCurrency(priceTarget.lastQuarterAvgPriceTarget)}
                                     </Typography>
                                     <Typography variant="body2" color={grey[500]}>
@@ -1182,8 +1182,8 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                             </Grid>
                             <Grid item xs={6} sm={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>Last Year</Typography>
-                                    <Typography variant="h4" color={white} fontWeight="bold">
+                                    <Typography variant="body2" color={grey[400]} mb={1} sx={{ minWidth: '7em' }}>Last Year</Typography>
+                                    <Typography variant="h6" color={white} fontWeight="bold">
                                         {formatCurrency(priceTarget.lastYearAvgPriceTarget)}
                                     </Typography>
                                     <Typography variant="body2" color={grey[500]}>
@@ -1193,8 +1193,8 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                             </Grid>
                             <Grid item xs={6} sm={3}>
                                 <Box>
-                                    <Typography variant="body2" color={grey[400]} mb={1}>All Time</Typography>
-                                    <Typography variant="h4" color={white} fontWeight="bold">
+                                    <Typography variant="body2" color={grey[400]} mb={1} sx={{ minWidth: '7em' }}>All Time</Typography>
+                                    <Typography variant="h6" color={white} fontWeight="bold">
                                         {formatCurrency(priceTarget.allTimeAvgPriceTarget)}
                                     </Typography>
                                     <Typography variant="body2" color={grey[500]}>
@@ -1210,7 +1210,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
             {/* Grade News */}
             <Card sx={{ backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
                 <CardContent>
-                    <Typography variant="h5" color={teal[300]} fontWeight="bold" mb={3}>
+                    <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                         Recent Rating News
                     </Typography>
                     {loading.gradesNews ? (
@@ -1218,19 +1218,22 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                             <CircularProgress sx={{ color: teal[400] }} size={32} />
                         </Box>
                     ) : gradesNews?.length > 0 ? (
-                        <Box display="flex" flexDirection="column" gap={3}>
+                        <Box display="flex" flexDirection="column" gap={1}>
                             {gradesNews.slice(0, 5).map((news, index) => (
                                 <Box 
                                     key={index}
                                     sx={{ 
-                                        p: 3, 
-                                        backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                                        p: 2, 
+                                        backgroundColor: 'transparent',
                                         borderRadius: 2,
-                                        border: `1px solid ${teal[800]}`
+                                        border: `1px solid ${teal[800]}`,
+                                        "&:hover": { borderColor: teal[200] }
                                     }}
+                                    onClick={() => window.open(news.newsURL, '_blank')}
+                                    style={{ cursor: 'pointer' }}
                                 >
-                                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                                        <Typography variant="h6" color={white} fontWeight="bold">
+                                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
+                                        <Typography variant="h7" color={white} fontWeight="bold">
                                             {news.newsTitle}
                                         </Typography>
                                         <Chip
@@ -1250,9 +1253,9 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                                         href={news.newsURL} 
                                         target="_blank" 
                                         rel="noopener"
-                                        sx={{ color: teal[400], textDecoration: 'none', fontSize: '1rem', fontWeight: 'bold' }}
+                                        sx={{ color: teal[400], textDecoration: 'none', fontSize: '10pt', fontWeight: 'bold' }}
                                     >
-                                        Read Full Article <FaExternalLinkAlt size={12} />
+                                        <span className='flex gap-2 items-center justify-end'>Read Full Article <FaExternalLinkAlt size={12} /></span>
                                     </Link>
                                 </Box>
                             ))}
@@ -1278,7 +1281,7 @@ const NewsTab = ({ data, loading, currentTicker }) => {
         <Box>
             <Card sx={{ backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
                 <CardContent>
-                    <Typography variant="h5" color={teal[300]} fontWeight="bold" mb={3}>
+                    <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                         Latest {currentTicker} News
                     </Typography>
                     {loading.stockNews ? (
@@ -1286,22 +1289,23 @@ const NewsTab = ({ data, loading, currentTicker }) => {
                             <CircularProgress sx={{ color: teal[400] }} size={48} />
                         </Box>
                     ) : stockNews?.length > 0 ? (
-                        <Box display="flex" flexDirection="column" gap={3}>
+                        <Box display="flex" flexDirection="column" gap={1}>
                             {stockNews.map((news, index) => (
                                 <Box 
                                     key={index}
                                     onClick={() => handleNewsClick(news)}
                                     sx={{ 
-                                        p: 3, 
-                                        backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                                        p: 2, 
+                                        backgroundColor: 'transparent',
                                         borderRadius: 2,
-                                        border: `1px solid ${teal[800]}`,
+                                        border: `1px solid ${teal[400]}`,
                                         cursor: 'pointer',
                                         transition: 'all 0.3s ease',
                                         '&:hover': {
-                                            backgroundColor: 'rgba(20, 184, 166, 0.1)',
-                                            transform: 'translateY(-4px)',
-                                            boxShadow: '0 8px 25px rgba(20, 184, 166, 0.2)'
+                                            borderColor: teal[200],
+                                            // backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                                            // transform: 'translateY(-4px)',
+                                            // boxShadow: '0 8px 25px rgba(20, 184, 166, 0.2)'
                                         }
                                     }}
                                 >
@@ -1312,8 +1316,8 @@ const NewsTab = ({ data, loading, currentTicker }) => {
                                                 src={news.image}
                                                 alt={news.title}
                                                 sx={{
-                                                    width: 120,
-                                                    height: 80,
+                                                    width: 180,
+                                                    height: 130,
                                                     objectFit: 'cover',
                                                     borderRadius: 2,
                                                     flexShrink: 0
@@ -1321,7 +1325,7 @@ const NewsTab = ({ data, loading, currentTicker }) => {
                                             />
                                         )}
                                         <Box flex={1}>
-                                            <Typography variant="h6" color={white} fontWeight="bold" mb={2}>
+                                            <Typography variant="h7" color={white} fontWeight="bold" mb={2}>
                                                 {news.title}
                                             </Typography>
                                             <Typography variant="body1" color={grey[300]} mb={2} sx={{
@@ -1337,7 +1341,6 @@ const NewsTab = ({ data, loading, currentTicker }) => {
                                                 <Typography variant="body2" color={grey[500]} fontWeight="bold">
                                                     {news.publisher} • {new Date(news.publishedDate).toLocaleDateString()}
                                                 </Typography>
-                                                <FaNewspaper color={teal[400]} size={20} />
                                             </Box>
                                         </Box>
                                     </Box>
