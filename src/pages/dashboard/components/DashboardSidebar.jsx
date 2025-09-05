@@ -11,7 +11,8 @@ import {
   IoAnalyticsSharp,
   IoCompassOutline,
   IoTrendingUpOutline,
-  IoDocumentTextOutline
+  IoDocumentTextOutline,
+  IoSearchOutline
 } from "react-icons/io5";
 import { FaUniversity } from "react-icons/fa";
 import { auth } from "../../../firebaseConfig";
@@ -187,6 +188,19 @@ function DashboardSidebar({ onClose }) {
               sx={getButtonStyle("/dashboard/movers")}
             >
               Movers
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Stock Analysis" placement="right" arrow>
+            <Button
+              onClick={() => {
+                navigate("/dashboard/stock-details");
+                handleItemClick();
+              }}
+              startIcon={<IoSearchOutline size={20} />}
+              sx={getButtonStyle("/dashboard/stock-details")}
+            >
+              Stock Analysis
             </Button>
           </Tooltip>
 
