@@ -608,21 +608,19 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
     return (
         <Box>
             {/* Stock Chart */}
-            <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
+            <Card sx={{ mb: 3, backgroundColor: 'transparent', boxShadow: 'none' }}>
                 <CardContent>
                     {currentTicker && (
                         <StockChart ticker={currentTicker} />
                     )}
                 </CardContent>
             </Card>
-
+            
+            <Divider sx={{ mt: 0, mb:0, backgroundColor: teal[800] }} />
             {/* Key Metrics */}
             {quote && (
-                <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
+                <Card sx={{ mb: 3, backgroundColor: 'transparent', boxShadow: 'none' }}>
                     <CardContent>
-                        <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
-                            Key Metrics
-                        </Typography>
                         <Grid container spacing={8}>
                             <Grid item xs={6} sm={4} md={3}>
                                 <Box>
@@ -683,13 +681,11 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
                 </Card>
             )}
 
+            <Divider sx={{ mt: 0, mb:1, backgroundColor: teal[800] }} />
             {/* Price Performance */}
             {priceChange && (
                 <Card sx={{ backgroundColor: 'transparent' }}>
                     <CardContent>
-                        <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
-                            Price Performance
-                        </Typography>
                         <Grid container spacing={2}>
                             {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
                                 <Grid item xs={6} sm={4} md={4} key={period}>
@@ -748,7 +744,7 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
     return (
         <Box>
             {/* Company Overview */}
-            <Card sx={{ mb: 4, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+            <Card sx={{ mb: 4, backgroundColor: 'transparent', boxShadow: 'none' }}>
                 <CardContent>
                     <Box display="flex" alignItems="center" gap={3} mb={3}>
                         {profile.image && (
@@ -767,7 +763,7 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
                         </Box>
                     </Box>
                     
-                    <Typography variant="body2" color={grey[300]} mb={3} sx={{ lineHeight: 1.8, fontSize: '1.1rem' }}>
+                    <Typography variant="body1" color={grey[300]} mb={3} sx={{ lineHeight: 1.5 }}>
                         {profile.description}
                     </Typography>
 
@@ -820,13 +816,10 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
                     </Grid>
                 </CardContent>
             </Card>
-
+            <Divider sx={{ mt: 0, mb:2, backgroundColor: teal[800] }} />
             {/* Financial Metrics */}
-            <Card sx={{ backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+            <Card sx={{ backgroundColor: 'transparent', mt: 0 }}>
                 <CardContent>
-                    <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
-                        Financial Metrics
-                    </Typography>
                     <Grid container spacing={6}>
                         <Grid item xs={6} sm={4}>
                             <Box>
@@ -882,7 +875,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
     return (
         <Box>
             {/* AI Analysis Section */}
-            <Card sx={{ mb: 4, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+            <Card sx={{ mb: 4, backgroundColor: 'transparent', boxShadow: 'none' }}>
                 <CardContent>
                     <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
                         <Box display="flex" alignItems="center" gap={2}>
@@ -1065,8 +1058,9 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                 </CardContent>
             </Card>
 
+            <Divider sx={{ mt: 0, mb:2, backgroundColor: teal[800] }} />
             {/* Current Grades */}
-            <Card sx={{ mb: 2, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+            <Card sx={{ mb: 0, backgroundColor: 'transparent', boxShadow: 'none' }}>
                 <CardContent>
                     <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                         Recent Analyst Ratings
@@ -1099,11 +1093,11 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
 
             {/* Historical Ratings Distribution */}
             {historicalGrades && (
-                <Card sx={{ mb: 4, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                <Card sx={{ mb: 1, backgroundColor: 'transparent', boxShadow: 'none' }}>
                     <CardContent>
-                        <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
+                        {/* <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                             Analyst Consensus
-                        </Typography>
+                        </Typography> */}
                         <Grid container spacing={3}>
                             <Grid item xs={6} sm={2.4}>
                                 <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2 }}>
@@ -1152,9 +1146,9 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
 
             {/* Price Targets */}
             {priceTarget && (
-                <Card sx={{ mb: 4, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                <Card sx={{ mb: 2, backgroundColor: 'transparent', boxShadow: 'none' }}>
                     <CardContent>
-                        <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
+                        <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
                             Price Targets
                         </Typography>
                         <Grid container spacing={4}>
@@ -1207,8 +1201,9 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                 </Card>
             )}
 
+            <Divider sx={{ mt: 0, mb:2, backgroundColor: teal[800] }} />
             {/* Grade News */}
-            <Card sx={{ backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+            <Card sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
                 <CardContent>
                     <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                         Recent Rating News
@@ -1279,7 +1274,7 @@ const NewsTab = ({ data, loading, currentTicker }) => {
 
     return (
         <Box>
-            <Card sx={{ backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+            <Card sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
                 <CardContent>
                     <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                         Latest {currentTicker} News
