@@ -60,19 +60,22 @@ const SettingsPage = () => {
 
     return (
         <Box sx={{ 
-            display: "grid", 
-            gridTemplateColumns: isSmallScreen 
-                ? "1fr" 
-                : "220px minmax(0, 1fr)",
-            gridAutoFlow: "column",
+            display: "flex",
             height: "100vh",
             backgroundColor: darkBg, 
             color: white, 
             background: darkGradient,
             overflow: "hidden"
         }}>
-            {/* Sidebar - Hidden on mobile */}
-            {!isSmallScreen && <DashboardSidebar />}
+            {/* Left Sidebar - Desktop */}
+            {!isSmallScreen && (
+                <Box sx={{ 
+                    width: "240px", 
+                    flexShrink: 0,
+                }}>
+                    <DashboardSidebar />
+                </Box>
+            )}
             
             {/* Mobile sidebar drawer */}
             <Drawer
