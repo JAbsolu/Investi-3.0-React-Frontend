@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import StockDetailsModal from "../components/StockDetailsModal";
 import { 
@@ -15,6 +15,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useMarketActivity } from "../../../hooks/useMarketActivity";
 import { useWishlist } from "../../../hooks/useWishlist";
+import { useAuth } from "../../../hooks/useAuth";
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -33,6 +34,7 @@ const MoversPage = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     // Custom hooks
+    const { user, userId } = useAuth();
     const {
         biggestGainers,
         biggestLosers,
@@ -42,7 +44,14 @@ const MoversPage = () => {
         refreshAllData
     } = useMarketActivity();
 
-    const { wishlist, addToWishlist } = useWishlist();
+    const { wishlist, addToWishlist, fetchWishlist } = useWishlist(userId);
+
+    // Fetch wishlist when userId is available
+    useEffect(() => {
+        if (userId) {
+            fetchWishlist();
+        }
+    }, [userId, fetchWishlist]);
 
     // Tab configuration
     const tabs = [
@@ -433,6 +442,17 @@ const MoversPage = () => {
                     )}
                 </Container>
             </Box>
+
+            {/* Stock Details Modal */}
+            {selectedStock && (
+                <StockDetailsModal
+                    open={stockModalOpen}
+                    onClose={handleCloseStockModal}
+                    stock={selectedStock}
+                    wishlist={wishlist}
+                    addToWishlist={addToWishlist}
+                />
+            )}
         </Box>
     );
 };
