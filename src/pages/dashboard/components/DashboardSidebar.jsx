@@ -76,19 +76,46 @@ function DashboardSidebar({ onClose }) {
   };
 
   return (
-    <Box
+    // <Box
+    //   sx={{
+    //     width: "220px",
+    //     flexShrink: 0,
+    //     borderRight: `solid 1px ${grey[900]}`,
+    //     background: 'linear-gradient(to bottom, #121212, #0d0d0d)',
+    //     px: 2,
+    //     display: "flex",
+    //     flexDirection: "column",
+    //     justifyContent: "space-between",
+    //     height: "100vh",
+    //     position: "sticky", 
+    //     top: 0,
+    //     boxShadow: '4px 0 15px rgba(0,0,0,0.3)',
+    //     overflow: 'hidden',
+    //     '&::after': {
+    //       content: '""',
+    //       position: 'absolute',
+    //       top: 0,
+    //       right: 0,
+    //       width: '1px',
+    //       height: '100%',
+    //       background: `linear-gradient(to bottom, transparent, ${teal[900]}, transparent)`,
+    //       opacity: 0.6,
+    //     }
+    //   }}
+    // >
+      <Box
       sx={{
-        width: "220px", // Changed from minWidth: "15em" to match grid column
-        flexShrink: 0, // Prevent shrinking
+        // width: "220px",
+        flexShrink: 0,
         borderRight: `solid 1px ${grey[900]}`,
         background: 'linear-gradient(to bottom, #121212, #0d0d0d)',
         px: 2,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
-        height: "100vh", // Use height instead of minHeight
-        position: "sticky", // Make sidebar sticky on desktop
-        top: 0, // Stick to top of viewport
+        justifyContent: "start",
+        height: "100vh",
+        position: "sticky", 
+        top: 0,
         boxShadow: '4px 0 15px rgba(0,0,0,0.3)',
         overflow: 'hidden',
         '&::after': {
@@ -102,8 +129,7 @@ function DashboardSidebar({ onClose }) {
           opacity: 0.6,
         }
       }}
-    >
-      <Box>
+      >
         {/* Logo Section */}
         <Box 
           sx={{ 
@@ -279,23 +305,7 @@ function DashboardSidebar({ onClose }) {
         </Box>
       </Box>
 
-      {/* Removed the footer section with Sign Out button */}
-      <Box sx={{ mb: 4, px: 1 }}>
-        {/* You can add a version number or other info here */}
-        <Typography 
-          variant="caption" 
-          sx={{ 
-            color: grey[700],
-            display: 'block',
-            textAlign: 'center',
-            fontSize: '0.7rem',
-            mt: 2 
-          }}
-        >
-          Investi v1.0.0
-        </Typography>
-      </Box>
-    </Box>
+    // </Box>
   );
 };
 
