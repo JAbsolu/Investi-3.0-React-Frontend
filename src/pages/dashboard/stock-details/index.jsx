@@ -246,21 +246,47 @@ const StockDetailsPage = () => {
 
     return (
         <Box sx={{ 
+            display: "flex",
             minHeight: '100vh',
-            background: darkGradient,
-            display: 'flex'
+            minWidth: '100%',
+            background: darkGradient
         }}>
-            {/* Sidebar */}
-            <DashboardSidebar 
-                open={sidebarOpen} 
+            {/* Left Sidebar - Desktop */}
+            {!isMobile && (
+                <Box sx={{ 
+                    width: "240px", 
+                    flexShrink: 0,
+                }}>
+                    <DashboardSidebar />
+                </Box>
+            )}
+
+            {/* Mobile sidebar drawer */}
+            <Drawer
+                anchor="left"
+                open={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}
-                variant={isMobile ? "temporary" : "permanent"}
-            />
+                variant="temporary"
+                ModalProps={{ keepMounted: true }}
+                sx={{
+                    display: { xs: 'block', lg: 'none' },
+                    '& .MuiDrawer-paper': { 
+                        width: 240,
+                        boxSizing: 'border-box',
+                        background: darkGradient,
+                    },
+                }}
+            >
+                <DashboardSidebar onClose={() => setSidebarOpen(false)} />
+            </Drawer>
 
             {/* Main Content */}
             <Box sx={{ 
                 flexGrow: 1, 
-                ml: 0 ,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                minWidth: 0,
                 minHeight: '100vh',
                 width: '100%',
                 maxWidth: '100%'
@@ -270,7 +296,8 @@ const StockDetailsPage = () => {
                     position: 'sticky',
                     top: 0,
                     zIndex: 1100,
-                    background: 'rgba(13, 13, 13, 0.95)',
+                    // background: 'rgba(13, 13, 13, 0.95)',
+                    background: 'transparent',
                     backdropFilter: 'blur(10px)',
                     borderBottom: `1px solid ${teal[800]}`,
                     p: { xs: 1, sm: 2, md: 3 },
@@ -288,7 +315,7 @@ const StockDetailsPage = () => {
                             )}
                             <Box display="flex" alignItems="center" gap={2} minWidth={0} flex={1}>
                                 <StockLogo ticker={currentTicker} size={isMobile ? 24 : 32} />
-                                <Box minWidth={0} flex={1}>
+                                <Box minWidth={'100%'} flex={1}>
                                     <Typography 
                                         variant={isMobile ? "h6" : "h6"} 
                                         color={white} 
