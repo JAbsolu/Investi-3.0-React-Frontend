@@ -28,7 +28,7 @@ const StockDetailsPage = () => {
     const { ticker: urlTicker } = useParams();
     const navigate = useNavigate();
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { user } = useAuth();
     
     const [sidebarOpen, setSidebarOpen] = useState(false);
