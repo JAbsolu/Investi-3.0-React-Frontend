@@ -87,8 +87,9 @@ function DashboardSidebar({ onClose }) {
         flexDirection: "column",
         justifyContent: "space-between",
         height: "100vh", // Use height instead of minHeight
+        position: "sticky", // Make sidebar sticky on desktop
+        top: 0, // Stick to top of viewport
         boxShadow: '4px 0 15px rgba(0,0,0,0.3)',
-        position: 'relative',
         overflow: 'hidden',
         '&::after': {
           content: '""',
