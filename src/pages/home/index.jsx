@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Navbar from "../../components/Navbar"
 import Footer from "../../components/Footer";
 import { grey, teal } from "@mui/material/colors";
+import { useNavigate } from "react-router-dom";
 
 
 // Constants for colors matching dashboard
@@ -225,6 +226,7 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const testimonialsPerPage = isMobile ? 1 : 3;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -310,7 +312,7 @@ export default function Home() {
             marginBottom: '16px'
           }}>
             Grow your wealth with{" "}
-            <span style={{ color: teal[400] }}>real-time <br /> insights</span>
+            <span style={{ color: teal[400], fontSize: isMobile ? "2rem" : "3rem" }}>real-time <br /> insights</span>
           </h1>
           <p style={{ 
             color: grey[400], 
@@ -339,6 +341,9 @@ export default function Home() {
                 cursor: "pointer",
                 border: "none",
                 fontSize: isMobile ? "0.9rem" : "1rem",
+              }}
+              onClick={() => {
+                  navigate("/signup");
               }}
             >
               Get Started <span style={{ marginLeft: "8px" }}>→</span>
@@ -377,7 +382,7 @@ export default function Home() {
               fontSize: isMobile ? '2rem' : '2.5rem',
             }}>
               Gen AI-Powered Insights for{" "}
-              <span style={{ color: teal[400]}}>
+              <span style={{ color: teal[400], fontSize: isMobile ? '2rem' : '2.5rem' }}>
                 Investors
               </span>
             </h2>
