@@ -2,15 +2,16 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoAnalyticsSharp } from "react-icons/io5";
 import { Box, Typography } from "@mui/material";
+import { teal } from "@mui/material/colors";
 
 // Constants for colors
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
 const white = "#ffffff";
-const teal = {
-  400: '#2dd4bf',
-  700: '#0f766e',
-  800: '#115e59'
-};
+// const teal = {
+//   400: '#2dd4bf',
+//   700: '#0f766e',
+//   800: '#115e59'
+// };
 const grey = {
   100: '#f3f4f6',
   900: '#111827'
@@ -63,7 +64,7 @@ const Navbar = () => {
                 fontWeight="bold" 
                 sx={{ 
                   color: white, // Fallback color
-                  background: `linear-gradient(90deg, ${teal[400]}, ${teal[700]})`,
+                  background: `linear-gradient(90deg, ${teal[400]}, ${teal[300]})`,
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -168,7 +169,7 @@ const Navbar = () => {
                 fontWeight="bold" 
                 sx={{ 
                   color: white, // Fallback color
-                  background: `linear-gradient(90deg, ${teal[400]}, ${teal[700]})`,
+                  background: `linear-gradient(90deg, ${teal[400]}, ${teal[300]})`,
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
