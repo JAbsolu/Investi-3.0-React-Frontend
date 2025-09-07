@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { IoAnalyticsSharp } from "react-icons/io5";
+import { Box, Typography } from "@mui/material";
 
 // Constants for colors
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
@@ -49,15 +51,41 @@ const Navbar = () => {
           padding: '0 16px'
         }}>
           {/* Logo */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            textDecoration: 'none'
-          }}>
-            <span style={{ fontWeight: 'bold', color: white, fontSize: '1.25rem' }}>
-              Investi
-            </span>
-          </div>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+              }}
+            >
+              <IoAnalyticsSharp size={28} style={{ color: teal[400], marginRight: '12px' }} />
+              <Typography 
+                variant="h5" 
+                fontWeight="bold" 
+                sx={{ 
+                  color: white, // Fallback color
+                  background: `linear-gradient(90deg, ${teal[400]}, ${teal[700]})`,
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  MozBackgroundClip: 'text',
+                  MozTextFillColor: 'transparent',
+                  letterSpacing: 0.5,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateX(5px)',
+                  },
+                  // Fallback for browsers that don't support gradient text
+                  '@supports not (background-clip: text)': {
+                    color: teal[400],
+                    background: 'none',
+                  }
+                }} 
+                onClick={() => navigate("/")}
+              >
+                Investi
+              </Typography>
+            </Box>
 
           {/* Auth Buttons - Desktop */}
           <div style={{ 
@@ -128,14 +156,41 @@ const Navbar = () => {
           padding: '24px'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-              <span style={{ fontWeight: 'bold', color: teal[400], fontSize: '1.25rem' }}>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+              }}
+            >
+              <IoAnalyticsSharp size={28} style={{ color: teal[400], marginRight: '12px' }} />
+              <Typography 
+                variant="h5" 
+                fontWeight="bold" 
+                sx={{ 
+                  color: white, // Fallback color
+                  background: `linear-gradient(90deg, ${teal[400]}, ${teal[700]})`,
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  MozBackgroundClip: 'text',
+                  MozTextFillColor: 'transparent',
+                  letterSpacing: 0.5,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateX(5px)',
+                  },
+                  // Fallback for browsers that don't support gradient text
+                  '@supports not (background-clip: text)': {
+                    color: teal[400],
+                    background: 'none',
+                  }
+                }} 
+                onClick={() => navigate("/")}
+              >
                 Investi
-              </span>
-            </div>
+              </Typography>
+            </Box>
             <button 
               onClick={toggleDrawer(false)}
               style={{
