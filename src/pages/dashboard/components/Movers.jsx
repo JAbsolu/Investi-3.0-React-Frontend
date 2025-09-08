@@ -13,7 +13,7 @@ import { useMarketActivity } from '../../../hooks/useMarketActivity';
 import { motion } from 'framer-motion';
 import StockDetailsModal from './StockDetailsModal';
 
-const MarketActivity = ({ wishlist = [], addToWishlist }) => {
+const Movers = ({ wishlist = [], addToWishlist }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -415,4 +415,4 @@ const MarketActivity = ({ wishlist = [], addToWishlist }) => {
   );
 };
 
-export default MarketActivity;
+export default Movers;
