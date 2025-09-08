@@ -21,7 +21,7 @@ import StockDataView from "./components/StockDataView";
 import TradingStrategies from "./components/TradingStrategies";
 import ExploreMarket from "./components/ExploreMarket";
 import LatestStockNews from "./components/LatestStockNews";
-import MarketActivity from "./components/MarketActivity";
+import Movers from "./components/Movers";
 
 // Constants  
 const darkBg = "#0d0d0d";
@@ -31,7 +31,7 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   
   // Custom hooks
-  const { user, userId, email } = useAuth();
+  const { user, userId, email, plan } = useAuth();
   const { isMobile, isTablet, isDesktop, isSmallScreen, isMediumScreen } = useResponsive();
   const {
     stockData,
@@ -330,7 +330,7 @@ export default function DashboardPage() {
 
                 {/* Movers Section */}
                 <Box sx={{ width: '100%' }}>
-                  <MarketActivity 
+                  <Movers 
                     wishlist={wishlist} 
                     addToWishlist={addToWishlistHook} 
                   />
@@ -342,14 +342,18 @@ export default function DashboardPage() {
                 </Box>
 
                 {/* Trading Strategies Section */}
+                {/*
                 <Box sx={{ width: '100%', mt: 3 }}>
                   <TradingStrategies onStrategyClick={handleStrategyClick} />
                 </Box>
+                */}
 
                 {/* Explore Market Section */}
+                {/*}
                 <Box sx={{ width: '100%', mt: 4 }}>
                   <ExploreMarket onToolClick={handleToolClick} />
                 </Box>
+                */}
               </Box>
             </Box>
           </Box>
