@@ -19,6 +19,7 @@ export const useAuth = () => {
     user,
     userId: user?.uid,
     email: user?.email,
+    plan: user?.plan,
     loading
   };
 };
