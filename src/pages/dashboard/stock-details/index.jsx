@@ -363,7 +363,7 @@ const StockDetailsPage = () => {
                                         px: { xs: 1, sm: 2 }
                                     }}
                                 >
-                                    {isInWishlist ? 'In Watchlist' : 'Add to Watchlist'}
+                                    {isInWishlist ? 'Watching' : 'Watch'}
                                 </Button>
                             </Box>
                         )}

@@ -1,9 +1,11 @@
-import React from 'react';
+import { useEffect, useState} from 'react';
 import { Box, Button, IconButton } from '@mui/material';
 import { HiOutlineMenu } from "react-icons/hi";
-import { AutoAwesome, List } from '@mui/icons-material';
-import { teal, grey } from '@mui/material/colors';
+import { AutoAwesome, RemoveRedEye, WorkspacePremium } from '@mui/icons-material';
+import { teal, grey, yellow } from '@mui/material/colors';
 import SearchBar from './SearchBar';
+import { useIsPremium } from '../../../hooks/isPremium';
+import Paywall from './Paywall';
 
 const DashboardHeader = ({
   isSmallScreen,
@@ -15,6 +17,13 @@ const DashboardHeader = ({
   onAnalysis,
   onAddToWishlist
 }) => {
+  const hasPremiumAccess = useIsPremium();
+  const [showPaywall, setShowPaywall] = useState(false);
+
+  const handlePayWallOpen = () => {
+    setShowPaywall(true);
+  };
+
   return (
     <>
       {/* Mobile Navigation & Search */}
@@ -70,7 +79,8 @@ const DashboardHeader = ({
           />
         )}
         
-        <Button
+        {hasPremiumAccess && (
+          <Button
           variant="contained"
           startIcon={<AutoAwesome />}
           sx={{ 
@@ -88,15 +98,59 @@ const DashboardHeader = ({
               backgroundColor: teal[600],
               transform: 'translateY(-2px)',
               boxShadow: `0 6px 12px rgba(0,128,128,0.3)`
+            },
+            '&:disabled': { 
+              backgroundColor: teal[200],
+              color: grey[500],
+              border: `1px solid ${grey[700]}`,
+              cursor: 'not-allowed',
+              transform: 'none',
+              boxShadow: 'none'
             }
           }}
           onClick={onAnalysis}
         >
-          AI Analysis 
+          AI Analysis
         </Button>
+        )}
+
+        {!hasPremiumAccess && (
+          <Button
+          variant="contained"
+          startIcon={<WorkspacePremium sx={{ color: yellow[800], fontSize: '1.7rem' }} />}
+          sx={{ 
+            color: 'white', 
+            minWidth: "12em",
+            maxHeight: "3em",
+            backgroundColor: teal[700],
+            textTransform: "none",
+            borderRadius: '10px',
+            px: isSmallScreen ? 1.2 : 2.5,
+            fontSize: isSmallScreen ? '0.8rem' : '10pt',
+            flexGrow: isSmallScreen ? 1 : 0,
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              backgroundColor: teal[600],
+              transform: 'translateY(-2px)',
+              boxShadow: `0 6px 12px rgba(0,128,128,0.3)`
+            },
+            '&:disabled': { 
+              backgroundColor: teal[200],
+              color: grey[500],
+              border: `1px solid ${grey[700]}`,
+              cursor: 'not-allowed',
+              transform: 'none',
+              boxShadow: 'none'
+            }
+          }}
+          onClick={handlePayWallOpen}
+        >
+          AI Analysis
+        </Button>
+        )}
         
         <Button
-          startIcon={<List/>}
+          startIcon={<RemoveRedEye/>}
           variant="outlined"
           sx={{ 
             minWidth: "12em",
@@ -116,8 +170,9 @@ const DashboardHeader = ({
           }}
           onClick={onAddToWishlist}
         >
-          Add to List
+          Watch
         </Button>
+        <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} />
       </Box>
     </>
   );

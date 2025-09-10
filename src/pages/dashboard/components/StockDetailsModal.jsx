@@ -30,6 +30,10 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
     const [searchTicker, setSearchTicker] = useState('');
     const [currentStock, setCurrentStock] = useState(stock);
 
+    const checkIfUserHasPremium = () => {
+
+    }
+
     // Check if stock is in wishlist
     const isInWishlist = currentStock && wishlist.includes(currentStock.symbol);
 
@@ -1152,7 +1156,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                     }
                                 }}
                             >
-                                {isMobile ? (isInWishlist ? 'Added' : 'Add') : (isInWishlist ? 'In Watchlist' : 'Add to Watchlist')}
+                                {isMobile ? (isInWishlist ? 'Added' : 'Add') : (isInWishlist ? 'Watching' : 'Watch')}
                             </Button>
                             <IconButton onClick={onClose} sx={{ color: grey[400] }}>
                                 <FaTimes />
