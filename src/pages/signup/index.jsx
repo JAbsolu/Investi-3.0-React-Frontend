@@ -8,11 +8,15 @@ import { useNavigate } from "react-router-dom";
 import { teal } from "@mui/material/colors";
 
 const Signup = () => {
-    const [firstname, setFirstname] = useState("");
-    const [lastname, setLastname] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [passwordConfirmation, setPasswordConfirmation] = useState("");
+    const [userInfo, setUserInfo] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        passwordConfirmation: "",
+        selectedPlan: "free"
+    });
+
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
@@ -22,7 +26,7 @@ const Signup = () => {
     const handleSignup = async (e) => {
         e.preventDefault();
 
-        if (password !== passwordConfirmation) {
+        if (userInfo.password !== userInfo.passwordConfirmation) {
             setError("Passwords do not match");
             return;
         }
@@ -31,24 +35,25 @@ const Signup = () => {
 
         try {
             // Create user with Firebase
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, userInfo.email, userInfo.password);
             const user = userCredential.user;
 
             // Update user profile with first and last name
             await updateProfile(user, {
-                displayName: `${firstname} ${lastname}`
+                displayName: `${userInfo.firstName} ${userInfo.lastName}`
             });
 
             // Add user to database
             await set(ref(database, `users/${user.uid}`), {
-                firstName: firstname,
-                lastName: lastname,
-                email: email,
+                firstName: userInfo.firstName,
+                lastName: userInfo.lastName,
+                email: userInfo.email,
+                plan: userInfo.selectedPlan,
                 createdAt: Date.now()
             });
 
             setSuccess("Signup successful!");
-            navigate("/dashboard");
+            navigate("/dashboard", { replace: true });
         } catch (err) {
             setError(err.message);
         }
@@ -91,16 +96,16 @@ const Signup = () => {
                         variant="outlined"
                         fullWidth
                         margin="normal"
-                        value={firstname}
-                        onChange={(e) => setFirstname(e.target.value)}
+                        value={userInfo.firstName}
+                        onChange={(e) => setUserInfo({ ...userInfo, firstName: e.target.value })}
                     />
                     <TextField
                         label="Last Name"
                         variant="outlined"
                         fullWidth
                         margin="normal"
-                        value={lastname}
-                        onChange={(e) => setLastname(e.target.value)}
+                        value={userInfo.lastName}
+                        onChange={(e) => setUserInfo({ ...userInfo, lastName: e.target.value })}
                     />
                     <TextField
                         label="Email Address"
@@ -108,8 +113,8 @@ const Signup = () => {
                         fullWidth
                         margin="normal"
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={userInfo.email}
+                        onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
                     />
                     <TextField
                         label="Password"
@@ -117,8 +122,8 @@ const Signup = () => {
                         fullWidth
                         margin="normal"
                         type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={userInfo.password}
+                        onChange={(e) => setUserInfo({ ...userInfo, password: e.target.value })}
                     />
                     <TextField
                         label="Password confirmation"
@@ -126,8 +131,8 @@ const Signup = () => {
                         fullWidth
                         margin="normal"
                         type="password"
-                        value={passwordConfirmation}
-                        onChange={(e) => setPasswordConfirmation(e.target.value)}
+                        value={userInfo.passwordConfirmation}
+                        onChange={(e) => setUserInfo({ ...userInfo, passwordConfirmation: e.target.value })}
                     />
                     {error && (
                         <Typography color="error" variant="body2" gutterBottom>
