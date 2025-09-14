@@ -14,8 +14,10 @@ import {
 } from 'react-icons/fa';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StockChart from '../components/stockChart';
+import Paywall from '../components/Paywall';
 import { useWishlist } from '../../../hooks/useWishlist';
 import { useAuth } from '../../../hooks/useAuth';
+import { useIsPremium } from '../../../hooks/isPremium';
 import { ref, get, child } from "firebase/database";
 import { database } from "../../../firebaseConfig";
 
@@ -41,6 +43,7 @@ const StockDetailsPage = () => {
     const [newsModalOpen, setNewsModalOpen] = useState(false);
     const [lastSearchedStock, setLastSearchedStock] = useState(null);
     const [showLastSearchDialog, setShowLastSearchDialog] = useState(false);
+    const [showPaywall, setShowPaywall] = useState(false);
     
     const { wishlist, addToWishlist } = useWishlist();
 
@@ -525,6 +528,7 @@ const StockDetailsPage = () => {
                                     formatNumber={formatNumber}
                                     getChangeColor={getChangeColor}
                                     isMobile={isMobile}
+                                    onShowPaywall={() => setShowPaywall(true)}
                                 />
                             </TabPanel>
                             
@@ -545,6 +549,7 @@ const StockDetailsPage = () => {
                                     formatCurrency={formatCurrency}
                                     getGradeColor={getGradeColor}
                                     currentTicker={currentTicker}
+                                    onShowPaywall={() => setShowPaywall(true)}
                                 />
                             </TabPanel>
                             
@@ -624,14 +629,21 @@ const StockDetailsPage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Paywall Modal */}
+            <Paywall 
+                open={showPaywall}
+                onClose={() => setShowPaywall(false)}
+            />
         </Box>
     );
 };
 
 // Overview Tab Component
-const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumber, getChangeColor, isMobile }) => {
+const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumber, getChangeColor, isMobile, onShowPaywall }) => {
     const quote = data.quote?.[0];
     const priceChange = data.priceChange?.[0];
+    const hasPremiumAccess = useIsPremium();
 
     return (
         <Box>
@@ -714,30 +726,62 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
             {priceChange && (
                 <Card sx={{ backgroundColor: 'transparent' }}>
                     <CardContent>
-                        <Grid container spacing={2}>
-                            {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
-                                <Grid item xs={6} sm={4} md={4} key={period}>
-                                    <Box sx={{ 
-                                        backgroundColor: 'transparent',
-                                        // borderRadius: 2,
-                                        // border: `1px solid ${teal[400]}`,
-                                        minWidth: '6em'
-                                    }}>
-                                        <Typography variant="body2" color={grey[400]} mb={1}>{period}</Typography>
-                                        <Typography 
-                                            variant="body1"
-                                            color={getChangeColor(change || 0)}
-                                            fontWeight="bold"
-                                        >
-                                            {change !== null && change !== undefined && !isNaN(change) 
-                                                ? `${change >= 0 ? '+' : ''}${Number(change).toFixed(2)}%`
-                                                : 'N/A'
-                                            }
-                                        </Typography>
-                                    </Box>
-                                </Grid>
-                            ))}
-                        </Grid>
+                        {hasPremiumAccess ? (
+                            <Grid container spacing={2}>
+                                {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
+                                    <Grid item xs={6} sm={4} md={4} key={period}>
+                                        <Box sx={{ 
+                                            backgroundColor: 'transparent',
+                                            minWidth: '6em'
+                                        }}>
+                                            <Typography variant="body2" color={grey[400]} mb={1}>{period}</Typography>
+                                            <Typography 
+                                                variant="body1"
+                                                color={getChangeColor(change || 0)}
+                                                fontWeight="bold"
+                                            >
+                                                {change !== null && change !== undefined && !isNaN(change) 
+                                                    ? `${change >= 0 ? '+' : ''}${Number(change).toFixed(2)}%`
+                                                    : 'N/A'
+                                                }
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        ) : (
+                            <Box sx={{ 
+                                textAlign: 'center',
+                                py: 6,
+                                px: 3,
+                                backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                                borderRadius: 2,
+                                border: `1px solid ${teal[800]}`
+                            }}>
+                                <Typography variant="h6" color={teal[300]} mb={2}>
+                                    🔒 Premium Feature
+                                </Typography>
+                                <Typography variant="body1" color={grey[400]} mb={3}>
+                                    Upgrade to Premium to view detailed price performance across different time periods.
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    onClick={onShowPaywall}
+                                    sx={{
+                                        backgroundColor: teal[600],
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        px: 4,
+                                        py: 1.5,
+                                        '&:hover': {
+                                            backgroundColor: teal[700],
+                                        }
+                                    }}
+                                >
+                                    Upgrade to Premium
+                                </Button>
+                            </Box>
+                        )}
                     </CardContent>
                 </Card>
             )}
@@ -893,12 +937,13 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
 };
 
 // Analysis Tab Component
-const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGradeColor, currentTicker }) => {
+const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGradeColor, currentTicker, onShowPaywall }) => {
     const grades = data.grades;
     const historicalGrades = data.historicalGrades?.[0];
     const gradesNews = data.gradesNews;
     const priceTarget = data.priceTarget?.[0];
     const aiAnalysis = data.aiAnalysis;
+    const hasPremiumAccess = useIsPremium();
 
     return (
         <Box>
@@ -1093,28 +1138,61 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                     <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
                         Recent Analyst Ratings
                     </Typography>
-                    {loading.grades ? (
-                        <Box display="flex" justifyContent="center" py={4}>
-                            <CircularProgress sx={{ color: teal[400] }} size={32} />
-                        </Box>
-                    ) : grades?.length > 0 ? (
-                        <Box display="flex" flexWrap="wrap" gap={2}>
-                            {grades.slice(0, 8).map((grade, index) => (
-                                <Chip
-                                    key={index}
-                                    label={`${grade.gradingCompany}: ${grade.newGrade}`}
-                                    sx={{
-                                        backgroundColor: getGradeColor(grade.newGrade),
-                                        color: 'white',
-                                        fontSize: '10pt',
-                                        py: 2,
-                                        px: 1
-                                    }}
-                                />
-                            ))}
-                        </Box>
+                    {hasPremiumAccess ? (
+                        loading.grades ? (
+                            <Box display="flex" justifyContent="center" py={4}>
+                                <CircularProgress sx={{ color: teal[400] }} size={32} />
+                            </Box>
+                        ) : grades?.length > 0 ? (
+                            <Box display="flex" flexWrap="wrap" gap={2}>
+                                {grades.slice(0, 8).map((grade, index) => (
+                                    <Chip
+                                        key={index}
+                                        label={`${grade.gradingCompany}: ${grade.newGrade}`}
+                                        sx={{
+                                            backgroundColor: getGradeColor(grade.newGrade),
+                                            color: 'white',
+                                            fontSize: '10pt',
+                                            py: 2,
+                                            px: 1
+                                        }}
+                                    />
+                                ))}
+                            </Box>
+                        ) : (
+                            <Typography color={grey[400]}>No recent ratings available</Typography>
+                        )
                     ) : (
-                        <Typography color={grey[400]}>No recent ratings available</Typography>
+                        <Box sx={{ 
+                            textAlign: 'center',
+                            py: 4,
+                            px: 3,
+                            backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                            borderRadius: 2,
+                            border: `1px solid ${teal[800]}`
+                        }}>
+                            <Typography variant="h6" color={teal[300]} mb={2}>
+                                🔒 Premium Feature
+                            </Typography>
+                            <Typography variant="body1" color={grey[400]} mb={3}>
+                                Upgrade to Premium to view recent analyst ratings and recommendations.
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: teal[600],
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    px: 4,
+                                    py: 1.5,
+                                    '&:hover': {
+                                        backgroundColor: teal[700],
+                                    }
+                                }}
+                            >
+                                Upgrade to Premium
+                            </Button>
+                        </Box>
                     )}
                 </CardContent>
             </Card>
@@ -1123,51 +1201,81 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
             {historicalGrades && (
                 <Card sx={{ mb: 1, backgroundColor: 'transparent', boxShadow: 'none' }}>
                     <CardContent>
-                        {/* <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
-                            Analyst Consensus
-                        </Typography> */}
-                        <Grid container spacing={3}>
-                            <Grid item xs={6} sm={2.4}>
-                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2 }}>
-                                    <Typography variant="h5" color={green[400]} fontWeight="bold">
-                                        {historicalGrades.analystRatingsStrongBuy}
-                                    </Typography>
-                                    <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Buy</Typography>
-                                </Box>
+                        {hasPremiumAccess ? (
+                            <Grid container spacing={3}>
+                                <Grid item xs={6} sm={2.4}>
+                                    <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2 }}>
+                                        <Typography variant="h5" color={green[400]} fontWeight="bold">
+                                            {historicalGrades.analystRatingsStrongBuy}
+                                        </Typography>
+                                        <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Buy</Typography>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={6} sm={2.4}>
+                                    <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.05)', borderRadius: 2 }}>
+                                        <Typography variant="h5" color={green[300]} fontWeight="bold">
+                                            {historicalGrades.analystRatingsBuy}
+                                        </Typography>
+                                        <Typography variant="body1" color={grey[400]} fontWeight="bold">Buy</Typography>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={6} sm={2.4}>
+                                    <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(156, 163, 175, 0.1)', borderRadius: 2 }}>
+                                        <Typography variant="h5" color={grey[400]} fontWeight="bold">
+                                            {historicalGrades.analystRatingsHold}
+                                        </Typography>
+                                        <Typography variant="body1" color={grey[400]} fontWeight="bold">Hold</Typography>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={6} sm={2.4}>
+                                    <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(239, 68, 68, 0.05)', borderRadius: 2 }}>
+                                        <Typography variant="h5" color={red[300]} fontWeight="bold">
+                                            {historicalGrades.analystRatingsSell}
+                                        </Typography>
+                                        <Typography variant="body1" color={grey[400]} fontWeight="bold">Sell</Typography>
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={6} sm={2.4}>
+                                    <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: 2 }}>
+                                        <Typography variant="h5" color={red[400]} fontWeight="bold">
+                                            {historicalGrades.analystRatingsStrongSell}
+                                        </Typography>
+                                        <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Sell</Typography>
+                                    </Box>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={6} sm={2.4}>
-                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.05)', borderRadius: 2 }}>
-                                    <Typography variant="h5" color={green[300]} fontWeight="bold">
-                                        {historicalGrades.analystRatingsBuy}
-                                    </Typography>
-                                    <Typography variant="body1" color={grey[400]} fontWeight="bold">Buy</Typography>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={6} sm={2.4}>
-                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(156, 163, 175, 0.1)', borderRadius: 2 }}>
-                                    <Typography variant="h5" color={grey[400]} fontWeight="bold">
-                                        {historicalGrades.analystRatingsHold}
-                                    </Typography>
-                                    <Typography variant="body1" color={grey[400]} fontWeight="bold">Hold</Typography>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={6} sm={2.4}>
-                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(239, 68, 68, 0.05)', borderRadius: 2 }}>
-                                    <Typography variant="h5" color={red[300]} fontWeight="bold">
-                                        {historicalGrades.analystRatingsSell}
-                                    </Typography>
-                                    <Typography variant="body1" color={grey[400]} fontWeight="bold">Sell</Typography>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={6} sm={2.4}>
-                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(239, 68, 68, 0.1)', borderRadius: 2 }}>
-                                    <Typography variant="h5" color={red[400]} fontWeight="bold">
-                                        {historicalGrades.analystRatingsStrongSell}
-                                    </Typography>
-                                    <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Sell</Typography>
-                                </Box>
-                            </Grid>
-                        </Grid>
+                        ) : (
+                            <Box sx={{ 
+                                textAlign: 'center',
+                                py: 4,
+                                px: 3,
+                                backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                                borderRadius: 2,
+                                border: `1px solid ${teal[800]}`
+                            }}>
+                                <Typography variant="h6" color={teal[300]} mb={2}>
+                                    🔒 Premium Feature
+                                </Typography>
+                                <Typography variant="body1" color={grey[400]} mb={3}>
+                                    Upgrade to Premium to view analyst consensus breakdown and historical ratings distribution.
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: teal[600],
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        px: 4,
+                                        py: 1.5,
+                                        '&:hover': {
+                                            backgroundColor: teal[700],
+                                        }
+                                    }}
+                                >
+                                    Upgrade to Premium
+                                </Button>
+                            </Box>
+                        )}
                     </CardContent>
                 </Card>
             )}
