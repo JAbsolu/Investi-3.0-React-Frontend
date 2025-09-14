@@ -335,7 +335,7 @@ const Paywall = ({
                 variant="contained"
                 size="large"
                 onClick={handleUpgradeClick}
-                startIcon={<FaCrown />}
+                startIcon={<FaCrown color='black'/>}
                 sx={{
                   backgroundColor: teal[600],
                   color: white,
