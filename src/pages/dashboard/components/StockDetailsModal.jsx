@@ -5,15 +5,16 @@ import {
     Alert, Avatar, Divider, useMediaQuery, useTheme, Link, TextField,
     InputAdornment
 } from '@mui/material';
-import { teal, green, red, grey, blue } from '@mui/material/colors';
+import { teal, green, red, grey, blue, amber } from '@mui/material/colors';
 import {
     FaTimes, FaPlus, FaCheck, FaExternalLinkAlt, FaBuilding,
-    FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaGlobe,
-    FaChartLine, FaArrowUp, FaArrowDown, FaStar, FaNewspaper,
-    FaSearch
+    FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaGlobe, FaNewspaper, FaCrown
 } from 'react-icons/fa';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StockChart from './stockChart';
+import { useIsPremium } from '../../../hooks/isPremium';
+import Paywall from './Paywall';
+
 
 // Constants
 const darkBg = "#0d0d0d";
@@ -29,10 +30,9 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
     const [newsModalOpen, setNewsModalOpen] = useState(false);
     const [searchTicker, setSearchTicker] = useState('');
     const [currentStock, setCurrentStock] = useState(stock);
+    const [showPaywall, setShowPaywall] = useState(false);
 
-    const checkIfUserHasPremium = () => {
-
-    }
+    const hasPremiumAccess = useIsPremium();
 
     // Check if stock is in wishlist
     const isInWishlist = currentStock && wishlist.includes(currentStock.symbol);
@@ -56,6 +56,11 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
         setCurrentStock(newStock);
         setSearchTicker('');
         setData({}); // Clear previous data
+    };
+
+    // Handle showing paywall
+    const handleShowPaywall = () => {
+        setShowPaywall(true);
     };
 
     // Handle Enter key press in search
@@ -218,7 +223,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
         return (
             <Box>
                 {/* Search Bar */}
-                <Card sx={{ mb: 2, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
+                {/* <Card sx={{ mb: 2, backgroundColor: 'rgba(20, 30, 20, 0.3)' }}>
                     <CardContent sx={{ py: { xs: 1.5, sm: 2 } }}>
                         <TextField
                             fullWidth
@@ -274,7 +279,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             }}
                         />
                     </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* Stock Chart */}
                 <>
@@ -357,33 +362,65 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
 
                 {/* Price Performance */}
                 {priceChange && (
-                    <Card sx={{ backgroundColor: 'transparent', mt: 0, borderRadius: 0, shadow: 'none' }}>
-                        <CardContent>
-                            <Grid container spacing={2}>
-                                {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
-                                    <Grid item xs={6} sm={4} md={4} key={period}>
-                                        <Box sx={{ 
-                                            backgroundColor: 'transparent',
-                                            minWidth: '6em'
-                                        }}>
-                                            <Typography variant="body2" color={grey[400]} mb={1}>{period}</Typography>
-                                            <Typography 
-                                                variant="body1"
-                                                color={getChangeColor(change || 0)}
-                                                fontWeight="bold"
-                                            >
-                                                {change !== null && change !== undefined && !isNaN(change) 
-                                                    ? `${change >= 0 ? '+' : ''}${Number(change).toFixed(2)}%`
-                                                    : 'N/A'
-                                                }
-                                            </Typography>
-                                        </Box>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </CardContent>
-                    </Card>
-                )}
+                    hasPremiumAccess ? (
+                        <Card sx={{ backgroundColor: 'transparent', mt: 0, borderRadius: 0, shadow: 'none' }}>
+                            <CardContent>
+                                <Grid container spacing={2}>
+                                    {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
+                                        <Grid item xs={6} sm={4} md={4} key={period}>
+                                            <Box sx={{ 
+                                                backgroundColor: 'transparent',
+                                                minWidth: '6em'
+                                            }}>
+                                                <Typography variant="body2" color={grey[400]} mb={1}>{period}</Typography>
+                                                <Typography  variant="body1" color={getChangeColor(change || 0)} fontWeight="bold">
+                                                    {change !== null && change !== undefined && !isNaN(change) 
+                                                        ? `${change >= 0 ? '+' : ''}${Number(change).toFixed(2)}%`
+                                                        : 'N/A'
+                                                    }
+                                                </Typography>
+                                            </Box>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <Box sx={{ textAlign: 'center', py: 4, px: 3, backgroundColor: 'rgba(20, 184, 166, 0.05)', borderRadius: 2, border: `1px solid ${teal[800]}` }}>
+                            <Box display="flex" justifyContent="center" mb={2}>
+                                <Chip
+                                    icon={<FaCrown color='black' />}
+                                    label="PREMIUM"
+                                    sx={{
+                                        backgroundColor: amber[600],
+                                        color: 'black',
+                                        fontWeight: 'bold',
+                                        fontSize: '0.9rem',
+                                        px: 1
+                                    }}
+                                />
+                            </Box>
+                            <Typography variant="body1" color={grey[400]} mb={3}>
+                                Upgrade to Premium to view detailed price performance across different time periods.
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                onClick={handleShowPaywall}
+                                sx={{
+                                    backgroundColor: teal[600],
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    px: 4,
+                                    py: 1.5,
+                                    '&:hover': {
+                                        backgroundColor: teal[700],
+                                    }
+                                }}
+                            >
+                                Upgrade to Premium
+                            </Button>
+                    </Box>
+                ))}
             </Box>
         );
     };
@@ -731,26 +768,70 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {/* Current Grades */}
                 <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
                     <CardContent>
-                        {loading.grades ? (
-                            <Box display="flex" justifyContent="center" py={2}>
-                                <CircularProgress sx={{ color: teal[400] }} size={24} />
-                            </Box>
-                        ) : grades?.length > 0 ? (
-                            <Box display="flex" flexWrap="wrap" gap={1}>
-                                {grades.slice(0, 5).map((grade, index) => (
+                        {hasPremiumAccess ? (
+                            loading.grades ? (
+                                <Box display="flex" justifyContent="center" py={2}>
+                                    <CircularProgress sx={{ color: teal[400] }} size={24} />
+                                </Box>
+                            ) : grades?.length > 0 ? (
+                                <Box display="flex" flexWrap="wrap" gap={1}>
+                                    {grades.slice(0, 5).map((grade, index) => (
+                                        <Chip
+                                            key={index}
+                                            label={`${grade.gradingCompany}: ${grade.newGrade}`}
+                                            sx={{
+                                                backgroundColor: getGradeColor(grade.newGrade),
+                                                color: 'white',
+                                                fontSize: '0.8rem'
+                                            }}
+                                        />
+                                    ))}
+                                </Box>
+                            ) : (
+                                <Typography color={grey[400]}>No recent ratings available</Typography>
+                            )
+                        ) : (
+                            <Box sx={{ 
+                                textAlign: 'center',
+                                py: 4,
+                                px: 3,
+                                backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                                borderRadius: 2,
+                                border: `1px solid ${teal[800]}`
+                            }}>
+                                <Box display="flex" justifyContent="center" mb={2}>
                                     <Chip
-                                        key={index}
-                                        label={`${grade.gradingCompany}: ${grade.newGrade}`}
+                                        icon={<FaCrown />}
+                                        label="PREMIUM"
                                         sx={{
-                                            backgroundColor: getGradeColor(grade.newGrade),
-                                            color: 'white',
-                                            fontSize: '0.8rem'
+                                            backgroundColor: amber[600],
+                                            color: 'black',
+                                            fontWeight: 'bold',
+                                            fontSize: '0.9rem',
+                                            px: 1
                                         }}
                                     />
-                                ))}
+                                </Box>
+                                <Typography variant="body1" color={grey[400]} mb={3}>
+                                    Upgrade to Premium to view recent analyst ratings and recommendations.
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    onClick={handleShowPaywall}
+                                    sx={{
+                                        backgroundColor: teal[600],
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        px: 4,
+                                        py: 1.5,
+                                        '&:hover': {
+                                            backgroundColor: teal[700],
+                                        }
+                                    }}
+                                >
+                                    Upgrade to Premium
+                                </Button>
                             </Box>
-                        ) : (
-                            <Typography color={grey[400]}>No recent ratings available</Typography>
                         )}
                     </CardContent>
                 </Card>
@@ -762,48 +843,92 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             <Typography variant="h6" color={teal[400]} fontWeight={600} mb={3}>
                                 Analyst Consensus
                             </Typography>
-                            <Grid container spacing={3}>
-                                <Grid item xs={6} sm={2.4}>
-                                    <Box textAlign="center">
-                                        <Typography variant="body1" color={grey[400]} mb={1}>Strong Buy</Typography>
-                                        <Typography variant="body2" color={green[400]} fontWeight="bold">
-                                            {historicalGrades.analystRatingsStrongBuy}
-                                        </Typography>
-                                    </Box>
+                            {hasPremiumAccess ? (
+                                <Grid container spacing={3}>
+                                    <Grid item xs={6} sm={2.4}>
+                                        <Box textAlign="center">
+                                            <Typography variant="body1" color={grey[400]} mb={1}>Strong Buy</Typography>
+                                            <Typography variant="body2" color={green[400]} fontWeight="bold">
+                                                {historicalGrades.analystRatingsStrongBuy}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={6} sm={2.4}>
+                                        <Box textAlign="center">
+                                            <Typography variant="body1" color={grey[400]} mb={1}>Buy</Typography>
+                                            <Typography variant="body2" color={green[300]} fontWeight="bold">
+                                                {historicalGrades.analystRatingsBuy}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={6} sm={2.4}>
+                                        <Box textAlign="center">
+                                            <Typography variant="body1" color={grey[400]} mb={1}>Hold</Typography>
+                                            <Typography variant="body2" color={grey[400]} fontWeight="bold">
+                                                {historicalGrades.analystRatingsHold}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={6} sm={2.4}>
+                                        <Box textAlign="center">
+                                            <Typography variant="body1" color={grey[400]} mb={1}>Sell</Typography>
+                                            <Typography variant="body2" color={red[300]} fontWeight="bold">
+                                                {historicalGrades.analystRatingsSell}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={6} sm={2.4}>
+                                        <Box textAlign="center">
+                                            <Typography variant="body1" color={grey[400]} mb={1}>Strong Sell</Typography>
+                                            <Typography variant="body2" color={red[400]} fontWeight="bold">
+                                                {historicalGrades.analystRatingsStrongSell}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={6} sm={2.4}>
-                                    <Box textAlign="center">
-                                        <Typography variant="body1" color={grey[400]} mb={1}>Buy</Typography>
-                                        <Typography variant="body2" color={green[300]} fontWeight="bold">
-                                            {historicalGrades.analystRatingsBuy}
-                                        </Typography>
+                            ) : (
+                                <Box sx={{ 
+                                    textAlign: 'center',
+                                    py: 4,
+                                    px: 3,
+                                    backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                                    borderRadius: 2,
+                                    border: `1px solid ${teal[800]}`
+                                }}>
+                                    <Box display="flex" justifyContent="center" mb={2}>
+                                        <Chip
+                                            icon={<FaCrown />}
+                                            label="PREMIUM"
+                                            sx={{
+                                                backgroundColor: amber[600],
+                                                color: 'black',
+                                                fontWeight: 'bold',
+                                                fontSize: '0.9rem',
+                                                px: 1
+                                            }}
+                                        />
                                     </Box>
-                                </Grid>
-                                <Grid item xs={6} sm={2.4}>
-                                    <Box textAlign="center">
-                                        <Typography variant="body1" color={grey[400]} mb={1}>Hold</Typography>
-                                        <Typography variant="body2" color={grey[400]} fontWeight="bold">
-                                            {historicalGrades.analystRatingsHold}
-                                        </Typography>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={6} sm={2.4}>
-                                    <Box textAlign="center">
-                                        <Typography variant="body1" color={grey[400]} mb={1}>Sell</Typography>
-                                        <Typography variant="body2" color={red[300]} fontWeight="bold">
-                                            {historicalGrades.analystRatingsSell}
-                                        </Typography>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={6} sm={2.4}>
-                                    <Box textAlign="center">
-                                        <Typography variant="body1" color={grey[400]} mb={1}>Strong Sell</Typography>
-                                        <Typography variant="body2" color={red[400]} fontWeight="bold">
-                                            {historicalGrades.analystRatingsStrongSell}
-                                        </Typography>
-                                    </Box>
-                                </Grid>
-                            </Grid>
+                                    <Typography variant="body1" color={grey[400]} mb={3}>
+                                        Upgrade to Premium to view analyst consensus breakdown and historical ratings distribution.
+                                    </Typography>
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleShowPaywall}
+                                        sx={{
+                                            backgroundColor: teal[600],
+                                            color: 'white',
+                                            fontWeight: 'bold',
+                                            px: 4,
+                                            py: 1.5,
+                                            '&:hover': {
+                                                backgroundColor: teal[700],
+                                            }
+                                        }}
+                                    >
+                                        Upgrade to Premium
+                                    </Button>
+                                </Box>
+                            )}
                         </CardContent>
                     </Card>
                 )}
@@ -1249,6 +1374,12 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
 
             {/* News Modal */}
             <NewsModal />
+
+            {/* Paywall Modal */}
+            <Paywall 
+                open={showPaywall}
+                onClose={() => setShowPaywall(false)}
+            />
         </>
     );
 };
