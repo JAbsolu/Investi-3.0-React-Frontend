@@ -1179,6 +1179,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                             </Typography>
                             <Button
                                 variant="contained"
+                                onClick={onShowPaywall}
                                 sx={{
                                     backgroundColor: teal[600],
                                     color: 'white',
@@ -1261,6 +1262,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                                 </Typography>
                                 <Button
                                     variant="contained"
+                                    onClick={onShowPaywall}
                                     sx={{
                                         backgroundColor: teal[600],
                                         color: 'white',
