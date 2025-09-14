@@ -6,9 +6,6 @@ import {
   Typography,
   Button,
   IconButton,
-  Card,
-  CardContent,
-  Grid,
   Chip,
   Divider,
   useMediaQuery,
@@ -21,9 +18,7 @@ import {
   FaRocket,
   FaShieldAlt,
   FaCheck,
-  FaRobot,
   FaChartLine,
-  FaUniversity,
   FaSearch,
   FaUserTie,
   FaExchangeAlt,
@@ -204,14 +199,9 @@ const Paywall = ({
 
             {/* Price */}
             <Box display="flex" justifyContent="center" alignItems="baseline" gap={1} mb={2}>
-              <Typography 
-                variant="h2" 
-                fontWeight="bold" 
-                color={white}
-                sx={{ fontSize: { xs: '3rem', md: '4rem' } }}
-              >
+              <p className='h2 text-8xl font-bold'>
                 $29
-              </Typography>
+              </p>
               <Typography variant="h6" color={teal[200]}>
                 /month
               </Typography>
@@ -370,6 +360,7 @@ const Paywall = ({
                 sx={{
                   color: grey[400],
                   borderColor: grey[600],
+                  py: 1.5,
                   '&:hover': {
                     backgroundColor: 'rgba(75, 85, 99, 0.1)',
                     borderColor: grey[500]
