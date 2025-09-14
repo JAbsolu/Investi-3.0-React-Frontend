@@ -165,7 +165,7 @@ const Paywall = ({
             {/* Premium Badge */}
             <Box display="flex" justifyContent="center" mb={2}>
               <Chip
-                icon={<FaCrown />}
+                icon={<FaCrown color='black' />}
                 label="PREMIUM"
                 sx={{
                   backgroundColor: amber[600],
