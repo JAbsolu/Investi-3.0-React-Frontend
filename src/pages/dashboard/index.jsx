@@ -133,7 +133,8 @@ export default function DashboardPage() {
   // Utility functions
   const saveLastSearch = async (userId, stock) => {
     try {
-      await set(ref(database, `lastSearch/${userId}`), stock);
+      // await set(ref(database, `lastSearch/${userId}`), stock);
+      await set(ref(database, `users/${userId}/lastSearch`), stock);
     } catch (error) {
       console.log(error.message);
     }
@@ -181,7 +182,8 @@ export default function DashboardPage() {
 
       try {
         const dbRef = ref(database);
-        const snapshot = await get(child(dbRef, `/lastSearch/${userId}`));
+        // const snapshot = await get(child(dbRef, `/lastSearch/${userId}`));
+        const snapshot = await get(child(dbRef, `users/${userId}/lastSearch`));
 
         if (snapshot.exists()) {
           const ticker = snapshot.val();
