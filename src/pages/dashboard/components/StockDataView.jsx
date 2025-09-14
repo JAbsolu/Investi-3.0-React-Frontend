@@ -36,29 +36,23 @@ const StockDataView = ({
         overflow: 'hidden'
       }}>
         {/* Stock Chart View */}
-        {(!showAnalysis || currentView === 'chart') && (
-          <Box sx={{ 
-            width: '100%',
-            opacity: currentView === 'chart' ? 1 : 0,
-            transform: currentView === 'chart' ? 'translateX(0)' : 'translateX(-20px)',
-            transition: 'all 0.3s ease-in-out'
-          }}>
-            <StockChart 
-              companyName={companyMetadata?.name}  
-              ticker={currentStock} 
-              price={stockData?.regularMarketPrice?.toFixed(2)} 
-              marketPriceChange={stockData?.regularMarketChange} 
-            />
-          </Box>
-        )}
+        <Box sx={{ 
+          width: '100%',
+          display: currentView === 'analysis' ? 'none' : 'block'
+        }}>
+          <StockChart 
+            companyName={companyMetadata?.name}  
+            ticker={currentStock} 
+            price={stockData?.regularMarketPrice?.toFixed(2)} 
+            marketPriceChange={stockData?.regularMarketChange} 
+          />
+        </Box>
 
         {/* AI Analysis View */}
-        {showAnalysis && currentView === 'analysis' && (
+        {showAnalysis && (
           <Box sx={{ 
             width: '100%',
-            opacity: currentView === 'analysis' ? 1 : 0,
-            transform: currentView === 'analysis' ? 'translateX(0)' : 'translateX(20px)',
-            transition: 'all 0.3s ease-in-out'
+            display: currentView === 'analysis' ? 'block' : 'none'
           }}>
             <Analysis ticker={currentStock} showAnalysis={showAnalysis} />
           </Box>
@@ -69,10 +63,11 @@ const StockDataView = ({
       {showAnalysis && (
         <Box sx={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'space-between',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 2,
           borderRadius: '8px',
-          mt: 1,
+          mt: 2,
         }}>
           <Button
             startIcon={<NavigateBeforeIcon />}
@@ -84,12 +79,14 @@ const StockDataView = ({
               borderColor: teal[500],
               color: currentView === 'chart' ? 'white' : teal[400],
               textTransform: 'none',
-              minWidth: '20px',
+              px: 2,
               '&:hover': {
                 backgroundColor: currentView === 'chart' ? teal[700] : 'rgba(0, 150, 136, 0.1)',
               }
             }}
-          />
+          >
+            Chart
+          </Button>
           
           <Button
             endIcon={<NavigateNextIcon />}
@@ -101,12 +98,14 @@ const StockDataView = ({
               borderColor: teal[500],
               color: currentView === 'analysis' ? 'white' : teal[400],
               textTransform: 'none',
-              minWidth: '20px',
+              px: 2,
               '&:hover': {
                 backgroundColor: currentView === 'analysis' ? teal[700] : 'rgba(0, 150, 136, 0.1)',
               }
             }}
-          />
+          >
+            Analysis
+          </Button>
         </Box>
       )}
     </Paper>
