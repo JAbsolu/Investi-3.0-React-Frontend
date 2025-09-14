@@ -760,7 +760,7 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
                             }}>
                                 <Box display="flex" justifyContent="center" mb={2}>
                                     <Chip
-                                        icon={<FaCrown />}
+                                        icon={<FaCrown color='black' />}
                                         label="PREMIUM"
                                         sx={{
                                             backgroundColor: amber[600],
@@ -960,33 +960,78 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
             {/* AI Analysis Section */}
             <Card sx={{ mb: 4, backgroundColor: 'transparent', boxShadow: 'none' }}>
                 <CardContent>
-                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
-                        <Box display="flex" alignItems="center" gap={2}>
-                            <AutoAwesomeIcon sx={{ color: teal[400], fontSize: 28 }} />
-                            <Typography variant="h6" color={teal[300]} fontWeight="bold">
-                                AI Analysis
-                            </Typography>
+                    {hasPremiumAccess ? (
+                        <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+                            <Box display="flex" alignItems="center" gap={2}>
+                                <AutoAwesomeIcon sx={{ color: teal[400], fontSize: 28 }} />
+                                <Typography variant="h6" color={teal[300]} fontWeight="bold">
+                                    AI Analysis
+                                </Typography>
+                            </Box>
+                            
+                            <Button
+                                variant="outlined"
+                                size="large"
+                                onClick={handleAIAnalysis}
+                                disabled={loading.aiAnalysis}
+                                startIcon={loading.aiAnalysis ? <CircularProgress size={20} sx={{ color: teal[400] }} /> : <AutoAwesomeIcon />}
+                                sx={{
+                                    color: loading.aiAnalysis ? 'white' : teal[400],
+                                    borderColor: teal[400],
+                                    backgroundColor: 'transparent',
+                                    px: 2,
+                                    py: 1,
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(20, 184, 166, 0.1)'
+                                    }
+                                }}
+                            >
+                                {loading.aiAnalysis ? 'Generating AI Analysis...' : 'Get Full AI Analysis'}
+                            </Button>
                         </Box>
-                        <Button
-                            variant="outlined"
-                            size="large"
-                            onClick={handleAIAnalysis}
-                            disabled={loading.aiAnalysis}
-                            startIcon={loading.aiAnalysis ? <CircularProgress size={20} sx={{ color: teal[400] }} /> : <AutoAwesomeIcon />}
-                            sx={{
-                                color: loading.aiAnalysis ? 'white' : teal[400],
-                                borderColor: teal[400],
-                                backgroundColor: 'transparent',
-                                px: 2,
-                                py: 1,
-                                '&:hover': {
-                                    backgroundColor: 'rgba(20, 184, 166, 0.1)'
-                                }
-                            }}
-                        >
-                            {loading.aiAnalysis ? 'Generating AI Analysis...' : 'Get Full AI Analysis'}
-                        </Button>
-                    </Box>
+                    ) : (
+                        <Box sx={{ 
+                                textAlign: 'center',
+                                py: 4,
+                                px: 3,
+                                backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                                borderRadius: 2,
+                                border: `1px solid ${teal[800]}`
+                            }}>
+                                <Box display="flex" justifyContent="center" mb={2}>
+                                    <Chip
+                                        icon={<FaCrown color='black' />}
+                                        label="PREMIUM"
+                                        sx={{
+                                            backgroundColor: amber[600],
+                                            color: 'black',
+                                            fontWeight: 'bold',
+                                            fontSize: '0.9rem',
+                                            px: 1
+                                        }}
+                                    />
+                                </Box>
+                                <Typography variant="body1" color={grey[400]} mb={3}>
+                                    Upgrade to Premium to view recent analyst ratings and recommendations.
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    onClick={onShowPaywall}
+                                    sx={{
+                                        backgroundColor: teal[600],
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        px: 4,
+                                        py: 1.5,
+                                        '&:hover': {
+                                            backgroundColor: teal[700],
+                                        }
+                                    }}
+                                >
+                                    Upgrade to Premium
+                                </Button>
+                        </Box>
+                    )}
                     
                     {loading.aiAnalysis ? (
                         <Box display="flex" justifyContent="center" py={8}>
@@ -1183,7 +1228,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                         }}>
                             <Box display="flex" justifyContent="center" mb={2}>
                                 <Chip
-                                    icon={<FaCrown />}
+                                    icon={<FaCrown color='black' />}
                                     label="PREMIUM"
                                     sx={{
                                         backgroundColor: amber[600],
@@ -1276,7 +1321,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                             }}>
                                 <Box display="flex" justifyContent="center" mb={2}>
                                     <Chip
-                                        icon={<FaCrown />}
+                                        icon={<FaCrown color='black' />}
                                         label="PREMIUM"
                                         sx={{
                                             backgroundColor: amber[600],
