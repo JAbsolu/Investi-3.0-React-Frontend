@@ -29,7 +29,7 @@ const StockDetailsPage = () => {
     const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const { user } = useAuth();
+    const { user, userId } = useAuth();
     
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
@@ -53,7 +53,8 @@ const StockDetailsPage = () => {
         
         try {
             const dbRef = ref(database);
-            const snapshot = await get(child(dbRef, `users/${user.uid}/lastSearch`));
+            // const snapshot = await get(child(dbRef, `/lastSearch/${user.uid}`));
+            const snapshot = await get(child(dbRef, `users/${userId}/lastSearch`));
             if (snapshot.exists()) {
                 const lastSearchData = snapshot.val();
                 setLastSearchedStock(lastSearchData.ticker);
