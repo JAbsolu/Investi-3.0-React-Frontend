@@ -7,10 +7,10 @@ import {
     useMediaQuery, useTheme, IconButton, Drawer, Avatar, Chip, Link, Divider,
     Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
-import { teal, grey, green, red } from '@mui/material/colors';
+import { teal, grey, green, red, amber } from '@mui/material/colors';
 import {
     FaBars, FaSearch, FaUsers, FaBuilding, FaCalendarAlt, FaMapMarkerAlt,
-    FaPhone, FaGlobe, FaExternalLinkAlt, FaNewspaper, FaArrowLeft
+    FaPhone, FaGlobe, FaExternalLinkAlt, FaNewspaper, FaArrowLeft, FaCrown
 } from 'react-icons/fa';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StockChart from '../components/stockChart';
@@ -758,9 +758,19 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
                                 borderRadius: 2,
                                 border: `1px solid ${teal[800]}`
                             }}>
-                                <Typography variant="h6" color={teal[300]} mb={2}>
-                                    🔒 Premium Feature
-                                </Typography>
+                                <Box display="flex" justifyContent="center" mb={2}>
+                                    <Chip
+                                        icon={<FaCrown />}
+                                        label="PREMIUM"
+                                        sx={{
+                                            backgroundColor: amber[600],
+                                            color: 'black',
+                                            fontWeight: 'bold',
+                                            fontSize: '0.9rem',
+                                            px: 1
+                                        }}
+                                    />
+                                </Box>
                                 <Typography variant="body1" color={grey[400]} mb={3}>
                                     Upgrade to Premium to view detailed price performance across different time periods.
                                 </Typography>
@@ -1171,9 +1181,19 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                             borderRadius: 2,
                             border: `1px solid ${teal[800]}`
                         }}>
-                            <Typography variant="h6" color={teal[300]} mb={2}>
-                                🔒 Premium Feature
-                            </Typography>
+                            <Box display="flex" justifyContent="center" mb={2}>
+                                <Chip
+                                    icon={<FaCrown />}
+                                    label="PREMIUM"
+                                    sx={{
+                                        backgroundColor: amber[600],
+                                        color: 'black',
+                                        fontWeight: 'bold',
+                                        fontSize: '0.9rem',
+                                        px: 1
+                                    }}
+                                />
+                            </Box>
                             <Typography variant="body1" color={grey[400]} mb={3}>
                                 Upgrade to Premium to view recent analyst ratings and recommendations.
                             </Typography>
@@ -1254,9 +1274,19 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                                 borderRadius: 2,
                                 border: `1px solid ${teal[800]}`
                             }}>
-                                <Typography variant="h6" color={teal[300]} mb={2}>
-                                    🔒 Premium Feature
-                                </Typography>
+                                <Box display="flex" justifyContent="center" mb={2}>
+                                    <Chip
+                                        icon={<FaCrown />}
+                                        label="PREMIUM"
+                                        sx={{
+                                            backgroundColor: amber[600],
+                                            color: 'black',
+                                            fontWeight: 'bold',
+                                            fontSize: '0.9rem',
+                                            px: 1
+                                        }}
+                                    />
+                                </Box>
                                 <Typography variant="body1" color={grey[400]} mb={3}>
                                     Upgrade to Premium to view analyst consensus breakdown and historical ratings distribution.
                                 </Typography>
