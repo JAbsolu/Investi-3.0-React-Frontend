@@ -12,7 +12,7 @@ import {
   TableSortLabel,
   Box
 } from '@mui/material';
-import { teal, red, grey, amber } from '@mui/material/colors';
+import { teal, red, green, grey, amber } from '@mui/material/colors';
 import { FaCrown, FaExternalLinkAlt } from 'react-icons/fa';
 import { useIsPremium } from '../../../../hooks/isPremium';
 
@@ -145,7 +145,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
         <TableBody>
           {sortedTransactions.map((transaction, index) => {
             const isPurchase = transaction.type?.toLowerCase() === 'purchase';
-            const typeColor = isPurchase ? teal[500] : red[500];
+            const typeColor = isPurchase ? green[600] : red[500];
             
             return (
               <TableRow 
