@@ -138,12 +138,12 @@ const Paywall = ({
           }
         }}
       >
-        <DialogContent sx={{ p: 0, overflow: 'scroll' }}>
+        <DialogContent sx={{ p: 0, overflow: 'scroll', background: `linear-gradient(135deg, ${teal[900]}, ${teal[700]})`, }}>
           {/* Header Section */}
           <Box sx={{ 
             position: 'relative',
-            background: `linear-gradient(135deg, ${teal[900]}, ${teal[700]})`,
-            p: { xs: 3, md: 4 },
+            // background: `linear-gradient(135deg, ${teal[900]}, ${teal[700]})`,
+            // p: { xs: 3, md: 4 },
             textAlign: 'center'
           }}>
             {/* Close Button */}
@@ -161,21 +161,6 @@ const Paywall = ({
             >
               <FaTimes />
             </IconButton>
-
-            {/* Premium Badge */}
-            <Box display="flex" justifyContent="center" mb={2}>
-              <Chip
-                icon={<FaCrown color='black' />}
-                label="PREMIUM"
-                sx={{
-                  backgroundColor: amber[600],
-                  color: 'black',
-                  fontWeight: 'bold',
-                  fontSize: '0.9rem',
-                  px: 1
-                }}
-              />
-            </Box>
 
             {/* Title */}
             <Typography 
@@ -197,13 +182,18 @@ const Paywall = ({
               AI Powered Insights
             </Typography>
 
+              <p className='h2 text-2xl font-semibold line-through'>
+                $40/month {" "}
+              </p>
+
             {/* Price */}
             <Box display="flex" justifyContent="center" alignItems="baseline" gap={1} mb={2}>
               <p className='h2 text-8xl font-bold'>
-                $29
+                $20
               </p>
               <Typography variant="h6" color={teal[200]}>
-                /month
+                /month {" "}
+                <br />
               </Typography>
             </Box>
 
@@ -244,25 +234,17 @@ const Paywall = ({
 
           {/* Features Section */}
           <Box sx={{ p: { xs: 3, md: 4 } }}>
-            <Typography 
-              variant="h4" 
-              fontWeight="bold" 
-              color={teal[300]} 
-              textAlign="center" 
-              mb={2}
-            >
-              What You'll Get
-            </Typography>
 
             {/* Benefits List */}
             <Box sx={{ 
-              maxWidth: '410px', 
+              maxWidth: '500px', 
               padding: 2,
               mx: 'auto',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
-              backgroundColor: 'rgba(31, 109, 80, 0.05)',
+              backgroundColor: '#000000',
+              // background: `linear-gradient(135deg, ${teal[900]}, ${teal[700]})`,
               border: `solid 1px ${teal[500]}`,
               borderRadius: 2,
               gap: 1
@@ -282,8 +264,9 @@ const Paywall = ({
                   {/* Checkmark */}
                   <Box sx={{ 
                     mt: 0,
-                    color: grey[400],
-                    fontSize: '.7rem',
+                    color: teal[500],
+                    fontSize: '0.9rem',
+                    mt: 0.5,
                     flexShrink: 0
                   }}>
                     <FaCheck />
@@ -294,11 +277,11 @@ const Paywall = ({
                     <Typography 
                       variant="body1" 
                       fontWeight="600" 
-                      color={teal[400]}
+                      color={teal[500]}
                       sx={{ 
                         mb: 0,
-                        fontSize: '.8rem',
-                        lineHeight: 1.3
+                        fontSize: '0.9rem',
+                        lineHeight: 2
                       }}
                     >
                       {benefit.title}
@@ -307,8 +290,8 @@ const Paywall = ({
                       variant="body2" 
                       color={grey[400]}
                       sx={{ 
-                        fontSize: '0.8rem',
-                        lineHeight: 1.4
+                        fontSize: '0.85rem',
+                        lineHeight: 1.5
                       }}
                     >
                       {benefit.description}
@@ -317,69 +300,41 @@ const Paywall = ({
                 </Box>
               ))}
             </Box>
+          </Box>
 
-            <Divider sx={{ my: 2, backgroundColor: teal[800] }} />
-
-            {/* Bottom CTA */}
-            <Box textAlign="center">
-              <Typography 
-                variant="h6" 
-                color={white} 
-                mb={3}
-                fontWeight="600"
-              >
-                Ready to unlock professional trading insights?
-              </Typography>
-              
-              <Button
-                variant="contained"
-                size="large"
-                onClick={handleUpgradeClick}
-                startIcon={<FaCrown color='black'/>}
-                sx={{
-                  backgroundColor: teal[600],
-                  color: white,
-                  fontWeight: 'bold',
-                  fontSize: '1.1rem',
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: 3,
-                  mr: 2,
-                  '&:hover': {
-                    backgroundColor: teal[700],
-                  }
-                }}
-              >
-                Start Premium Now
-              </Button>
-
-              <Button
-                variant="outlined"
-                size="large"
-                onClick={onClose}
-                sx={{
-                  color: grey[400],
-                  borderColor: grey[600],
-                  py: 1.5,
-                  '&:hover': {
-                    backgroundColor: 'rgba(75, 85, 99, 0.1)',
-                    borderColor: grey[500]
-                  }
-                }}
-              >
-                Maybe Later
-              </Button>
-            </Box>
-
+          <Box sx={{ textAlign: 'center' }}>
+            {/* CTA Button */}
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleUpgradeClick}
+              startIcon={<FaRocket />}
+              sx={{
+                backgroundColor: amber[600],
+                color: 'black',
+                fontWeight: 'bold',
+                fontSize: '1.2rem',
+                px: 4,
+                py: 1.5,
+                borderRadius: 3,
+                '&:hover': {
+                  backgroundColor: amber[500],
+                  transform: 'translateY(-2px)',
+                },
+                transition: 'all 0.3s ease'
+              }}
+            >
+              Upgrade to Premium
+            </Button>
             {/* Trust Indicators */}
             <Typography 
               variant="caption" 
-              color={grey[500]} 
+              color={teal[200]}
               sx={{ 
                 display: 'block', 
                 textAlign: 'center', 
-                mt: 3,
-                fontSize: '0.75rem' 
+                my: 1.5,
+                fontSize: '1rem' 
               }}
             >
               🔒 Secure payment • Cancel anytime • Join 1000+ premium members
