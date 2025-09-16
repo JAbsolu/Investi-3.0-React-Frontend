@@ -2,10 +2,11 @@ import { useEffect, useState} from 'react';
 import { Box, Button, IconButton } from '@mui/material';
 import { HiOutlineMenu } from "react-icons/hi";
 import { AutoAwesome, RemoveRedEye, WorkspacePremium } from '@mui/icons-material';
-import { teal, grey, yellow } from '@mui/material/colors';
+import { teal, grey, yellow, amber } from '@mui/material/colors';
 import SearchBar from './SearchBar';
 import { useIsPremium } from '../../../hooks/isPremium';
 import Paywall from './Paywall';
+import { FaCrown } from 'react-icons/fa';
 
 const DashboardHeader = ({
   isSmallScreen,
@@ -117,7 +118,7 @@ const DashboardHeader = ({
         {!hasPremiumAccess && (
           <Button
           variant="contained"
-          startIcon={<WorkspacePremium sx={{ color: yellow[800], fontSize: '1.7rem' }} />}
+          startIcon={<FaCrown color={amber[500]}/>}
           sx={{ 
             color: 'white', 
             minWidth: "12em",
