@@ -195,7 +195,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                   {transaction.symbol && (
                     <Chip
                       icon={!hasPremiumAccess && index >= 5 && <FaCrown color="black" />}
-                      label={index < 5 ? transaction.symbol : "Upgrade to Premium"}
+                      label={index < 5 ? transaction.symbol : "UPGRADE"}
                       size="small"
                       onClick={!hasPremiumAccess && index >= 5 ? () => setShowPaywall(true) : () => onStockClick && onStockClick(transaction.symbol)}
                       sx={{
