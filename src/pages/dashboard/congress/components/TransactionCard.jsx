@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -9,8 +9,12 @@ import {
 } from '@mui/material';
 import { teal, red, grey } from '@mui/material/colors';
 import { FaExternalLinkAlt, FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
+import StockDetailsModal from '../../components/StockDetailsModal';
 
-const TransactionCard = ({ transaction }) => {
+const TransactionCard = ({ transaction, wishlist = [], addToWishlist }) => {
+  const [stockModalOpen, setStockModalOpen] = useState(false);
+  const [selectedStock, setSelectedStock] = useState(null);
+
   const {
     symbol,
     disclosureDate,
@@ -35,6 +39,22 @@ const TransactionCard = ({ transaction }) => {
     if (link) {
       window.open(link, '_blank', 'noopener,noreferrer');
     }
+  };
+
+  const handleStockClick = (e) => {
+    e.stopPropagation();
+    if (symbol) {
+      setSelectedStock({
+        symbol: symbol,
+        name: assetDescription || symbol
+      });
+      setStockModalOpen(true);
+    }
+  };
+
+  const handleModalClose = () => {
+    setStockModalOpen(false);
+    setSelectedStock(null);
   };
 
   const formatDate = (dateString) => {
@@ -63,6 +83,7 @@ const TransactionCard = ({ transaction }) => {
           boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
         },
       }}
+      onClick={handleStockClick}
     >
       <CardContent sx={{ p: 3 }}>
         {/* Header with Member Name and Symbol */}
@@ -84,6 +105,12 @@ const TransactionCard = ({ transaction }) => {
                 color: 'white',
                 fontWeight: 'bold',
                 fontSize: '0.75rem',
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: teal[400],
+                  transform: 'translateY(-1px)',
+                },
+                transition: 'all 0.2s ease',
               }}
             />
           )}
@@ -178,6 +205,15 @@ const TransactionCard = ({ transaction }) => {
           )}
         </Box>
       </CardContent>
+
+      {/* Stock Details Modal */}
+      <StockDetailsModal
+        open={stockModalOpen}
+        onClose={handleModalClose}
+        stock={selectedStock}
+        wishlist={wishlist}
+        addToWishlist={addToWishlist}
+      />
     </Card>
   );
 };
