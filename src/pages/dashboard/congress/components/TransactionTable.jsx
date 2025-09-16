@@ -15,11 +15,13 @@ import {
 import { teal, red, green, grey, amber } from '@mui/material/colors';
 import { FaCrown, FaExternalLinkAlt } from 'react-icons/fa';
 import { useIsPremium } from '../../../../hooks/isPremium';
+import Paywall from '../../components/Paywall';
 
 const TransactionTable = ({ transactions, title, isCompact = false, constrained = false, onStockClick }) => {
   const [orderBy, setOrderBy] = useState('disclosureDate');
   const [order, setOrder] = useState('desc');
   const hasPremiumAccess = useIsPremium();
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const handleSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -178,7 +180,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                         backgroundColor: teal[600],
                         color: 'white',
                         fontWeight: 'bold',
-                        fontSize: '0.75rem',
+                        fontSize: '0.7rem',
                         cursor: onStockClick ? 'pointer' : 'default',
                         '&:hover': onStockClick ? {
                           backgroundColor: teal[500],
@@ -193,18 +195,18 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                   {transaction.symbol && (
                     <Chip
                       icon={!hasPremiumAccess && index >= 5 && <FaCrown color="black" />}
-                      label={index < 5 ? transaction.symbol : "Upgrade to view"}
+                      label={index < 5 ? transaction.symbol : "Upgrade to Premium"}
                       size="small"
-                      onClick={() => onStockClick && onStockClick(transaction.symbol)}
+                      onClick={() => setShowPaywall(true)}
                       sx={{
                         backgroundColor: !hasPremiumAccess && index >= 5 ? amber[600] : teal[600],
                         color: !hasPremiumAccess && index >= 5 ? 'black' : 'white',
                         fontWeight: 'bold',
-                        fontSize: '0.75rem',
+                        fontSize: '0.8rem',
                         padding: 1,
                         cursor: onStockClick ? 'pointer' : 'default',
                         '&:hover': onStockClick ? {
-                          backgroundColor: teal[500],
+                          backgroundColor: amber[500],
                           transform: 'scale(1.05)'
                         } : {}
                       }}
@@ -271,6 +273,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
           })}
         </TableBody>
       </Table>
+      <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} />
     </TableContainer>
   );
 };

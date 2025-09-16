@@ -230,16 +230,15 @@ const CongressPage = () => {
               )}
 
               {/* Page Header */}
-              <Box sx={{ mb: 3 }}>
+              <Box sx={{ mb: 0 }}>
                 {!isSmallScreen && (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <FaUniversity style={{ color: teal[400], fontSize: '2rem' }} />
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2}}>
                     <Typography 
-                      variant="h4" 
+                      variant="h2" 
                       sx={{ 
-                        color: teal[300],
+                        color: "white",
                         fontWeight: 700,
-                        fontSize: '2.125rem'
+                        fontSize: '1.4rem'
                       }}
                     >
                       Congressional Trading Monitor
@@ -250,6 +249,8 @@ const CongressPage = () => {
                       sx={{ 
                         color: teal[400],
                         ml: 'auto',
+                        py: 1,
+                        px: 2,
                         border: `1px solid ${teal[600]}`,
                         '&:hover': {
                           backgroundColor: teal[900],
@@ -270,7 +271,7 @@ const CongressPage = () => {
                   sx={{ 
                     color: grey[400],
                     lineHeight: 1.6,
-                    mb: 2,
+                    mb: 1,
                     fontSize: isMobile ? '0.85rem' : '1rem'
                   }}
                 >
@@ -278,7 +279,7 @@ const CongressPage = () => {
                 </Typography>
 
                 {/* Data Source Info */}
-                <Alert 
+                {/* <Alert 
                   severity="info"
                   sx={{ 
                     backgroundColor: 'rgba(2, 136, 209, 0.1)',
@@ -300,11 +301,11 @@ const CongressPage = () => {
                   }
                 >
                   Data sourced from official House and Senate financial disclosure databases
-                </Alert>
+                </Alert> */}
               </Box>
 
               {/* Senate/House Tab Navigation */}
-              <Box sx={{ mb: 1, borderBottom: `1px solid ${teal[800]}` }}>
+              <Box sx={{ mb: 0, borderBottom: `1px solid ${teal[800]}` }}>
                 <Tabs
                   value={activeTab}
                   onChange={handleTabChange}
@@ -313,7 +314,7 @@ const CongressPage = () => {
                       color: grey[500],
                       textTransform: 'none',
                       fontWeight: 600,
-                      fontSize: isMobile ? '0.85rem' : '1rem',
+                      fontSize: isMobile ? '0.8rem' : '.9rem',
                       minWidth: isMobile ? 100 : 120,
                       '&.Mui-selected': {
                         color: teal[300],
