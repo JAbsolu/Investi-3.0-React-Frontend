@@ -5,12 +5,11 @@ import {
     Box, Typography, Container, Divider,
     useMediaQuery, useTheme, IconButton, Drawer,
     Tabs, Tab, CircularProgress, Alert, Button,
-    Grid
+    Avatar,
 } from "@mui/material";
-import { teal, grey, green, red } from "@mui/material/colors";
+import { teal, grey, green, red, orange } from "@mui/material/colors";
 import { 
     FaBars, FaArrowUp, FaArrowDown, FaFire, FaRedo,
-    FaArrowLeft
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useMarketActivity } from "../../../hooks/useMarketActivity";
@@ -55,9 +54,9 @@ const MoversPage = () => {
 
     // Tab configuration
     const tabs = [
-        { label: 'Biggest Gainers', icon: <FaArrowUp />, key: 'gainers', data: biggestGainers },
-        { label: 'Biggest Losers', icon: <FaArrowDown />, key: 'losers', data: biggestLosers },
-        { label: 'Most Traded', icon: <FaFire />, key: 'traded', data: mostTraded },
+        { label: 'Biggest Gainers', icon: <FaArrowUp color={green[400]} />, key: 'gainers', data: biggestGainers },
+        { label: 'Biggest Losers', icon: <FaArrowDown color={red[600]} />, key: 'losers', data: biggestLosers },
+        { label: 'Most Traded', icon: <FaFire color={orange[600]} />, key: 'traded', data: mostTraded },
     ];
 
     // Toggle drawer for mobile
@@ -92,7 +91,6 @@ const MoversPage = () => {
         if (!ticker) return;
         // Navigate back to dashboard with the selected stock
         navigate('/dashboard');
-        // You could add additional logic here to set the stock in a global state
     };
 
     // Format price
@@ -119,79 +117,105 @@ const MoversPage = () => {
     const currentLoading = loading[currentTab?.key];
     const currentError = errors[currentTab?.key];
 
+     // Stock Logo Component
+    const StockLogo = ({ ticker, size = 24 }) => {
+        const [hasError, setHasError] = React.useState(false);
+
+        const [imageSrc, setImageSrc] = React.useState(
+              ticker?.symbol ? `https://images.financialmodelingprep.com/symbol/${ticker.symbol}.png` : ""
+        );
+
+        const handleImageError = () => {
+            if (!hasError) {
+                setHasError(true);
+                setImageSrc("/investi_favicon2.png");
+            }
+        };
+        return ticker?.symbol ? (
+            <Avatar 
+                src={imageSrc}
+                onError={handleImageError}
+                sx={{ 
+                width: size, 
+                height: size, 
+                borderRadius: "50%",
+                mr: 0.5,
+                backgroundColor: 'transparent',
+                padding: 0
+                }}
+            />
+        ) : null;
+    };
+
     // Stock item component (list style)
     const StockItem = ({ stock }) => (
         <Box
             onClick={() => handleStockClick(stock)}
             sx={{
-                backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                backgroundColor: 'transparent',
+                border: `1px solid ${teal[600]}`,
                 display: 'flex',
-                justifyContent: 'space-between',
+                justifyContent: 'start',
+                gap: 4,
                 alignItems: 'center',
-                width: '100%',
-                height: "5em",
+                width: isSmallScreen ? '100%' : '75%',
+                height: "7em",
                 borderRadius: 2,
                 transition: 'all 0.2s ease',
                 cursor: 'pointer',
-                p: 2,
-                mb: 1,
+                pl: 2,
+                pr: 4,
+                mb: 2,
                 '&:hover': {
                     transform: 'translateY(-2px)',
-                    boxShadow: `0 6px 12px rgba(20, 184, 166, 0.2)`,
                     backgroundColor: 'rgba(20, 184, 166, 0.1)',
                 }
             }}
         >
-
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxWidth: "70%", textWrap: 'wrap' }}>
-                <Typography 
-                    variant="h6" 
-                    fontWeight="bold" 
-                    color="white"
-                    sx={{ fontSize: '0.85rem' }}
-                >
-                    {stock.symbol}
-                </Typography>
-                 <Typography 
-                variant="body2" 
-                color={teal[300]}
-                sx={{ 
-                    fontSize: '0.85rem',
-                    lineHeight: 1.3,
-                    display: '-webkit-box',
-                    WebkitLineClamp: 1,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                }}
-            >
-                {stock.name}
-            </Typography>
-                {/* <Typography 
-                    variant="caption" 
-                    color={teal[400]}
-                    sx={{ fontSize: '0.7rem' }}
-                >
-                    {stock.exchange}
-                </Typography> */}
-            </Box>
-                
-            <Box textAlign="right" sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxWidth: "70%" }}>
-                <Typography 
-                    variant="h6" 
-                    fontWeight="bold" 
-                    color="white"
-                    sx={{ fontSize: '1rem' }}
-                >
-                    {formatPrice(stock.price)}
-                </Typography>
-                <Typography 
-                    variant="body2" 
-                    color={getChangeColor(stock.change)}
-                    fontWeight="bold"
-                    sx={{ fontSize: '0.9rem' }}
-                >
-                    {formatPercentage(stock.changesPercentage)}
-                </Typography>
+            <StockLogo ticker={stock} size={80}/>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0, maxWidth: "70%", textWrap: 'wrap' }}>
+                    <Typography 
+                        variant="body1" 
+                        color={"white"}
+                        sx={{ fontSize: '1rem', fontWeight: 'bold' }}
+                    >
+                        {stock.exchange}
+                    </Typography>
+                    <Typography 
+                        variant="body1" 
+                        color={teal[300]}
+                        sx={{ 
+                            fontSize: '0.9rem',
+                            lineHeight: 1.3,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 1,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                        }}
+                    >
+                        {stock.name}
+                    </Typography>
+                </Box>
+                    
+                <Box textAlign="left" sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxWidth: "70%" }}>
+                    <Typography 
+                        variant="h6" 
+                        fontWeight="bold" 
+                        color="white"
+                        sx={{ fontSize: '1rem' }}
+                    >
+                        {formatPrice(stock.price)}
+                    </Typography>
+                    <Typography 
+                        variant="body2" 
+                        color={getChangeColor(stock.change)}
+                        fontWeight="bold"
+                        sx={{ fontSize: '0.9rem' }}
+                    >
+                        {formatPercentage(stock.changesPercentage)}
+                    </Typography>
+                </Box>
             </Box>
         </Box>
     );
@@ -258,7 +282,8 @@ const MoversPage = () => {
                             position: 'sticky',
                             top: 0,
                             zIndex: 1100,
-                            backgroundColor: darkBg,
+                            // backgroundColor: darkBg,
+                            background: '#000000',
                             borderBottom: `1px solid ${teal[800]}`,
                             px: 2,
                             py: 1.5,
@@ -293,31 +318,14 @@ const MoversPage = () => {
                 )}
                 
                 <Container maxWidth="xl" sx={{ mt: isSmallScreen ? 0 : 2, pb: 5 }}>
-                    <Box mb={2}>
-                        {/* Back Button */}
-                        {/* <Button
-                            onClick={() => navigate('/dashboard')}
-                            startIcon={<FaArrowLeft />}
-                            sx={{
-                                color: teal[400],
-                                textTransform: 'none',
-                                mb: 2,
-                                '&:hover': {
-                                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
-                                },
-                            }}
-                        >
-                            Back to Dashboard
-                        </Button> */}
-
+                    {!isSmallScreen && (<Box mb={2}>
                         {/* Desktop Title */}
                         {!isSmallScreen && (
                             <Typography 
                                 variant="h4" 
                                 fontWeight="bold" 
-                                color={teal[400]} 
-                                mb={1}
-                                sx={{ fontSize: { xs: '1.8rem', sm: '2.5rem' } }}
+                                color={"white"} 
+                                sx={{ fontSize: { xs: '1.6rem', sm: '1.8rem' } }}
                             >
                                 Movers
                             </Typography>
@@ -325,7 +333,6 @@ const MoversPage = () => {
                         <Typography 
                             variant="body1" 
                             color={"#ffffff"} 
-                            mb={3}
                             sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
                         >
                             Explore the most active stocks in today's market
@@ -333,9 +340,10 @@ const MoversPage = () => {
                         
                         {/* <Divider sx={{ bgcolor: teal[900], opacity: 0.5, my: 3 }} /> */}
                     </Box>
+                    )}
 
                     {/* Movers Tabs */}
-                    <Box sx={{ mb: 4, borderBottom: `1px solid ${teal[800]}` }}>
+                    <Box sx={{ mb: 2, borderBottom: `1px solid ${teal[800]}` }}>
                         <Tabs
                             value={activeTab}
                             onChange={handleTabChange}
@@ -347,7 +355,7 @@ const MoversPage = () => {
                                     color: grey[500],
                                     textTransform: 'none',
                                     fontWeight: 600,
-                                    fontSize: isMobile ? '0.8rem' : '1rem',
+                                    fontSize: isMobile ? '0.8rem' : '.9rem',
                                     minWidth: isMobile ? 120 : 160,
                                     '&.Mui-selected': {
                                         color: teal[300],
@@ -355,7 +363,7 @@ const MoversPage = () => {
                                 },
                                 '& .MuiTabs-indicator': {
                                     backgroundColor: teal[500],
-                                    height: 3,
+                                    height: 2,
                                 },
                                 '& .MuiTabs-scrollButtons': {
                                     color: teal[400],
