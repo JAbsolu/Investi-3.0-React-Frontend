@@ -39,7 +39,7 @@ const StockDetailsPage = () => {
     const [data, setData] = useState({});
     const [searchTicker, setSearchTicker] = useState('');
     const [currentTicker, setCurrentTicker] = useState(urlTicker || '');
-    const [selectedNews, setSelectedNews] = useState(null);
+    const [selectedNews, setSelectedNews] = useState (null);
     const [newsModalOpen, setNewsModalOpen] = useState(false);
     const [lastSearchedStock, setLastSearchedStock] = useState(null);
     const [showLastSearchDialog, setShowLastSearchDialog] = useState(false);
