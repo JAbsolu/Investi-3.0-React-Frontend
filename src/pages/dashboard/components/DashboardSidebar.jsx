@@ -23,7 +23,7 @@ function DashboardSidebar({ onClose }) {
   const currentPath = location.pathname;
 
   const [showPaywall, setShowPaywall] = useState(false);
-  const { hasPremiumAccess } = useIsPremium();
+  const {hasPremiumAccess} = useIsPremium();
 
   // Check if a route is active
   const isActive = (path) => {
@@ -242,7 +242,7 @@ function DashboardSidebar({ onClose }) {
             opacity: 0.7 
           }} />
 
-          {!hasPremiumAccess && (
+          {/* {!hasPremiumAccess && (
             <Chip
               icon={<FaCrown color='black' />}
               label="UPGRADE"
@@ -256,7 +256,7 @@ function DashboardSidebar({ onClose }) {
               }}
               onClick={() => setShowPaywall(true)}
             />
-          )}
+          )} */}
 
         </Box>
         <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} />
