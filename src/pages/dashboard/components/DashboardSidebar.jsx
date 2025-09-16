@@ -4,10 +4,7 @@ import { signOut } from "firebase/auth";
 import { green, grey, teal, red } from "@mui/material/colors";
 import { 
   IoHomeSharp, 
-  // IoNewspaperOutline, 
-  // IoChatbubbleEllipsesOutline,
   IoSettingsOutline, 
-  // IoLogOutOutline,
   IoAnalyticsSharp,
   IoCompassOutline,
   IoTrendingUpOutline,
