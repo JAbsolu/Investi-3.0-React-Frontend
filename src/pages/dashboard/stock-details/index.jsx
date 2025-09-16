@@ -226,16 +226,31 @@ const StockDetailsPage = () => {
 
     // Stock Logo Component
     const StockLogo = ({ ticker, size = 24 }) => {
+        const [hasError, setHasError] = React.useState(false);
+
         const profile = data.profile?.[0];
+
+        const [imageSrc, setImageSrc] = React.useState(
+              profile?.image ? profile.image : "/favicon.png"
+        );
+
+        const handleImageError = () => {
+            if (!hasError) {
+                setHasError(true);
+                setImageSrc("/investi_favicon2.png");
+            }
+        };
         return profile?.image ? (
             <Avatar 
-                src={profile.image} 
+                src={imageSrc}
+                onError={handleImageError}
                 sx={{ 
-                    width: size, 
-                    height: size, 
-                    mr: 1,
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    padding: 0.5
+                width: size, 
+                height: size, 
+                borderRadius: 0,
+                mr: 0.5,
+                backgroundColor: 'transparent',
+                padding: 0
                 }}
             />
         ) : null;
@@ -318,7 +333,7 @@ const StockDetailsPage = () => {
                                 </IconButton>
                             )}
                             <Box display="flex" alignItems="center" gap={2} minWidth={0} flex={1}>
-                                <StockLogo ticker={currentTicker} size={isMobile ? 24 : 32} />
+                                <StockLogo size={isMobile ? 24 : 32} />
                                 <Box minWidth={'100%'} flex={1}>
                                     <Typography 
                                         variant={isMobile ? "h6" : "h6"} 
@@ -823,6 +838,38 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
         );
     }
 
+    // Stock Logo Component
+    const StockLogo = ({ size = 24 }) => {
+        const [hasError, setHasError] = React.useState(false);
+
+        const profile = data.profile?.[0];
+
+        const [imageSrc, setImageSrc] = React.useState(
+              profile?.image ? profile.image : "/favicon.png"
+        );
+
+        const handleImageError = () => {
+            if (!hasError) {
+                setHasError(true);
+                setImageSrc("/investi_favicon2.png");
+            }
+        };
+        return profile?.image ? (
+            <Avatar 
+                src={imageSrc}
+                onError={handleImageError}
+                sx={{ 
+                width: size, 
+                height: size, 
+                borderRadius: 0,
+                mr: 0.5,
+                backgroundColor: 'transparent',
+                padding: 0
+                }}
+            />
+        ) : null;
+    };
+
     return (
         <Box>
             {/* Company Overview */}
@@ -830,10 +877,7 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
                 <CardContent>
                     <Box display="flex" alignItems="center" gap={3} mb={3}>
                         {profile.image && (
-                            <Avatar 
-                                src={profile.image} 
-                                sx={{ width: 64, height: 64 }}
-                            />
+                            <StockLogo data={data} size={50} />
                         )}
                         <Box>
                             <Typography variant="h4" color={white} fontWeight="bold" mb={1}>
