@@ -12,12 +12,14 @@ import {
   TableSortLabel,
   Box
 } from '@mui/material';
-import { teal, red, grey } from '@mui/material/colors';
-import { FaExternalLinkAlt } from 'react-icons/fa';
+import { teal, red, grey, amber } from '@mui/material/colors';
+import { FaCrown, FaExternalLinkAlt } from 'react-icons/fa';
+import { useIsPremium } from '../../../../hooks/isPremium';
 
 const TransactionTable = ({ transactions, title, isCompact = false, constrained = false, onStockClick }) => {
   const [orderBy, setOrderBy] = useState('disclosureDate');
   const [order, setOrder] = useState('desc');
+  const hasPremiumAccess = useIsPremium();
 
   const handleSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -165,7 +167,8 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                     </Box>
                   </Box>
                 </TableCell>
-                <TableCell sx={{ color: 'white' }}>
+                {hasPremiumAccess ? (
+                   <TableCell sx={{ color: 'white' }}>
                   {transaction.symbol && (
                     <Chip
                       label={transaction.symbol}
@@ -185,6 +188,30 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                     />
                   )}
                 </TableCell>
+                ) : (
+                   <TableCell sx={{ color: 'white' }}>
+                  {transaction.symbol && (
+                    <Chip
+                      icon={!hasPremiumAccess && index >= 5 && <FaCrown color="black" />}
+                      label={index < 5 ? transaction.symbol : "Upgrade to view"}
+                      size="small"
+                      onClick={() => onStockClick && onStockClick(transaction.symbol)}
+                      sx={{
+                        backgroundColor: !hasPremiumAccess && index >= 5 ? amber[600] : teal[600],
+                        color: !hasPremiumAccess && index >= 5 ? 'black' : 'white',
+                        fontWeight: 'bold',
+                        fontSize: '0.75rem',
+                        padding: 1,
+                        cursor: onStockClick ? 'pointer' : 'default',
+                        '&:hover': onStockClick ? {
+                          backgroundColor: teal[500],
+                          transform: 'scale(1.05)'
+                        } : {}
+                      }}
+                    />
+                  )}
+                </TableCell>
+                )}
                 {!isCompact && (
                   <TableCell sx={{ color: grey[300], maxWidth: 200 }}>
                     <Box sx={{ 
