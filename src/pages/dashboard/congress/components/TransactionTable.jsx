@@ -197,7 +197,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                       icon={!hasPremiumAccess && index >= 5 && <FaCrown color="black" />}
                       label={index < 5 ? transaction.symbol : "Upgrade to Premium"}
                       size="small"
-                      onClick={() => setShowPaywall(true)}
+                      onClick={!hasPremiumAccess && index >= 5 ? () => setShowPaywall(true) : () => onStockClick && onStockClick(transaction.symbol)}
                       sx={{
                         backgroundColor: !hasPremiumAccess && index >= 5 ? amber[600] : teal[600],
                         color: !hasPremiumAccess && index >= 5 ? 'black' : 'white',
@@ -206,7 +206,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                         padding: 1,
                         cursor: onStockClick ? 'pointer' : 'default',
                         '&:hover': onStockClick ? {
-                          backgroundColor: amber[500],
+                          backgroundColor:!hasPremiumAccess && index >= 5 ? amber[500] : teal[500],
                           transform: 'scale(1.05)'
                         } : {}
                       }}

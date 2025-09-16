@@ -7,13 +7,17 @@ import {
   Chip,
   IconButton
 } from '@mui/material';
-import { teal, red, grey } from '@mui/material/colors';
-import { FaExternalLinkAlt, FaCalendarAlt, FaDollarSign } from 'react-icons/fa';
+import { teal, red, grey, amber } from '@mui/material/colors';
+import { FaExternalLinkAlt, FaCalendarAlt, FaDollarSign, FaCrown } from 'react-icons/fa';
 import StockDetailsModal from '../../components/StockDetailsModal';
+import { useIsPremium } from '../../../../hooks/isPremium';
+import Paywall from '../../components/Paywall';
 
-const TransactionCard = ({ transaction, wishlist = [], addToWishlist }) => {
+const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) => {
   const [stockModalOpen, setStockModalOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
+  const { hasPremiumAccess } = useIsPremium();
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const {
     symbol,
@@ -83,7 +87,7 @@ const TransactionCard = ({ transaction, wishlist = [], addToWishlist }) => {
           boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
         },
       }}
-      onClick={handleStockClick}
+      onClick={!hasPremiumAccess && index >= 5 ? () => setShowPaywall(true) : handleStockClick}
     >
       <CardContent sx={{ p: 3 }}>
         {/* Header with Member Name and Symbol */}
@@ -98,13 +102,15 @@ const TransactionCard = ({ transaction, wishlist = [], addToWishlist }) => {
           </Box>
           {symbol && (
             <Chip
-              label={symbol}
+              icon={!hasPremiumAccess && index >= 5 && <FaCrown color="black" size={12} />}
+              label={!hasPremiumAccess && index >= 5 ? "UPGRADE" : symbol}
               size="small"
               sx={{
-                backgroundColor: teal[500],
-                color: 'white',
+                backgroundColor: !hasPremiumAccess && index >= 5 ? amber[600] : teal[500],
+                color: !hasPremiumAccess && index >= 5 ? 'black' : 'white',
                 fontWeight: 'bold',
                 fontSize: '0.75rem',
+                px: 1,
                 cursor: 'pointer',
                 '&:hover': {
                   backgroundColor: teal[400],
@@ -213,6 +219,12 @@ const TransactionCard = ({ transaction, wishlist = [], addToWishlist }) => {
         stock={selectedStock}
         wishlist={wishlist}
         addToWishlist={addToWishlist}
+      />
+
+      {/* Paywall Modal */}
+      <Paywall
+        open={showPaywall}
+        onClose={() => setShowPaywall(false)}
       />
     </Card>
   );
