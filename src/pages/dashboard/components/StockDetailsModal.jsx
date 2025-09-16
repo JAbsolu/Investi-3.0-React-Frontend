@@ -200,20 +200,36 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
 
     // Stock Logo Component
     const StockLogo = ({ ticker, size = 24 }) => {
+        const [hasError, setHasError] = React.useState(false);
+
         const profile = data.profile?.[0];
+
+        const [imageSrc, setImageSrc] = React.useState(
+              profile?.image ? profile.image : "/favicon.png"
+        );
+
+        const handleImageError = () => {
+            if (!hasError) {
+                setHasError(true);
+                setImageSrc("/investi_favicon2.png");
+            }
+        };
         return profile?.image ? (
             <Avatar 
-                src={profile.image} 
+                src={imageSrc}
+                onError={handleImageError}
                 sx={{ 
-                    width: size, 
-                    height: size, 
-                    mr: 1,
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    padding: 0.5
+                width: size, 
+                height: size, 
+                borderRadius: 0,
+                mr: 0.5,
+                backgroundColor: 'transparent',
+                padding: 0
                 }}
             />
         ) : null;
     };
+    
 
     // Overview Tab Component
     const OverviewTab = () => {
