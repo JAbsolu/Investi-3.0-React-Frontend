@@ -1,7 +1,8 @@
 import React from 'react';
 import { 
   Box, Typography, Card, CardContent, CircularProgress, 
-  Button, useMediaQuery, useTheme, Alert, IconButton, Tooltip
+  Button, useMediaQuery, useTheme, Alert, IconButton, Tooltip,
+  Avatar
 } from '@mui/material';
 import { teal, grey, green, red } from '@mui/material/colors';
 import { 
@@ -77,6 +78,36 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
     }
   };
 
+  // get stock logo component
+  const StockLogo = ({ ticker, size = 24 }) => {
+    const [imageSrc, setImageSrc] = React.useState(
+      ticker?.symbol ? `https://images.financialmodelingprep.com/symbol/${ticker.symbol}.png` : "/favicon.png"
+    );
+    const [hasError, setHasError] = React.useState(false);
+
+    const handleImageError = () => {
+      if (!hasError) {
+        setHasError(true);
+        setImageSrc("/investi_favicon2.png");
+      }
+    };
+
+    return ticker?.symbol ? (
+      <Avatar 
+        src={imageSrc}
+        onError={handleImageError}
+        sx={{ 
+          width: size, 
+          height: size, 
+          borderRadius: 0,
+          mr: 0.5,
+          backgroundColor: 'transparent',
+          padding: 0
+        }}
+      />
+    ) : null;
+  };
+
   // Stock item component
   const StockItem = ({ stock, type }) => (
     <Card
@@ -103,26 +134,29 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
       }}
     >
       <CardContent sx={{ p: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
-          <Typography 
-            variant="h6" 
-            fontWeight="bold" 
-            color="white"
-            sx={{ fontSize: '0.8rem', lineHeight: 1.2 }}
-          >
-            {stock.symbol}
-          </Typography>
+        <Box display="flex" gap={0.5} justifyContent="start" alignItems="end" mb={0.5}>
+          <StockLogo ticker={stock} size={isMobile ? 32 : 40} />
           <Typography 
             variant="body2" 
-            // color={teal[400]}
-            color='white'
-            sx={{ fontSize: '0.7rem', lineHeight: 1.2 }}
+            color={teal[300]}
+            sx={{ 
+              mb: 0.5,
+              mt: 0.5,
+              fontSize: '0.85rem',
+              lineHeight: 1.15,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              minHeight: '28px',
+              maxHeight: '28px'
+            }}
           >
-            {stock.exchange}
+            {stock.name}
           </Typography>
         </Box>
         
-        <Typography 
+        {/* <Typography 
           variant="body2" 
           color={teal[300]}
           sx={{ 
@@ -137,8 +171,8 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
             maxHeight: '28px'
           }}
         >
-          {stock.name}
-        </Typography>
+          {stock.symbol}
+        </Typography> */}
         
         <Box display="flex" justifyContent="space-between" alignItems="flex-end" mt="auto">
           <Typography 
@@ -277,20 +311,20 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
 
   // Regular section component for other sections
   const MarketSection = ({ title, icon: Icon, data, type, color }) => (
-    <Box mb={4}>
+    <Box mb={2}>
       <Box 
         display="flex" 
         alignItems="center" 
         justifyContent={'space-between'}
-        mb={2}
+        mb={0}
         sx={{ px: isMobile ? 1 : 0 }}
       >
         {/* <Icon size={18} color={color} style={{ marginRight: '8px' }} /> */}
         <Typography 
           variant="h6" 
           fontWeight="bold" 
-          color={teal[400]}
-          sx={{ fontSize: '1rem' }}
+          color={"white"}
+          sx={{ fontSize: '1.2rem' }}
         >
           {title}
         </Typography>
@@ -360,7 +394,7 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
             },
           }}
         >
-          {data.slice(0, 6).map((stock, index) => (
+          {data.slice(0, 10).map((stock, index) => (
             <StockItem key={stock.symbol || index} stock={stock} type={type} />
           ))}
         </Box>
@@ -379,10 +413,16 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
           alignItems: 'stretch'
         }}
       >
-        <InfiniteScrollSection
+        {/* <InfiniteScrollSection
           title="Daily Movers"
           data={biggestGainers}
           type="gainers"
+        /> */}
+        <MarketSection
+          title="Daily Movers"
+          data={biggestGainers}
+          type="gainers"
+          color={teal[400]}
         />
         {/*  
         <MarketSection
@@ -392,6 +432,7 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
           type="losers"
           color={red[400]}
         />
+          */}
         
         <MarketSection
           title="Most Traded"
@@ -400,7 +441,7 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
           type="traded"
           color={teal[400]}
         />
-        */}
+      
       </Box>
 
       {/* Stock Details Modal */}
