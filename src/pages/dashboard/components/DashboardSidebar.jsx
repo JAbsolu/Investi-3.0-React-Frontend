@@ -1,7 +1,7 @@
-import { Box, Button, Typography, Tooltip, Divider } from "@mui/material";
+import { Box, Button, Typography, Tooltip, Divider, Chip } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { signOut } from "firebase/auth";
-import { green, grey, teal, red } from "@mui/material/colors";
+import { grey, teal, amber } from "@mui/material/colors";
 import { 
   IoHomeSharp, 
   IoSettingsOutline, 
@@ -11,13 +11,19 @@ import {
   IoDocumentTextOutline,
   IoSearchOutline
 } from "react-icons/io5";
-import { FaUniversity } from "react-icons/fa";
+import { FaCrown, FaUniversity } from "react-icons/fa";
 import { auth } from "../../../firebaseConfig";
+import Paywall from "./Paywall";
+import { useState } from "react";
+import { useIsPremium } from "../../../hooks/isPremium";
 
 function DashboardSidebar({ onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+
+  const [showPaywall, setShowPaywall] = useState(false);
+  const { hasPremiumAccess } = useIsPremium();
 
   // Check if a route is active
   const isActive = (path) => {
@@ -73,33 +79,6 @@ function DashboardSidebar({ onClose }) {
   };
 
   return (
-    // <Box
-    //   sx={{
-    //     width: "220px",
-    //     flexShrink: 0,
-    //     borderRight: `solid 1px ${grey[900]}`,
-    //     background: 'linear-gradient(to bottom, #121212, #0d0d0d)',
-    //     px: 2,
-    //     display: "flex",
-    //     flexDirection: "column",
-    //     justifyContent: "space-between",
-    //     height: "100vh",
-    //     position: "sticky", 
-    //     top: 0,
-    //     boxShadow: '4px 0 15px rgba(0,0,0,0.3)',
-    //     overflow: 'hidden',
-    //     '&::after': {
-    //       content: '""',
-    //       position: 'absolute',
-    //       top: 0,
-    //       right: 0,
-    //       width: '1px',
-    //       height: '100%',
-    //       background: `linear-gradient(to bottom, transparent, ${teal[900]}, transparent)`,
-    //       opacity: 0.6,
-    //     }
-    //   }}
-    // >
       <Box
       sx={{
         // width: "220px",
@@ -262,47 +241,26 @@ function DashboardSidebar({ onClose }) {
             mx: 'auto',
             opacity: 0.7 
           }} />
-          
-          {/* Sign Out Button integrated into main navigation */}
-          {/* <Tooltip title="Sign Out" placement="right" arrow>
-            <Button
-              onClick={handleSignOut}
-              startIcon={<IoLogOutOutline size={20} />}
-              sx={{
-                justifyContent: "flex-start",
-                color: red[400],
-                backgroundColor: 'transparent',
-                borderRadius: '10px',
-                py: 1.2,
-                px: 2,
-                mb: 0.5,
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                  color: red[300],
-                  transform: 'translateX(5px)',
-                },
-                '& .MuiButton-startIcon': {
-                  color: red[400],
-                  marginRight: 1.5,
-                  transition: 'all 0.2s ease',
-                },
-                '&:hover .MuiButton-startIcon': {
-                  color: red[300],
-                },
-                fontWeight: 400,
-                textTransform: 'none',
-                fontSize: '0.95rem',
-                letterSpacing: 0.3,
-              }}
-            >
-              Sign Out
-            </Button>
-          </Tooltip> */}
-        </Box>
-      </Box>
 
-    // </Box>
+          {!hasPremiumAccess && (
+            <Chip
+              icon={<FaCrown color='black' />}
+              label="UPGRADE"
+              sx={{
+                backgroundColor: amber[600],
+                color: 'black',
+                fontWeight: 'bold',
+                fontSize: '0.9rem',
+                px: 1,
+                "&:hover": { cursor: 'pointer', backgroundColor: amber[500] }
+              }}
+              onClick={() => setShowPaywall(true)}
+            />
+          )}
+
+        </Box>
+        <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} />
+      </Box>
   );
 };
 
