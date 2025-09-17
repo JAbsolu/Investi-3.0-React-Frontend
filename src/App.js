@@ -13,7 +13,7 @@ import CongressPage from './pages/dashboard/congress';
 import MoversPage from './pages/dashboard/movers';
 import SettingsPage from './pages/dashboard/settings';
 import StatementsPage from './pages/dashboard/statements';
-import StockDetailsPage from './pages/dashboard/stock-details';
+import StockDetailsPage from './pages/dashboard/research';
 
 function App() {
   const [userIsAuth, setUserIsAuth] = useState(false);
@@ -46,8 +46,8 @@ function App() {
       <Route path="/dashboard/news" element={userIsAuth ? <News /> : <SignIn />} />
       <Route path="/dashboard/congress" element={userIsAuth ? <CongressPage /> : <SignIn />} />
       <Route path="/dashboard/movers" element={userIsAuth ? <MoversPage /> : <SignIn />} />
-      <Route path="/dashboard/stock-details" element={userIsAuth ? <StockDetailsPage /> : <SignIn />} />
-      <Route path="/dashboard/stock-details/:ticker" element={userIsAuth ? <StockDetailsPage /> : <SignIn />} />
+      <Route path="/dashboard/research" element={userIsAuth ? <StockDetailsPage /> : <SignIn />} />
+      <Route path="/dashboard/research/:ticker" element={userIsAuth ? <StockDetailsPage /> : <SignIn />} />
       <Route path="/dashboard/statements" element={userIsAuth ? <StatementsPage /> : <SignIn />} />
       <Route path="/dashboard/settings" element={userIsAuth ? <SettingsPage /> : <SignIn />} />
     </Routes>
