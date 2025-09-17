@@ -8,7 +8,8 @@ import {
 import { teal, green, red, grey, blue, amber } from '@mui/material/colors';
 import {
     FaTimes, FaPlus, FaCheck, FaExternalLinkAlt, FaBuilding,
-    FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaGlobe, FaNewspaper, FaCrown
+    FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaGlobe, FaNewspaper, FaCrown,
+    FaRocket
 } from 'react-icons/fa';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StockChart from './stockChart';
@@ -668,10 +669,9 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 )}
 
                 {/* Current Grades */}
-                <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
+                <Card sx={{ mb: 3, backgroundColor: 'transparent', boxShadow: 'none' }}>
                     <CardContent>
-                        {hasPremiumAccess ? (
-                            loading.grades ? (
+                        {loading.grades ? (
                                 <Box display="flex" justifyContent="center" py={2}>
                                     <CircularProgress sx={{ color: teal[400] }} size={24} />
                                 </Box>
@@ -691,52 +691,11 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                 </Box>
                             ) : (
                                 <Typography color={grey[400]}>No recent ratings available</Typography>
-                            )
-                        ) : (
-                            <Box sx={{ 
-                                textAlign: 'center',
-                                py: 4,
-                                px: 3,
-                                backgroundColor: 'rgba(20, 184, 166, 0.05)',
-                                borderRadius: 2,
-                                border: `1px solid ${teal[800]}`
-                            }}>
-                                <Box display="flex" justifyContent="center" mb={2}>
-                                    <Chip
-                                        icon={<FaCrown />}
-                                        label="PREMIUM"
-                                        sx={{
-                                            backgroundColor: amber[600],
-                                            color: 'black',
-                                            fontWeight: 'bold',
-                                            fontSize: '0.9rem',
-                                            px: 1
-                                        }}
-                                    />
-                                </Box>
-                                <Typography variant="body1" color={grey[400]} mb={3}>
-                                    Upgrade to Premium to view recent analyst ratings and recommendations.
-                                </Typography>
-                                <Button
-                                    variant="contained"
-                                    onClick={handleShowPaywall}
-                                    sx={{
-                                        backgroundColor: teal[600],
-                                        color: 'white',
-                                        fontWeight: 'bold',
-                                        px: 4,
-                                        py: 1.5,
-                                        '&:hover': {
-                                            backgroundColor: teal[700],
-                                        }
-                                    }}
-                                >
-                                    Upgrade to Premium
-                                </Button>
-                            </Box>
                         )}
                     </CardContent>
                 </Card>
+
+                <Divider sx={{ mt: 0, mb:2, backgroundColor: teal[800] }} />
 
                 {/* Price Targets */}
                 {priceTarget && (
@@ -795,8 +754,11 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                     </Card>
                 )}
 
+                <Divider sx={{ mt: 0, mb:2, backgroundColor: teal[800] }} />
+
                 {/* AI Analysis Section */}
-                <Card sx={{ mb: 3, backgroundColor: 'transparent' }}>
+                {hasPremiumAccess ? (
+                    <Card sx={{ mb: 3, backgroundColor: 'transparent', boxShadow: 'none' }}>
                     <CardContent>
                         <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
                             <Box display="flex" alignItems="center" gap={2}>
@@ -979,9 +941,42 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                         )}
                     </CardContent>
                 </Card>
+                ): (
+                <Box sx={{ 
+                   textAlign: 'center',
+                   py: 4,
+                   px: 3,
+                   backgroundColor: 'rgba(20, 184, 166, 0.05)',
+                   borderRadius: 2,
+                   border: `1px solid ${teal[800]}`
+                }}>
+                   <Typography variant="body1" color={grey[400]} mb={3}>
+                       Upgrade to Premium to view AI-generated analyst.
+                   </Typography>
+                   <Button
+                       variant="contained"
+                       startIcon={<FaRocket color='black' />}
+                       onClick={() => setShowPaywall(true)}
+                       sx={{
+                           backgroundColor: amber[600],
+                           color: 'black',
+                           fontWeight: 'bold',
+                           px: 4,
+                           py: 1.5,
+                           '&:hover': {
+                               backgroundColor: amber[500],
+                           }
+                       }}
+                   >
+                       Upgrade to Premium
+                   </Button>
+                </Box>
+                )}
+
+                <Divider sx={{ mt: 0, mb:2, backgroundColor: teal[800] }} />
 
                 {/* Grade News */}
-                <Card sx={{ backgroundColor: 'transparent' }}>
+                <Card sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
                     <CardContent>
                         {loading.gradesNews ? (
                             <Box display="flex" justifyContent="center" py={2}>
