@@ -16,12 +16,15 @@ import { teal, red, green, grey, amber } from '@mui/material/colors';
 import { FaCrown, FaExternalLinkAlt } from 'react-icons/fa';
 import { useIsPremium } from '../../../../hooks/isPremium';
 import Paywall from '../../components/Paywall';
+import { useNavigate } from 'react-router-dom';
 
 const TransactionTable = ({ transactions, title, isCompact = false, constrained = false, onStockClick }) => {
   const [orderBy, setOrderBy] = useState('disclosureDate');
   const [order, setOrder] = useState('desc');
   const hasPremiumAccess = useIsPremium();
-  const [showPaywall, setShowPaywall] = useState(false);
+  // const [showPaywall, setShowPaywall] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -197,7 +200,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                       icon={!hasPremiumAccess && index >= 5 && <FaCrown color="black" />}
                       label={index < 5 ? transaction.symbol : "UPGRADE"}
                       size="small"
-                      onClick={!hasPremiumAccess && index >= 5 ? () => setShowPaywall(true) : () => onStockClick && onStockClick(transaction.symbol)}
+                      onClick={!hasPremiumAccess && index >= 5 ? () => navigate('/dashboard/plans') : () => onStockClick && onStockClick(transaction.symbol)}
                       sx={{
                         backgroundColor: !hasPremiumAccess && index >= 5 ? amber[600] : teal[600],
                         color: !hasPremiumAccess && index >= 5 ? 'black' : 'white',
@@ -273,7 +276,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
           })}
         </TableBody>
       </Table>
-      <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} />
+      {/* <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} /> */}
     </TableContainer>
   );
 };
