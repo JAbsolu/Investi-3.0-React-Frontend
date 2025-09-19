@@ -15,6 +15,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StockChart from './stockChart';
 import { useIsPremium } from '../../../hooks/isPremium';
 import Paywall from './Paywall';
+import { useNavigate } from 'react-router-dom';
 
 
 // Constants
@@ -31,7 +32,10 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
     const [newsModalOpen, setNewsModalOpen] = useState(false);
     const [searchTicker, setSearchTicker] = useState('');
     const [currentStock, setCurrentStock] = useState(stock);
-    const [showPaywall, setShowPaywall] = useState(false);
+    // const [showPaywall, setShowPaywall] = useState(false);
+
+    const navigate = useNavigate();
+
 
     const hasPremiumAccess = useIsPremium();
 
@@ -59,17 +63,17 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
         setData({}); // Clear previous data
     };
 
-    // Handle showing paywall
-    const handleShowPaywall = () => {
-        setShowPaywall(true);
-    };
+    // // Handle showing paywall
+    // const handleShowPaywall = () => {
+    //     setShowPaywall(true);
+    // };
 
     // Handle Enter key press in search
-    const handleSearchKeyPress = (event) => {
-        if (event.key === 'Enter') {
-            handleStockSearch();
-        }
-    };
+    // const handleSearchKeyPress = (event) => {
+    //     if (event.key === 'Enter') {
+    //         handleStockSearch();
+    //     }
+    // };
 
     // Update current stock when prop changes
     useEffect(() => {
@@ -422,7 +426,8 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             </Typography>
                             <Button
                                 variant="contained"
-                                onClick={handleShowPaywall}
+                                // onClick={handleShowPaywall}
+                                onClick={() => navigate('/dashboard/plans')} 
                                 sx={{
                                     backgroundColor: teal[600],
                                     color: 'white',
@@ -596,7 +601,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
         const priceTarget = data.priceTarget?.[0];
         const aiAnalysis = data.aiAnalysis;
 
-        const [showPaywall, setShowPaywall] = useState(false);
+        // const [showPaywall, setShowPaywall] = useState(false);
 
         return (
             <Box>
@@ -614,7 +619,10 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Buy</Typography>
                                 </Box>
                                 ): (
-                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2, filter: 'blur(4px)', "&:hover": { cursor: 'pointer' } }} onClick={() => setShowPaywall(true)}>
+                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2, filter: 'blur(4px)', "&:hover": { cursor: 'pointer' } }} 
+                                    // onClick={() => setShowPaywall(true)}
+                                    onClick={() => navigate('/dashboard/plans')}
+                                >
                                     <Typography variant="h6" color={amber[400]} fontWeight="bold">
                                         UPGRADE
                                     </Typography>
@@ -631,7 +639,10 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Buy</Typography>
                                 </Box>
                                 ) : (
-                                    <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2, filter: 'blur(4px)', "&:hover": { cursor: 'pointer' } }} onClick={() => setShowPaywall(true)}>
+                                    <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2, filter: 'blur(4px)', "&:hover": { cursor: 'pointer' } }} 
+                                    // onClick={() => setShowPaywall(true)}
+                                    onClick={() => navigate('/dashboard/plans')}
+                                    >
                                     <Typography variant="h6" color={amber[300]} fontWeight="bold">
                                         UPGRADE
                                     </Typography>
@@ -956,7 +967,8 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                    <Button
                        variant="contained"
                        startIcon={<FaRocket color='black' />}
-                       onClick={() => setShowPaywall(true)}
+                    //  onClick={() => setShowPaywall(true)}
+                       onClick={() => navigate('/dashboard/plans')}
                        sx={{
                            backgroundColor: amber[600],
                            color: 'black',
@@ -1361,10 +1373,10 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
             <NewsModal />
 
             {/* Paywall Modal */}
-            <Paywall 
+            {/* <Paywall 
                 open={showPaywall}
                 onClose={() => setShowPaywall(false)}
-            />
+            /> */}
         </>
     );
 };
