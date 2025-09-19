@@ -12,12 +12,13 @@ import { FaExternalLinkAlt, FaCalendarAlt, FaDollarSign, FaCrown } from 'react-i
 import StockDetailsModal from '../../components/StockDetailsModal';
 import { useIsPremium } from '../../../../hooks/isPremium';
 import Paywall from '../../components/Paywall';
+import { useNavigate } from 'react-router-dom';
 
 const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) => {
   const [stockModalOpen, setStockModalOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
   const { hasPremiumAccess } = useIsPremium();
-  const [showPaywall, setShowPaywall] = useState(false);
+  // const [showPaywall, setShowPaywall] = useState(false);
 
   const {
     symbol,
@@ -34,6 +35,8 @@ const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) =
     amount,
     link
   } = transaction;
+
+  const navigate = useNavigate();
 
   const isPurchase = type?.toLowerCase() === 'purchase';
   const typeColor = isPurchase ? teal[500] : red[500];
@@ -87,7 +90,7 @@ const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) =
           boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
         },
       }}
-      onClick={!hasPremiumAccess && index >= 5 ? () => setShowPaywall(true) : handleStockClick}
+      onClick={!hasPremiumAccess && index >= 5 ? () => navigate('/dashboard/plans') : handleStockClick}
     >
       <CardContent sx={{ p: 3 }}>
         {/* Header with Member Name and Symbol */}
@@ -222,10 +225,10 @@ const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) =
       />
 
       {/* Paywall Modal */}
-      <Paywall
+      {/* <Paywall
         open={showPaywall}
         onClose={() => setShowPaywall(false)}
-      />
+      /> */}
     </Card>
   );
 };
