@@ -14,6 +14,7 @@ import MoversPage from './pages/dashboard/movers';
 import SettingsPage from './pages/dashboard/settings';
 import StatementsPage from './pages/dashboard/statements';
 import StockDetailsPage from './pages/dashboard/research';
+import PricingPlans from './pages/dashboard/plans';
 
 function App() {
   const [userIsAuth, setUserIsAuth] = useState(false);
@@ -50,6 +51,7 @@ function App() {
       <Route path="/dashboard/research/:ticker" element={userIsAuth ? <StockDetailsPage /> : <SignIn />} />
       <Route path="/dashboard/statements" element={userIsAuth ? <StatementsPage /> : <SignIn />} />
       <Route path="/dashboard/settings" element={userIsAuth ? <SettingsPage /> : <SignIn />} />
+      <Route path="/dashboard/plans" element={userIsAuth ? <PricingPlans /> : <SignIn />} />
     </Routes>
   );
 }
