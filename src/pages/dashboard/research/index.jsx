@@ -33,7 +33,8 @@ const StockDetailsPage = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { user, userId } = useAuth();
-    
+
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
     const [loading, setLoading] = useState({});
@@ -44,7 +45,7 @@ const StockDetailsPage = () => {
     const [newsModalOpen, setNewsModalOpen] = useState(false);
     const [lastSearchedStock, setLastSearchedStock] = useState(null);
     const [showLastSearchDialog, setShowLastSearchDialog] = useState(false);
-    const [showPaywall, setShowPaywall] = useState(false);
+    // const [showPaywall, setShowPaywall] = useState(false);
     
     const { wishlist, addToWishlist } = useWishlist();
 
@@ -502,7 +503,8 @@ const StockDetailsPage = () => {
                                 formatNumber={formatNumber}
                                 getChangeColor={getChangeColor}
                                 isMobile={isMobile}
-                                onShowPaywall={() => setShowPaywall(true)}
+                                // onShowPaywall={() => setShowPaywall(true)}
+                                onShowPaywall={() => navigate('/dashboard/plans')}
                             />
                         </TabPanel>
                         
@@ -523,7 +525,8 @@ const StockDetailsPage = () => {
                                 formatCurrency={formatCurrency}
                                 getGradeColor={getGradeColor}
                                 currentTicker={currentTicker}
-                                onShowPaywall={() => setShowPaywall(true)}
+                                // onShowPaywall={() => setShowPaywall(true)}
+                                onShowPaywall={() => navigate('/dashboard/plans')}
                             />
                         </TabPanel>
                         
@@ -599,10 +602,10 @@ const StockDetailsPage = () => {
             </Dialog>
 
             {/* Paywall Modal */}
-            <Paywall 
+            {/* <Paywall 
                 open={showPaywall}
                 onClose={() => setShowPaywall(false)}
-            />
+            /> */}
         </Box>
     );
 };
@@ -612,6 +615,8 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
     const quote = data.quote?.[0];
     const priceChange = data.priceChange?.[0];
     const hasPremiumAccess = useIsPremium();
+    const navigate = useNavigate();
+
 
     return (
         <Box>
@@ -771,6 +776,7 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
 // Profile Tab Component
 const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
     const profile = data.profile?.[0];
+    const navigate = useNavigate();
 
     if (loading.profile) {
         return (
@@ -952,6 +958,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
     const priceTarget = data.priceTarget?.[0];
     const aiAnalysis = data.aiAnalysis;
     const hasPremiumAccess = useIsPremium();
+    const navigate = useNavigate();
 
     return (
         <Box>
@@ -1393,6 +1400,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
 // News Tab Component
 const NewsTab = ({ data, loading, currentTicker }) => {
     const stockNews = data.stockNews;
+    const navigate = useNavigate();
 
     const handleNewsClick = (news) => {
         window.open(news.url, '_blank');
