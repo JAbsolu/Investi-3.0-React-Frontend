@@ -18,12 +18,13 @@ import { useAuth } from "../../hooks/useAuth";
 import { useResponsive } from "../../hooks/useResponsive";
 import DashboardHeader from "./components/DashboardHeader";
 import StockDataView from "./components/StockDataView";
-import TradingStrategies from "./components/TradingStrategies";
-import ExploreMarket from "./components/ExploreMarket";
+// import TradingStreategies from "./components/TradingStrategies";
+// import ExploreMarket from "./components/ExploreMarket";
 import LatestStockNews from "./components/LatestStockNews";
 import Movers from "./components/Movers";
 import { useIsPremium } from "../../hooks/isPremium";
-import Paywall from "./components/Paywall";
+// import Paywall from "./components/Paywall";
+
 
 // Constants  
 const darkBg = "#0d0d0d";
@@ -63,7 +64,7 @@ export default function DashboardPage() {
   const [stock, setStock] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileWishlistOpen, setMobileWishlistOpen] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
+  // const [showPaywall, setShowPaywall] = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [currentView, setCurrentView] = useState('chart');
 
@@ -109,16 +110,16 @@ export default function DashboardPage() {
     setCurrentView('analysis');
   };
 
-  const handleClosePaywall = () => {
-    setShowPaywall(false);
-  };
+  // const handleClosePaywall = () => {
+  //   setShowPaywall(false);
+  // };
 
-  const handleOpenPaywall = () => {
-    if (!hasPremiumAccess) {
-      setShowPaywall(true);
-      return;
-    }
-  }
+  // const handleOpenPaywall = () => {
+  //   if (!hasPremiumAccess) {
+  //     setShowPaywall(true);
+  //     return;
+  //   }
+  // }
 
   const handleStrategyClick = (strategy) => {
     // console.log('Strategy clicked:', strategy);
@@ -285,8 +286,8 @@ export default function DashboardPage() {
               handleDrawerToggle={handleDrawerToggle}
               stock={stock}
               setStock={setStock}
-              handleOpenPaywall={handleOpenPaywall}
-              handleClosePaywall={handleClosePaywall}
+              handleOpenPaywall={() => navigate('/dashboard/plans')}
+              // handleClosePaywall={handleClosePaywall}
               handleSearchOnEnter={handleSearchOnEnter}
               onAnalysis={handleAnalysis}
               onAddToWishlist={handleAddToWishlist}
@@ -319,8 +320,8 @@ export default function DashboardPage() {
                 handleDrawerToggle={handleDrawerToggle}
                 stock={stock}
                 setStock={setStock}
-                showPaywall={showPaywall}
-                setShowPaywall={setShowPaywall}
+                // showPaywall={showPaywall}
+                // setShowPaywall={setShowPaywall}
                 handleSearchOnEnter={handleSearchOnEnter}
                 onAnalysis={handleAnalysis}
                 onAddToWishlist={handleAddToWishlist}
@@ -350,12 +351,12 @@ export default function DashboardPage() {
                   />
                 </Box>
 
-                <Box>
+                {/* <Box>
                   <Paywall
                     open={showPaywall}
                     onClose={handleClosePaywall}
                   />
-                </Box>
+                </Box> */}
 
                 {/* Movers Section */}
                 <Box sx={{ width: '100%' }}>
