@@ -7,6 +7,8 @@ import SearchBar from './SearchBar';
 import { useIsPremium } from '../../../hooks/isPremium';
 import Paywall from './Paywall';
 import { FaCrown } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+
 
 const DashboardHeader = ({
   isSmallScreen,
@@ -19,11 +21,13 @@ const DashboardHeader = ({
   onAddToWishlist
 }) => {
   const hasPremiumAccess = useIsPremium();
-  const [showPaywall, setShowPaywall] = useState(false);
+  // const [showPaywall, setShowPaywall] = useState(false);
 
-  const handlePayWallOpen = () => {
-    setShowPaywall(true);
-  };
+  // const handlePayWallOpen = () => {
+  //   setShowPaywall(true);
+  // };
+
+  const navigate = useNavigate();
 
   return (
     <>
@@ -144,7 +148,8 @@ const DashboardHeader = ({
               boxShadow: 'none'
             }
           }}
-          onClick={handlePayWallOpen}
+          // onClick={handlePayWallOpen}
+          onClick={() => navigate("/dashboard/plans")}
         >
           AI Analysis
         </Button>
@@ -173,7 +178,7 @@ const DashboardHeader = ({
         >
           Watch
         </Button>
-        <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} />
+        {/* <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} /> */}
       </Box>
     </>
   );
