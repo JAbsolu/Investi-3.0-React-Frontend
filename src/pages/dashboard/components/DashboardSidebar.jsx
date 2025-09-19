@@ -22,7 +22,7 @@ function DashboardSidebar({ onClose }) {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const [showPaywall, setShowPaywall] = useState(false);
+  // const [showPaywall, setShowPaywall] = useState(false);
   const {hasPremiumAccess} = useIsPremium();
 
   // Check if a route is active
@@ -259,7 +259,7 @@ function DashboardSidebar({ onClose }) {
           )} */}
 
         </Box>
-        <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} />
+        {/* <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} /> */}
       </Box>
   );
 };
