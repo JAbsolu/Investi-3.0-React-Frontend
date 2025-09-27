@@ -12,9 +12,11 @@ import {
   Building2,
   Sparkles
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const PricingPlans = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
+  const navigate = useNavigate();
 
   const freeFeatures = [
     { text: "Access to daily movers (Gainers, Losers, Most Traded)", limited: false },
@@ -92,7 +94,8 @@ const PricingPlans = () => {
     planType,
     icon,
     gradientClass,
-    buttonClass
+    buttonClass,
+    priceId
   }) => (
     <div
       className={`relative h-full transform transition-all duration-500 ${
@@ -166,8 +169,11 @@ const PricingPlans = () => {
           `}
           disabled={comingSoon}
           onClick={() => {
+            if (planType === 'free') {
+              navigate('/dashboard');
+            }
             if (!comingSoon) {
-              alert(`Redirecting to ${planName} plan...`);
+              navigate('/dashboard/checkout', { state: { stripePriceId: priceId } });
             }
           }}
         >
@@ -207,7 +213,7 @@ const PricingPlans = () => {
               price="0"
               description="Perfect for getting started with market insights"
               features={freeFeatures}
-              buttonText="Get Started Free"
+              buttonText="Continue With Free"
               planType="free"
               icon={<TrendingUp className="w-8 h-8" style={{ color: theme.palette.primary.main }} />}
               gradientClass="bg-gradient-to-r from-blue-500 to-cyan-400"
@@ -223,6 +229,7 @@ const PricingPlans = () => {
               buttonText="Upgrade to Silver"
               popular={true}
               planType="silver"
+              priceId="price_1SC5GIFUQWEqeOOpgXTmxfSB"
               icon={<BarChart3 className="w-8 h-8" style={{ color: theme.palette.secondary.main }} />}
               gradientClass="bg-gradient-to-r from-gray-400 to-gray-200"
               buttonClass="bg-gradient-to-r from-gray-400 to-gray-200 text-slate-900 shadow-lg hover:from-gray-300 hover:to-gray-100"
@@ -237,6 +244,7 @@ const PricingPlans = () => {
               buttonText="Coming Soon"
               comingSoon={true}
               planType="gold"
+              priceId="price_1SC5HDFUQWEqeOOpyToROeAm"
               icon={<Shield className="w-8 h-8" style={{ color: theme.palette.primary.main }} />}
               gradientClass="bg-gradient-to-r from-yellow-400 to-yellow-600"
               buttonClass=""
