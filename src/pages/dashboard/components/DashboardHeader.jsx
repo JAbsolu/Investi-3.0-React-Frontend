@@ -8,7 +8,6 @@ import { useIsPremium } from '../../../hooks/isPremium';
 import { FaCrown } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
-
 const DashboardHeader = ({
   isSmallScreen,
   handleDrawerToggle,
