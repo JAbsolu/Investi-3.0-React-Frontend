@@ -12,7 +12,6 @@ import {
   Building2,
   Sparkles
 } from 'lucide-react';
-import DashboardSidebar from '../components/DashboardSidebar';
 import CheckoutModal from '../stripeCheckout';
 import StripeWrapper from '../stripeWrapper';
 
@@ -187,8 +186,6 @@ const PricingPlans = () => {
   );
 
   return (
-    <div className='flex'>
-      <DashboardSidebar />
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div style={{ minHeight: '100vh', background: theme.palette.background.default, position: 'relative', overflow: 'hidden' }}>
@@ -307,7 +304,6 @@ const PricingPlans = () => {
           )}
         </div>
       </ThemeProvider>
-    </div>
   );
 };
 
