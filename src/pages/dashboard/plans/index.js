@@ -199,7 +199,7 @@ const PricingPlans = () => {
           <div className="relative z-10 container mx-auto px-6 py-6">
             {/* Header */}
             <div className="text-center mb-6">
-              <h1 style={{ fontSize: theme.typography.h1.fontSize, fontWeight: theme.typography.h1.fontWeight, background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`, WebkitBackgroundClip: 'text', color: 'transparent' }} className="mb-6">
+              <h1 style={{ fontSize: theme.typography.h2.fontSize, fontWeight: theme.typography.h1.fontWeight, background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`, WebkitBackgroundClip: 'text', color: 'transparent' }} className="mb-6">
                 Join the best platform for AI powered financial insights
               </h1>
             </div>
