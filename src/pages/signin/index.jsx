@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { Container, TextField, Button, Typography, Box, Avatar } from "@mui/material";
 import { FaChartLine } from "react-icons/fa";
@@ -9,7 +9,7 @@ import Cookies from "js-cookie";
 import PwdResetModal from "./components/PwdResetModal";
 import { teal } from "@mui/material/colors";
 
-const API_URL = process.env.REACT_APP_API_URL;
+// const API_URL = process.env.REACT_APP_API_URL;
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
