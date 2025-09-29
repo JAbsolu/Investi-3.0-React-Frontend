@@ -1,5 +1,4 @@
 import { Box, Container, Grid, Typography, Link, IconButton, Divider, useMediaQuery, useTheme } from '@mui/material';
-import { Link } from 'react-router-dom';
 import { FaTwitter, FaFacebook, FaLinkedin, FaGithub, FaChartLine } from 'react-icons/fa';
 import { teal, grey } from '@mui/material/colors';
 
