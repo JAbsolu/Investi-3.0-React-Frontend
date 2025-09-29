@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Send, Bot, Loader, TrendingUp } from 'lucide-react';
+import { Bot, Loader, TrendingUp } from 'lucide-react';
 import { FaCloudDownloadAlt } from 'react-icons/fa';
 import { 
   Box, Typography, 
@@ -24,7 +24,6 @@ const Analysis = ({ ticker, showAnalysis }) => {
     const [conversationId, setConversationId] = useState(null);
     const [analysisResult, setAnalysisResult] = useState(null);
     const messagesEndRef = useRef(null);
-    const inputRef = useRef(null);
     const contentRef = useRef(null);
 
       const { userId } = useAuth();
@@ -166,7 +165,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
         }
         
         setPrevMessageCount(messages.length);
-    }, [messages.length, prevMessageCount]); // Only depend on message count, not content changes
+    }, [messages, messages.length, prevMessageCount]); // Only depend on message count, not content changes
 
     // Monitor auth state
     useEffect(() => {
@@ -189,7 +188,7 @@ const Analysis = ({ ticker, showAnalysis }) => {
         } else if (analysisResult) {
             setIsWaitingForAnalysis(false);
         }
-    }, [ticker, showAnalysis]);
+    }, [ticker, showAnalysis, analysisResult]);
     
     // Reset analysis tracking when ticker changes
     useEffect(() => {
@@ -312,13 +311,6 @@ const Analysis = ({ ticker, showAnalysis }) => {
             saveConversationToFirebase(finalMessages);
         } finally {
             setIsLoading(false);
-        }
-    };
-
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSendMessage();
         }
     };
 

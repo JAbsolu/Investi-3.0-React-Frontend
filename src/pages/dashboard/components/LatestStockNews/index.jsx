@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Typography,
@@ -8,7 +7,7 @@ import {
   Pagination
 } from '@mui/material';
 import { teal, grey } from '@mui/material/colors';
-import { FaNewspaper, FaRedo } from 'react-icons/fa';
+import { FaRedo } from 'react-icons/fa';
 import NewsCard from './NewsCard';
 import { useLatestNews } from '../../../../hooks/useLatestNews';
 
@@ -21,11 +20,7 @@ const LatestStockNews = () => {
     totalPages,
     totalItems,
     goToPage,
-    goToNextPage,
-    goToPrevPage,
     refetch,
-    hasNextPage,
-    hasPrevPage
   } = useLatestNews();
 
   const handleRetry = () => {

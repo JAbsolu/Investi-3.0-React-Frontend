@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -8,10 +8,9 @@ import {
   IconButton
 } from '@mui/material';
 import { teal, red, grey, amber } from '@mui/material/colors';
-import { FaExternalLinkAlt, FaCalendarAlt, FaDollarSign, FaCrown } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaDollarSign, FaCrown } from 'react-icons/fa';
 import StockDetailsModal from '../../components/StockDetailsModal';
 import { useIsPremium } from '../../../../hooks/isPremium';
-import Paywall from '../../components/Paywall';
 import { useNavigate } from 'react-router-dom';
 
 const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) => {
@@ -224,11 +223,6 @@ const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) =
         addToWishlist={addToWishlist}
       />
 
-      {/* Paywall Modal */}
-      {/* <Paywall
-        open={showPaywall}
-        onClose={() => setShowPaywall(false)}
-      /> */}
     </Card>
   );
 };

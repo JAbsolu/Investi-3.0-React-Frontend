@@ -1,7 +1,6 @@
-import { Box, Button, Typography, Tooltip, Divider, Chip } from "@mui/material";
+import { Box, Button, Typography, Tooltip, Divider } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import { grey, teal, amber } from "@mui/material/colors";
+import { grey, teal } from "@mui/material/colors";
 import { 
   IoHomeSharp, 
   IoSettingsOutline, 
@@ -11,35 +10,18 @@ import {
   IoDocumentTextOutline,
   IoSearchOutline
 } from "react-icons/io5";
-import { FaCrown, FaUniversity } from "react-icons/fa";
-import { auth } from "../../../firebaseConfig";
-import Paywall from "./Paywall";
-import { useState } from "react";
-import { useIsPremium } from "../../../hooks/isPremium";
+import { FaUniversity } from "react-icons/fa";
 
 function DashboardSidebar({ onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // const [showPaywall, setShowPaywall] = useState(false);
-  const {hasPremiumAccess} = useIsPremium();
-
   // Check if a route is active
   const isActive = (path) => {
     if (path === "/dashboard" && currentPath === "/dashboard") return true;
     if (path !== "/dashboard" && currentPath.includes(path)) return true;
     return false;
-  };
-
-  // ------------------ Sign Out ------------------
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      navigate("/signin");
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
   };
 
   // Button styles with active state
@@ -259,7 +241,6 @@ function DashboardSidebar({ onClose }) {
           )} */}
 
         </Box>
-        {/* <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} /> */}
       </Box>
   );
 };

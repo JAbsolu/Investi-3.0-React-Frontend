@@ -1,14 +1,11 @@
 import React from 'react';
 import { 
   Box, Typography, Card, CardContent, CircularProgress, 
-  Button, useMediaQuery, useTheme, Alert, IconButton, Tooltip,
+  Button, useMediaQuery, useTheme, Alert,
   Avatar
 } from '@mui/material';
 import { teal, grey, green, red } from '@mui/material/colors';
-import { 
-  FaArrowUp, FaArrowDown, FaFire, FaArrowRight,
-  FaRedo, FaPlus, FaCheck
-} from 'react-icons/fa';
+import { FaFire, FaRedo } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useMarketActivity } from '../../../hooks/useMarketActivity';
 import { motion } from 'framer-motion';
@@ -28,7 +25,7 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
   
   const {
     biggestGainers,
-    biggestLosers,
+    // biggestLosers,
     mostTraded,
     loading,
     errors,
@@ -155,24 +152,6 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
             {stock.name}
           </Typography>
         </Box>
-        
-        {/* <Typography 
-          variant="body2" 
-          color={teal[300]}
-          sx={{ 
-            mb: 0.5,
-            fontSize: '0.85rem',
-            lineHeight: 1.15,
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            minHeight: '28px',
-            maxHeight: '28px'
-          }}
-        >
-          {stock.symbol}
-        </Typography> */}
         
         <Box display="flex" justifyContent="space-between" alignItems="flex-end" mt="auto">
           <Typography 

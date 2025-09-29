@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
     Dialog, DialogContent, DialogTitle, Box, Typography, IconButton,
     Tabs, Tab, Card, CardContent, Grid, Chip, Button, CircularProgress,
-    Alert, Avatar, Divider, useMediaQuery, useTheme, Link, TextField,
-    InputAdornment
+    Alert, Avatar, Divider, useMediaQuery, useTheme, Link,
 } from '@mui/material';
-import { teal, green, red, grey, blue, amber } from '@mui/material/colors';
+import { teal, green, red, grey, amber } from '@mui/material/colors';
 import {
     FaTimes, FaPlus, FaCheck, FaExternalLinkAlt, FaBuilding,
     FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaGlobe, FaNewspaper, FaCrown,
@@ -14,7 +13,6 @@ import {
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StockChart from './stockChart';
 import { useIsPremium } from '../../../hooks/isPremium';
-import Paywall from './Paywall';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -1371,12 +1369,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
 
             {/* News Modal */}
             <NewsModal />
-
-            {/* Paywall Modal */}
-            {/* <Paywall 
-                open={showPaywall}
-                onClose={() => setShowPaywall(false)}
-            /> */}
         </>
     );
 };

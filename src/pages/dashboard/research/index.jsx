@@ -11,16 +11,14 @@ import { teal, grey, green, red, amber } from '@mui/material/colors';
 import {
     FaBars, FaSearch, FaUsers, FaBuilding, FaCalendarAlt, FaMapMarkerAlt,
     FaPhone, FaGlobe, FaExternalLinkAlt,FaRocket,
-    FaCrown
 } from 'react-icons/fa';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StockChart from '../components/stockChart';
-import Paywall from '../components/Paywall';
-import { useWishlist } from '../../../hooks/useWishlist';
 import { useAuth } from '../../../hooks/useAuth';
 import { useIsPremium } from '../../../hooks/isPremium';
 import { ref, get, child } from "firebase/database";
 import { database } from "../../../firebaseConfig";
+import { useWishlist } from '../../../hooks/useWishlist';
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -45,7 +43,6 @@ const StockDetailsPage = () => {
     const [newsModalOpen, setNewsModalOpen] = useState(false);
     const [lastSearchedStock, setLastSearchedStock] = useState(null);
     const [showLastSearchDialog, setShowLastSearchDialog] = useState(false);
-    // const [showPaywall, setShowPaywall] = useState(false);
     
     const { wishlist, addToWishlist } = useWishlist();
 
@@ -503,7 +500,6 @@ const StockDetailsPage = () => {
                                 formatNumber={formatNumber}
                                 getChangeColor={getChangeColor}
                                 isMobile={isMobile}
-                                // onShowPaywall={() => setShowPaywall(true)}
                                 onShowPaywall={() => navigate('/dashboard/plans')}
                             />
                         </TabPanel>
@@ -525,7 +521,6 @@ const StockDetailsPage = () => {
                                 formatCurrency={formatCurrency}
                                 getGradeColor={getGradeColor}
                                 currentTicker={currentTicker}
-                                // onShowPaywall={() => setShowPaywall(true)}
                                 onShowPaywall={() => navigate('/dashboard/plans')}
                             />
                         </TabPanel>
@@ -600,12 +595,6 @@ const StockDetailsPage = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-
-            {/* Paywall Modal */}
-            {/* <Paywall 
-                open={showPaywall}
-                onClose={() => setShowPaywall(false)}
-            /> */}
         </Box>
     );
 };

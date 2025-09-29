@@ -1,18 +1,16 @@
-import { useEffect, useState} from 'react';
+
 import { Box, Button, IconButton } from '@mui/material';
 import { HiOutlineMenu } from "react-icons/hi";
-import { AutoAwesome, RemoveRedEye, WorkspacePremium } from '@mui/icons-material';
-import { teal, grey, yellow, amber } from '@mui/material/colors';
+import { AutoAwesome, RemoveRedEye } from '@mui/icons-material';
+import { teal, grey, amber } from '@mui/material/colors';
 import SearchBar from './SearchBar';
 import { useIsPremium } from '../../../hooks/isPremium';
-import Paywall from './Paywall';
 import { FaCrown } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 
 const DashboardHeader = ({
   isSmallScreen,
-  mobileOpen,
   handleDrawerToggle,
   stock,
   setStock,
@@ -21,11 +19,6 @@ const DashboardHeader = ({
   onAddToWishlist
 }) => {
   const hasPremiumAccess = useIsPremium();
-  // const [showPaywall, setShowPaywall] = useState(false);
-
-  // const handlePayWallOpen = () => {
-  //   setShowPaywall(true);
-  // };
 
   const navigate = useNavigate();
 
@@ -178,7 +171,6 @@ const DashboardHeader = ({
         >
           Watch
         </Button>
-        {/* <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} /> */}
       </Box>
     </>
   );

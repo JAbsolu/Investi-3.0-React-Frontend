@@ -6,15 +6,12 @@ import {
   Typography,
   Button,
   IconButton,
-  Chip,
-  Divider,
   useMediaQuery,
   useTheme
 } from '@mui/material';
 import { teal, grey, amber, green } from '@mui/material/colors';
 import {
   FaTimes,
-  FaCrown,
   FaRocket,
   FaShieldAlt,
   FaCheck,
@@ -26,10 +23,8 @@ import {
   FaStar
 } from 'react-icons/fa';
 import { IoAnalyticsSharp } from 'react-icons/io5';
-// import StripeModal from './StripeModal';
 
 // Constants for colors matching dashboard
-const darkBg = "#0d0d0d";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
 const white = "#ffffff";
 
@@ -37,8 +32,8 @@ const Paywall = ({
   open, 
   onClose, 
   onUpgrade, 
-  triggerFeature = null,
-  currentPlan = "free" 
+  // triggerFeature = null,
+  // currentPlan = "free" 
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));

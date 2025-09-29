@@ -15,7 +15,6 @@ import {
 import { teal, red, green, grey, amber } from '@mui/material/colors';
 import { FaCrown, FaExternalLinkAlt } from 'react-icons/fa';
 import { useIsPremium } from '../../../../hooks/isPremium';
-import Paywall from '../../components/Paywall';
 import { useNavigate } from 'react-router-dom';
 
 const TransactionTable = ({ transactions, title, isCompact = false, constrained = false, onStockClick }) => {
@@ -276,7 +275,6 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
           })}
         </TableBody>
       </Table>
-      {/* <Paywall open={showPaywall} onClose={() => setShowPaywall(false)} /> */}
     </TableContainer>
   );
 };
