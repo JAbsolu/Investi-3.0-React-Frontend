@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { teal } from '@mui/material/colors';
 import MarketCard from './MarketCard';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import { teal, grey } from '@mui/material/colors';
 import ChartMini from './ChartMini';

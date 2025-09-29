@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import { teal, grey } from '@mui/material/colors';
 import { FaChevronRight } from 'react-icons/fa';

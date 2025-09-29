@@ -1,4 +1,4 @@
-import { Box, Paper, Typography, Divider, CircularProgress } from "@mui/material";
+import { Box, Paper, Typography, CircularProgress } from "@mui/material";
 import { RxCross2 } from "react-icons/rx";
 import { red, teal, grey } from '@mui/material/colors';
 import { useEffect, useState, useCallback } from "react";

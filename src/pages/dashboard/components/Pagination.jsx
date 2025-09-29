@@ -3,8 +3,6 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { teal } from "@mui/material/colors";
 
-const white = "#ffffff";
-
 const Pagination = ({ data, children, startingIndex, endingIndex, setNewStartIndex, setNewEndIndex }) => {
 
     const handleNext = () => {

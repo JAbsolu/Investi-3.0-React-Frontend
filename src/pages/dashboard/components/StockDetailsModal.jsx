@@ -61,18 +61,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
         setData({}); // Clear previous data
     };
 
-    // // Handle showing paywall
-    // const handleShowPaywall = () => {
-    //     setShowPaywall(true);
-    // };
-
-    // Handle Enter key press in search
-    // const handleSearchKeyPress = (event) => {
-    //     if (event.key === 'Enter') {
-    //         handleStockSearch();
-    //     }
-    // };
-
     // Update current stock when prop changes
     useEffect(() => {
         setCurrentStock(stock);
