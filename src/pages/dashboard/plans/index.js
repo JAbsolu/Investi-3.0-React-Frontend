@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '../../../theme';
@@ -12,12 +12,17 @@ import {
   Building2,
   Sparkles
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import DashboardSidebar from '../components/DashboardSidebar';
+import CheckoutModal from '../stripeCheckout';
+import StripeWrapper from '../stripeWrapper';
 
 const PricingPlans = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
-  const navigate = useNavigate();
+  const [checkoutModalInfo, setCheckoutModalInfo] 
+    = useState({
+      show: false,
+      stripePriceId: null
+    });
 
   const bronzeFeatures = [
     { text: "Access to daily movers (Gainers, Losers, Most Traded)", limited: false },
@@ -170,11 +175,8 @@ const PricingPlans = () => {
           `}
           disabled={comingSoon}
           onClick={() => {
-            if (planType === 'free') {
-              navigate('/dashboard');
-            }
             if (!comingSoon) {
-              navigate('/dashboard/checkout', { state: { stripePriceId: priceId } });
+              setCheckoutModalInfo({ show: true, stripePriceId: priceId });
             }
           }}
         >
@@ -293,6 +295,16 @@ const PricingPlans = () => {
               </div>
             </div>
           </div>
+          {/* Checkout Modal */}
+          {checkoutModalInfo.show && (
+            <StripeWrapper>
+              <CheckoutModal
+                open={checkoutModalInfo.show}
+                stripePriceId={checkoutModalInfo.stripePriceId}
+                onClose={() => setCheckoutModalInfo({ show: false, stripePriceId: null })}
+              />
+            </StripeWrapper>
+          )}
         </div>
       </ThemeProvider>
     </div>
