@@ -1,11 +1,9 @@
-import React from 'react';
-import { Box, Container, Grid, Typography, Link as MuiLink, IconButton, Divider, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Container, Grid, Typography, Link, IconButton, Divider, useMediaQuery, useTheme } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FaTwitter, FaFacebook, FaLinkedin, FaGithub, FaChartLine } from 'react-icons/fa';
 import { teal, grey } from '@mui/material/colors';
 
 // Constants for colors matching dashboard
-const darkBg = "#0d0d0d";
 const white = "#ffffff";
 
 const Footer = () => {

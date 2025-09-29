@@ -7,11 +7,6 @@ import { teal } from "@mui/material/colors";
 // Constants for colors
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
 const white = "#ffffff";
-// const teal = {
-//   400: '#2dd4bf',
-//   700: '#0f766e',
-//   800: '#115e59'
-// };
 const grey = {
   100: '#f3f4f6',
   900: '#111827'
