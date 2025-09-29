@@ -196,15 +196,12 @@ const PricingPlans = () => {
             <div style={{ position: 'absolute', top: '75%', left: '33%', width: 128, height: 128, background: '#a259ff10', borderRadius: '50%', filter: 'blur(48px)', animation: 'pulse 2s infinite 2s' }} />
           </div>
 
-          <div className="relative z-10 container mx-auto px-6 py-0">
+          <div className="relative z-10 container mx-auto px-6 py-6">
             {/* Header */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
               <h1 style={{ fontSize: theme.typography.h1.fontSize, fontWeight: theme.typography.h1.fontWeight, background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`, WebkitBackgroundClip: 'text', color: 'transparent' }} className="mb-6">
-                Select A Plan
+                Join the best platform for AI powered financial insights
               </h1>
-              <p style={{ color: theme.palette.text.secondary, fontSize: theme.typography.h5.fontSize }} className="max-w-2xl mx-auto leading-relaxed">
-                Access comprehensive financial data, analytics, and insights to make informed investment decisions
-              </p>
             </div>
 
             {/* Plans Grid */}
@@ -257,7 +254,7 @@ const PricingPlans = () => {
             </div>
 
             {/* Additional Features Section */}
-            <div style={{ background: theme.palette.background.paper, border: `1px solid ${theme.palette.text.secondary}20`, borderRadius: '1rem', padding: '2rem', backdropFilter: 'blur(12px)' }}>
+            {/* <div style={{ background: theme.palette.background.paper, border: `1px solid ${theme.palette.text.secondary}20`, borderRadius: '1rem', padding: '2rem', backdropFilter: 'blur(12px)' }}>
               <h2 style={{ fontSize: theme.typography.h2.fontSize, fontWeight: theme.typography.h2.fontWeight, color: theme.palette.text.primary }} className="text-center mb-8">
                 Why Choose Our Platform?
               </h2>
@@ -290,7 +287,7 @@ const PricingPlans = () => {
                   </p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
           {/* Checkout Modal */}
           {checkoutModalInfo.show && (
