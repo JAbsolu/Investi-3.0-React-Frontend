@@ -10,7 +10,6 @@ import {
   Box,
   Divider
 } from '@mui/material';
-import { teal } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 
 // Styled Card with hover effects and customization
