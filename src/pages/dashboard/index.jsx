@@ -286,7 +286,7 @@ export default function DashboardPage() {
               handleDrawerToggle={handleDrawerToggle}
               stock={stock}
               setStock={setStock}
-              handleOpenPaywall={() => navigate('/dashboard/plans')}
+              handleOpenPaywall={() => navigate('/upgrades')}
               // handleClosePaywall={handleClosePaywall}
               handleSearchOnEnter={handleSearchOnEnter}
               onAnalysis={handleAnalysis}

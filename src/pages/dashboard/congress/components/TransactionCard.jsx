@@ -89,7 +89,7 @@ const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) =
           boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
         },
       }}
-      onClick={!hasPremiumAccess && index >= 5 ? () => navigate('/dashboard/plans') : handleStockClick}
+      onClick={!hasPremiumAccess && index >= 5 ? () => navigate('/upgrades') : handleStockClick}
     >
       <CardContent sx={{ p: 3 }}>
         {/* Header with Member Name and Symbol */}

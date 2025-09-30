@@ -500,7 +500,7 @@ const StockDetailsPage = () => {
                                 formatNumber={formatNumber}
                                 getChangeColor={getChangeColor}
                                 isMobile={isMobile}
-                                onShowPaywall={() => navigate('/dashboard/plans')}
+                                onShowPaywall={() => navigate('/upgrades')}
                             />
                         </TabPanel>
                         
@@ -521,7 +521,7 @@ const StockDetailsPage = () => {
                                 formatCurrency={formatCurrency}
                                 getGradeColor={getGradeColor}
                                 currentTicker={currentTicker}
-                                onShowPaywall={() => navigate('/dashboard/plans')}
+                                onShowPaywall={() => navigate('/upgrades')}
                             />
                         </TabPanel>
                         

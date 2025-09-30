@@ -199,7 +199,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                       icon={!hasPremiumAccess && index >= 5 && <FaCrown color="black" />}
                       label={index < 5 ? transaction.symbol : "UPGRADE"}
                       size="small"
-                      onClick={!hasPremiumAccess && index >= 5 ? () => navigate('/dashboard/plans') : () => onStockClick && onStockClick(transaction.symbol)}
+                      onClick={!hasPremiumAccess && index >= 5 ? () => navigate('/upgrades') : () => onStockClick && onStockClick(transaction.symbol)}
                       sx={{
                         backgroundColor: !hasPremiumAccess && index >= 5 ? amber[600] : teal[600],
                         color: !hasPremiumAccess && index >= 5 ? 'black' : 'white',

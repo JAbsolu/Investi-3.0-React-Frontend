@@ -141,7 +141,7 @@ const DashboardHeader = ({
             }
           }}
           // onClick={handlePayWallOpen}
-          onClick={() => navigate("/dashboard/plans")}
+          onClick={() => navigate("/upgrades")}
         >
           AI Analysis
         </Button>

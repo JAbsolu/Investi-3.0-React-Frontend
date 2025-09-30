@@ -413,7 +413,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             <Button
                                 variant="contained"
                                 // onClick={handleShowPaywall}
-                                onClick={() => navigate('/dashboard/plans')} 
+                                onClick={() => navigate('/upgrades')} 
                                 sx={{
                                     backgroundColor: teal[600],
                                     color: 'white',
@@ -607,7 +607,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                 ): (
                                 <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2, filter: 'blur(4px)', "&:hover": { cursor: 'pointer' } }} 
                                     // onClick={() => setShowPaywall(true)}
-                                    onClick={() => navigate('/dashboard/plans')}
+                                    onClick={() => navigate('/upgrades')}
                                 >
                                     <Typography variant="h6" color={amber[400]} fontWeight="bold">
                                         UPGRADE
@@ -627,7 +627,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                 ) : (
                                     <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2, filter: 'blur(4px)', "&:hover": { cursor: 'pointer' } }} 
                                     // onClick={() => setShowPaywall(true)}
-                                    onClick={() => navigate('/dashboard/plans')}
+                                    onClick={() => navigate('/upgrades')}
                                     >
                                     <Typography variant="h6" color={amber[300]} fontWeight="bold">
                                         UPGRADE
@@ -954,7 +954,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                        variant="contained"
                        startIcon={<FaRocket color='black' />}
                     //  onClick={() => setShowPaywall(true)}
-                       onClick={() => navigate('/dashboard/plans')}
+                       onClick={() => navigate('/upgrades')}
                        sx={{
                            backgroundColor: amber[600],
                            color: 'black',
