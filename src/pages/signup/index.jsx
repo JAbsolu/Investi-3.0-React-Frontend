@@ -53,7 +53,7 @@ const Signup = () => {
             });
 
             setSuccess("Signup successful!");
-            navigate("/dashboard", { replace: true });
+            navigate("/onboarding", { replace: true });
         } catch (err) {
             setError(err.message);
         }
