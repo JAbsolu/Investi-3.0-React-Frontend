@@ -25,12 +25,13 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
 
     const { userId } = useAuth();
 
-    const saveSubscribtionToFireDB = async (userId, customerId, subscriptionId) => {
+    const saveSubscribtionToFireDB = async (userId, customerId, subscriptionId, paymentMethodId) => {
         try {
             await set(ref(database, `users/${userId}/subscriptions/${subscriptionId}`), {
-                customerId,
-                subscriptionId,
-                status: 'active',
+                "customerId": customerId,
+                "subscriptionId": subscriptionId,
+                "paymentMethodId": paymentMethodId,
+                "status": 'active'
             });
             console.info('Subscription saved to Firestore');
         } catch (error) {
@@ -77,7 +78,7 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
             }
             const data = await response.json();
             // save subscription info to Firebase
-            await saveSubscribtionToFireDB(userId, data.customer.id, data.subscription.id);
+            await saveSubscribtionToFireDB(userId, data.customer.id, data.subscription.id, paymentMethodId);
 
             setTimeout(() => {
                 setPaymentSuccess(true);
