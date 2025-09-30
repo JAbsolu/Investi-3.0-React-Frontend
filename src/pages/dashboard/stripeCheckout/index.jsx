@@ -85,7 +85,7 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
                 setIsProcessing(false);
             }, 2000);
 
-              setTimeout(() => {
+            setTimeout(() => {
                 navigate('/dashboard', { replace: true, state: { from: location } });
             }, 2000);
         } catch (error) {
