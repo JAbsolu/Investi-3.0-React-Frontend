@@ -14,7 +14,7 @@ import MoversPage from './pages/dashboard/movers';
 import SettingsPage from './pages/dashboard/settings';
 import StatementsPage from './pages/dashboard/statements';
 import StockDetailsPage from './pages/dashboard/research';
-import PricingPlans from './pages/dashboard/plans';
+import PricingPlans from './pages/plans';
 // import CheckoutForm from './pages/dashboard/stripeCheckout';
 // import StripeWrapper from './pages/dashboard/stripeWrapper';
 
@@ -53,7 +53,8 @@ function App() {
       <Route path="/dashboard/research/:ticker" element={userIsAuth ? <StockDetailsPage /> : <SignIn />} />
       <Route path="/dashboard/statements" element={userIsAuth ? <StatementsPage /> : <SignIn />} />
       <Route path="/dashboard/settings" element={userIsAuth ? <SettingsPage /> : <SignIn />} />
-      <Route path="/dashboard/plans" element={userIsAuth ? <PricingPlans /> : <SignIn />} />
+      <Route path="/onboarding" element={userIsAuth ? <PricingPlans /> : <SignIn />} />
+      <Route path="/upgrades" element={userIsAuth ? <PricingPlans /> : <SignIn />} />
       {/* <Route 
         path="/dashboard/checkout" 
         element={
