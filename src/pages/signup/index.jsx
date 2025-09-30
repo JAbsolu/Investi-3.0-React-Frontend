@@ -53,7 +53,10 @@ const Signup = () => {
             });
 
             setSuccess("Signup successful!");
-            navigate("/onboarding", { replace: true });
+            setTimeout(() => {
+                navigate("/onboarding", { replace: true });
+            }, 2000);
+            
         } catch (err) {
             setError(err.message);
         }
