@@ -14,7 +14,8 @@ const Signup = () => {
         email: "",
         password: "",
         passwordConfirmation: "",
-        selectedPlan: "free"
+        selectedPlan: "free",
+        subscriptions: null
     });
 
     const [error, setError] = useState("");
@@ -49,6 +50,7 @@ const Signup = () => {
                 lastName: userInfo.lastName,
                 email: userInfo.email,
                 plan: userInfo.selectedPlan,
+                subscriptions: null,
                 createdAt: Date.now()
             });
 
