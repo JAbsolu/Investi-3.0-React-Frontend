@@ -44,6 +44,7 @@ export const useAuth = () => {
     firstName: userProfile?.firstName,
     lastName: userProfile?.lastName,
     plan: userProfile?.plan,
+    subscriptions: userProfile?.subscriptions,
     createdAt: userProfile?.createdAt,
     loading
   };
