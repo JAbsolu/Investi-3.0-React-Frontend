@@ -8,6 +8,8 @@ import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { teal, indigo, grey, green, red } from '@mui/material/colors';
+import { database } from '../../../firebaseConfig';
+import { ref, set } from 'firebase/database';
 
 const API_URL = process.env.REACT_APP_API_URL;
 const darkGradient = 'linear-gradient(135deg, #181c20 0%, #0d0d0d 100%)';
@@ -17,11 +19,24 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
     const elements = useElements();
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentSuccess, setPaymentSuccess] = useState(false);
-    const [customerId, setCustomerId] = useState(null);
-    const [subscriptionId, setSubscriptionId] = useState(null); 
     const { email } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
+
+    const { userId } = useAuth();
+
+    const saveSubscribtionToFireDB = async (userId, customerId, subscriptionId) => {
+        try {
+            await set(ref(database, `users/${userId}/subscriptions/${subscriptionId}`), {
+                customerId,
+                subscriptionId,
+                status: 'active',
+            });
+            console.info('Subscription saved to Firestore');
+        } catch (error) {
+            console.error('Error saving subscription to Firestore:', error);
+        }
+    };
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -60,14 +75,16 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
                 console.error('Failed to create customer:', response.statusText);
                 return null;
             }
-
             const data = await response.json();
-            setCustomerId(data.customer.id);
-            setSubscriptionId(data.subscription.id);
+            // save subscription info to Firebase
+            await saveSubscribtionToFireDB(userId, data.customer.id, data.subscription.id);
 
             setTimeout(() => {
                 setPaymentSuccess(true);
                 setIsProcessing(false);
+            }, 2000);
+
+              setTimeout(() => {
                 navigate('/dashboard', { replace: true, state: { from: location } });
             }, 2000);
         } catch (error) {
