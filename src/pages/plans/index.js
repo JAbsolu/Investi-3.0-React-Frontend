@@ -1,19 +1,12 @@
 import { useState } from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from '../../theme';
 import { 
   CheckCircle, 
   Star, 
-  TrendingUp, 
+  // TrendingUp, 
   BarChart3, 
   Shield,
-  // Zap,
-  // Building2,
-  // Sparkles
 } from 'lucide-react';
-import CheckoutModal from '../dashboard/stripeCheckout';
-import StripeWrapper from '../dashboard/stripeWrapper';
+import theme from '../../theme'
 
 const PricingPlans = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -63,22 +56,33 @@ const PricingPlans = () => {
   ];
 
   const FeatureList = ({ features, planType }) => (
-    <ul className="space-y-3 mb-8">
+    <ul className="space-y-3 mb-6 sm:mb-8">
       {features.map((feature, index) => (
         <li key={index} className="flex items-start">
           <CheckCircle 
-            style={{ color: planType === 'gold' ? theme.palette.primary.main : planType === 'silver' ? theme.palette.secondary.main : theme.palette.text.primary }}
-            className="w-5 h-5 mt-0.5 mr-3 flex-shrink-0"
+            className="w-4 h-4 sm:w-5 sm:h-5 mt-0.5 mr-2 sm:mr-3 flex-shrink-0"
+            style={{ 
+              color: planType === 'gold' ? '#3b82f6' : planType === 'silver' ? '#10b981' : '#6366f1'
+            }}
           />
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full gap-2">
             <span 
-              style={{ color: feature.limited ? theme.palette.text.secondary : theme.palette.text.primary, opacity: feature.limited ? 0.7 : 1 }}
-              className="text-sm"
+              className="text-xs sm:text-sm leading-relaxed"
+              style={{ 
+                color: feature.limited ? '#9ca3af' : '#f3f4f6',
+                opacity: feature.limited ? 0.7 : 1 
+              }}
             >
               {feature.text}
             </span>
             {feature.limited && (
-              <span style={{ background: theme.palette.secondary.main + '20', color: theme.palette.secondary.main }} className="ml-2 px-2 py-1 text-xs font-semibold rounded-md whitespace-nowrap">
+              <span 
+                className="ml-2 px-1.5 py-0.5 sm:px-2 sm:py-1 text-[10px] sm:text-xs font-semibold rounded-md whitespace-nowrap flex-shrink-0"
+                style={{ 
+                  background: '#10b98120',
+                  color: '#10b981'
+                }}
+              >
                 LIMITED
               </span>
             )}
@@ -103,43 +107,45 @@ const PricingPlans = () => {
     priceId
   }) => (
     <div
-      className={`relative h-full transform transition-all duration-500 ${
-        hoveredCard === planName ? 'scale-105 -translate-y-2' : ''
+      className={`relative h-full w-full transform transition-all duration-500 ${
+        hoveredCard === planName ? 'sm:scale-105 sm:-translate-y-2' : ''
       }`}
       onMouseEnter={() => setHoveredCard(planName)}
       onMouseLeave={() => setHoveredCard(null)}
     >
       <div className={`
-        relative h-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 
+        relative h-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl sm:rounded-2xl p-5 sm:p-8 
         shadow-2xl hover:shadow-3xl transition-all duration-500
         ${popular ? 'border-gray-300/30 border-2' : ''}
         ${comingSoon ? 'overflow-hidden' : ''}
       `}>
         {/* Top gradient bar */}
-        <div className={`absolute top-0 left-0 right-0 h-1 ${gradientClass} rounded-t-2xl`} />
+        <div className={`absolute top-0 left-0 right-0 h-1 ${gradientClass} rounded-t-xl sm:rounded-t-2xl`} />
         
         {/* Popular badge */}
         {popular && (
-          <div className="absolute -top-3 right-6 flex items-center bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
-            <Star className="w-4 h-4 mr-1" />
+          <div className="absolute -top-2.5 sm:-top-3 right-4 sm:right-6 flex items-center bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-3 py-0.5 sm:px-4 sm:py-1 rounded-full text-xs sm:text-sm font-semibold shadow-lg">
+            <Star className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
             Most Popular
           </div>
         )}
         
         {/* Coming soon overlay */}
         {comingSoon && (
-          <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-10 rounded-2xl">
-            <h2 className="text-4xl font-bold text-yellow-400 uppercase tracking-wider">
+          <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-10 rounded-xl sm:rounded-2xl">
+            <h2 className="text-2xl sm:text-4xl font-bold text-yellow-400 uppercase tracking-wider px-4 text-center">
               Coming Soon
             </h2>
           </div>
         )}
 
         {/* Plan header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            {icon}
-            <h3 className={`text-2xl font-bold ml-3 ${
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="flex items-center justify-center mb-3 sm:mb-4">
+            <div className="w-6 h-6 sm:w-8 sm:h-8">
+              {icon}
+            </div>
+            <h3 className={`text-xl sm:text-2xl font-bold ml-2 sm:ml-3 ${
               planType === 'gold' ? 'text-yellow-400' : 
               planType === 'silver' ? 'text-gray-300' : 'text-blue-400'
             }`}>
@@ -147,15 +153,15 @@ const PricingPlans = () => {
             </h3>
           </div>
           
-          <div className={`text-5xl font-bold mb-2 ${
+          <div className={`text-4xl sm:text-5xl font-bold mb-2 ${
             planType === 'gold' ? 'text-yellow-400' : 
             planType === 'silver' ? 'text-gray-300' : 'text-blue-400'
           }`}>
             ${price}
-            <span className="text-lg font-normal text-gray-400">/month</span>
+            <span className="text-base sm:text-lg font-normal text-gray-400">/month</span>
           </div>
           
-          <p className="text-gray-400 text-base">
+          <p className="text-gray-400 text-sm sm:text-base px-2">
             {description}
           </p>
         </div>
@@ -166,10 +172,10 @@ const PricingPlans = () => {
         {/* CTA Button */}
         <button
           className={`
-            w-full py-4 px-6 font-semibold uppercase tracking-wide rounded-xl transition-all duration-300
+            w-full py-3 sm:py-4 px-4 sm:px-6 text-sm sm:text-base font-semibold uppercase tracking-wide rounded-lg sm:rounded-xl transition-all duration-300
             ${comingSoon 
               ? 'border-2 border-yellow-400/50 text-yellow-400 cursor-not-allowed opacity-60' 
-              : buttonClass + ' hover:shadow-xl hover:-translate-y-1'
+              : buttonClass + ' hover:shadow-xl sm:hover:-translate-y-1'
             }
           `}
           disabled={comingSoon}
@@ -186,121 +192,91 @@ const PricingPlans = () => {
   );
 
   return (
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <div style={{ minHeight: '100vh', background: theme.palette.background.default, position: 'relative', overflow: 'hidden' }}>
-          {/* Floating Background Elements */}
-          <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none' }}>
-            <div style={{ position: 'absolute', top: '25%', left: '25%', width: 192, height: 192, background: theme.palette.primary.main + '10', borderRadius: '50%', filter: 'blur(48px)', animation: 'pulse 2s infinite' }} />
-            <div style={{ position: 'absolute', bottom: '25%', right: '25%', width: 256, height: 256, background: theme.palette.secondary.main + '10', borderRadius: '50%', filter: 'blur(48px)', animation: 'pulse 2s infinite 1s' }} />
-            <div style={{ position: 'absolute', top: '75%', left: '33%', width: 128, height: 128, background: '#a259ff10', borderRadius: '50%', filter: 'blur(48px)', animation: 'pulse 2s infinite 2s' }} />
-          </div>
+    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: theme.palette.background.default}}>
+      {/* Floating Background Elements */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 sm:w-48 sm:h-48 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-40 h-40 sm:w-64 sm:h-64 bg-green-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-3/4 left-1/3 w-24 h-24 sm:w-32 sm:h-32 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
 
-          <div className="relative z-10 container mx-auto px-6 py-6">
-            {/* Header */}
-            <div className="text-center mb-6">
-              <h1 style={{ fontSize: theme.typography.h2.fontSize, fontWeight: theme.typography.h1.fontWeight, background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`, WebkitBackgroundClip: 'text', color: 'transparent' }} className="mb-6">
-                Join the best platform for AI powered financial insights
-              </h1>
-            </div>
-
-            {/* Plans Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-              {/* Bronze Plan */}
-              <PlanCard
-                planName="Bronze"
-                price="10"
-                description="Perfect for getting started with market insights"
-                features={bronzeFeatures}
-                buttonText="Continue with Bronze"
-                planType="bronze"
-                priceId="price_1SCUnPFUQWEqeOOpFrmW6SQF" // Live price id
-                icon={<TrendingUp className="w-8 h-8" style={{ color: theme.palette.primary.main }} />}
-                gradientClass="bg-gradient-to-r from-blue-500 to-cyan-400"
-                buttonClass="bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-lg hover:from-blue-400 hover:to-cyan-300"
-              />
-
-              {/* Silver Plan */}
-              <PlanCard
-                planName="Silver"
-                price="20"
-                description="Complete access to all financial data and analytics"
-                features={silverFeatures}
-                buttonText="Upgrade to Silver"
-                popular={true}
-                planType="silver"
-                // priceId="price_1SC5GIFUQWEqeOOpgXTmxfSB" //for testing
-                priceId="price_1S8uqgFUQWEqeOOp8c4aQF3a" // Live price id
-                icon={<BarChart3 className="w-8 h-8" style={{ color: theme.palette.secondary.main }} />}
-                gradientClass="bg-gradient-to-r from-gray-400 to-gray-200"
-                buttonClass="bg-gradient-to-r from-gray-400 to-gray-200 text-slate-900 shadow-lg hover:from-gray-300 hover:to-gray-100"
-              />
-
-              {/* Gold Plan */}
-              <PlanCard
-                planName="Gold"
-                price="40"
-                description="Premium features for professional traders"
-                features={goldFeatures}
-                buttonText="Coming Soon"
-                comingSoon={true}
-                planType="gold"
-                // priceId="price_1SC5HDFUQWEqeOOpyToROeAm" // For testing
-                priceId="price_1SC2S3FUQWEqeOOpLror5Ozp" // Live price id
-                icon={<Shield className="w-8 h-8" style={{ color: theme.palette.primary.main }} />}
-                gradientClass="bg-gradient-to-r from-yellow-400 to-yellow-600"
-                buttonClass=""
-              />
-            </div>
-
-            {/* Additional Features Section */}
-            {/* <div style={{ background: theme.palette.background.paper, border: `1px solid ${theme.palette.text.secondary}20`, borderRadius: '1rem', padding: '2rem', backdropFilter: 'blur(12px)' }}>
-              <h2 style={{ fontSize: theme.typography.h2.fontSize, fontWeight: theme.typography.h2.fontWeight, color: theme.palette.text.primary }} className="text-center mb-8">
-                Why Choose Our Platform?
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <Zap className="w-16 h-16 mx-auto mb-4" style={{ color: theme.palette.primary.main }} />
-                  <h3 style={{ fontSize: theme.typography.h5.fontSize, fontWeight: theme.typography.h5.fontWeight, color: theme.palette.text.primary }} className="mb-2">
-                    Real-Time Data
-                  </h3>
-                  <p style={{ color: theme.palette.text.secondary }}>
-                    Get the most up-to-date market information and analytics
-                  </p>
-                </div>
-                <div className="text-center">
-                  <Building2 className="w-16 h-16 mx-auto mb-4" style={{ color: theme.palette.primary.main }} />
-                  <h3 style={{ fontSize: theme.typography.h5.fontSize, fontWeight: theme.typography.h5.fontWeight, color: theme.palette.text.primary }} className="mb-2">
-                    Institutional Grade
-                  </h3>
-                  <p style={{ color: theme.palette.text.secondary }}>
-                    Professional-level tools used by financial institutions
-                  </p>
-                </div>
-                <div className="text-center">
-                  <Sparkles className="w-16 h-16 mx-auto mb-4" style={{ color: theme.palette.primary.main }} />
-                  <h3 style={{ fontSize: theme.typography.h5.fontSize, fontWeight: theme.typography.h5.fontWeight, color: theme.palette.text.primary }} className="mb-2">
-                    Latest Insights
-                  </h3>
-                  <p style={{ color: theme.palette.text.secondary }}>
-                    Stay ahead with cutting-edge financial analysis and reports
-                  </p>
-                </div>
-              </div>
-            </div> */}
-          </div>
-          {/* Checkout Modal */}
-          {checkoutModalInfo.show && (
-            <StripeWrapper>
-              <CheckoutModal
-                open={checkoutModalInfo.show}
-                stripePriceId={checkoutModalInfo.stripePriceId}
-                onClose={() => setCheckoutModalInfo({ show: false, stripePriceId: null })}
-              />
-            </StripeWrapper>
-          )}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12 max-w-7xl">
+        {/* Header */}
+       {/* Header */}
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 px-4 bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent leading-relaxed">
+            Join Today to Start Making Smarter Investment Decisions with AI-Powered Market Intelligence
+          </h1>
+          <p className="text-sm sm:text-base md:text-lg text-gray-400 max-w-3xl mx-auto px-4 leading-relaxed">
+            Get instant access to comprehensive stock analysis, real-time market data, insider trades, congressional activity, and AI-driven insights—all in one powerful platform. Stop guessing. Start investing with confidence.
+          </p>
         </div>
-      </ThemeProvider>
+
+
+        {/* Plans Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-16 max-w-6xl mx-auto">
+          {/* Bronze Plan */}
+          {/* <PlanCard
+             planName="Bronze"
+             price="10"
+             description="Perfect for getting started with market insights"
+             features={bronzeFeatures}
+             buttonText="Continue with Bronze"
+             planType="bronze"
+             priceId="price_1SCUnPFUQWEqeOOpFrmW6SQF" // Live price id
+             icon={<TrendingUp className="w-8 h-8" style={{ color: theme.palette.primary.main }} />}
+             gradientClass="bg-gradient-to-r from-blue-500 to-cyan-400"
+             buttonClass="bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-lg hover:from-blue-400 hover:to-cyan-300"
+          />  */}
+          
+          {/* Silver Plan */}
+          <PlanCard
+            planName="Silver"
+            price="20"
+            description="Complete access to all financial data and analytics"
+            features={silverFeatures}
+            buttonText="Upgrade to Silver"
+            popular={true}
+            planType="silver"
+            priceId="price_1S8uqgFUQWEqeOOp8c4aQF3a"
+            icon={<BarChart3 className="w-full h-full text-gray-300" />}
+            gradientClass="bg-gradient-to-r from-gray-400 to-gray-200"
+            buttonClass="bg-gradient-to-r from-gray-400 to-gray-200 text-slate-900 shadow-lg hover:from-gray-300 hover:to-gray-100"
+          />
+
+          {/* Gold Plan */}
+          <PlanCard
+            planName="Gold"
+            price="40"
+            description="Premium features for professional traders"
+            features={goldFeatures}
+            buttonText="Coming Soon"
+            comingSoon={true}
+            planType="gold"
+            priceId="price_1SC2S3FUQWEqeOOpLror5Ozp"
+            icon={<Shield className="w-full h-full text-yellow-400" />}
+            gradientClass="bg-gradient-to-r from-yellow-400 to-yellow-600"
+            buttonClass=""
+          />
+        </div>
+      </div>
+
+      {/* Checkout Modal Placeholder */}
+      {checkoutModalInfo.show && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-xl p-6 sm:p-8 max-w-md w-full">
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-4">Checkout Modal</h3>
+            <p className="text-gray-300 mb-6">Price ID: {checkoutModalInfo.stripePriceId}</p>
+            <button
+              onClick={() => setCheckoutModalInfo({ show: false, stripePriceId: null })}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
