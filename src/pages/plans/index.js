@@ -7,6 +7,8 @@ import {
   Shield,
 } from 'lucide-react';
 import theme from '../../theme'
+import CheckoutModal from '../dashboard/stripeCheckout';
+import StripeWrapper from '../dashboard/stripeWrapper'
 
 const PricingPlans = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -204,8 +206,8 @@ const PricingPlans = () => {
         {/* Header */}
        {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 px-4 bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent leading-relaxed">
-            Join Today to Start Making Smarter Investment Decisions with AI-Powered Market Intelligence
+          <h1 className="text-xl sm:text-start sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 px-4 bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent leading-relaxed">
+            Start Making Smarter Investment Decisions with AI-Powered Market Intelligence Today
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-gray-400 max-w-3xl mx-auto px-4 leading-relaxed">
             Get instant access to comprehensive stock analysis, real-time market data, insider trades, congressional activity, and AI-driven insights—all in one powerful platform. Stop guessing. Start investing with confidence.
@@ -263,18 +265,13 @@ const PricingPlans = () => {
 
       {/* Checkout Modal Placeholder */}
       {checkoutModalInfo.show && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-xl p-6 sm:p-8 max-w-md w-full">
-            <h3 className="text-xl sm:text-2xl font-bold text-white mb-4">Checkout Modal</h3>
-            <p className="text-gray-300 mb-6">Price ID: {checkoutModalInfo.stripePriceId}</p>
-            <button
-              onClick={() => setCheckoutModalInfo({ show: false, stripePriceId: null })}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition-colors"
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        <StripeWrapper>
+          <CheckoutModal 
+            open={checkoutModalInfo.show} 
+            handleClose={() => setCheckoutModalInfo({ show: false, stripePriceId: null })} 
+            priceId={checkoutModalInfo.stripePriceId}
+          />
+        </StripeWrapper>
       )}
     </div>
   );
