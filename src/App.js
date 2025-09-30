@@ -15,8 +15,6 @@ import SettingsPage from './pages/dashboard/settings';
 import StatementsPage from './pages/dashboard/statements';
 import StockDetailsPage from './pages/dashboard/research';
 import PricingPlans from './pages/plans';
-// import CheckoutForm from './pages/dashboard/stripeCheckout';
-// import StripeWrapper from './pages/dashboard/stripeWrapper';
 
 function App() {
   const [userIsAuth, setUserIsAuth] = useState(false);
@@ -55,15 +53,6 @@ function App() {
       <Route path="/dashboard/settings" element={userIsAuth ? <SettingsPage /> : <SignIn />} />
       <Route path="/onboarding" element={userIsAuth ? <PricingPlans /> : <SignIn />} />
       <Route path="/upgrades" element={userIsAuth ? <PricingPlans /> : <SignIn />} />
-      {/* <Route 
-        path="/dashboard/checkout" 
-        element={
-          userIsAuth ? 
-          <StripeWrapper>
-            <CheckoutForm />
-          </StripeWrapper> 
-          : <SignIn />
-        }/> */}
     </Routes>
   );
 }
