@@ -18,7 +18,9 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
     const stripe = useStripe();
     const elements = useElements();
     const [isProcessing, setIsProcessing] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [paymentSuccess, setPaymentSuccess] = useState(false);
+
     const { email } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
@@ -27,15 +29,17 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
 
     const saveSubscribtionToFireDB = async (userId, customerId, subscriptionId, paymentMethodId) => {
         try {
-            await set(ref(database, `users/${userId}/subscriptions/${subscriptionId}`), {
+            await set(ref(database, `users/${userId}/subscriptions`), {
                 "customerId": customerId,
                 "subscriptionId": subscriptionId,
                 "paymentMethodId": paymentMethodId,
                 "status": 'active'
             });
             console.info('Subscription saved to Firestore');
+            return true;
         } catch (error) {
             console.error('Error saving subscription to Firestore:', error);
+            return false;
         }
     };
 
@@ -53,14 +57,16 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
         }
     }, [email]);
 
-    const createCustomer = async (form, paymentMethodId) => {
+    const createCustomer = async (form, paymentMethodId, stripePriceId) => {
         if (!form.email || !form.fullName) {
             console.error('Email and full name are required to create a customer.');
             return null;
         }
 
+        alert(`stripe price id: ${stripePriceId}`)
+
         try {
-            const response = await fetch(`${API_URL}/stripe/create-customer`, {
+            const response = await fetch(`${API_URL}/stripe/subscription-flow`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -73,12 +79,21 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
             });
 
             if (!response.ok) {
-                console.error('Failed to create customer:', response.statusText);
+                console.error(response);
+                setErrorMessage(response.error?.raw?.message || 'There was an issue subscribing, you have not been charged. Please try again.');
+                setIsProcessing(false);
                 return null;
             }
+
             const data = await response.json();
+
             // save subscription info to Firebase
-            await saveSubscribtionToFireDB(userId, data.customer.id, data.subscription.id, paymentMethodId);
+            const isSaved = await saveSubscribtionToFireDB(userId, data.customer.id, data.subscription.id, paymentMethodId);
+            
+            if (!isSaved) {
+                setIsProcessing(false);
+                return isSaved;
+            }
 
             setTimeout(() => {
                 setPaymentSuccess(true);
@@ -89,7 +104,9 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
                 navigate('/dashboard', { replace: true, state: { from: location } });
             }, 2000);
         } catch (error) {
-            console.error('Error creating customer:', error);
+            console.error(error.message);
+            setErrorMessage(error.message || 'There was an issue subscribing, you have not been charged. Please try again.');
+            setIsProcessing(false);
             return null;
         }
     };
@@ -145,7 +162,7 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
             if (paymentMethod.error) {
                 console.error('Payment method creation failed:', paymentMethod.error);
             } else {
-                await createCustomer(formData, paymentMethod.paymentMethod.id);
+                await createCustomer(formData, paymentMethod.paymentMethod.id, stripePriceId);
                 return;
             }
         } catch (error) {
@@ -310,6 +327,7 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
                             <span>Your payment information is secure and encrypted</span>
                         </div>
                         {/* Submit Button */}
+                        <p className="text-sm text-red-500">{errorMessage}</p>
                         <button
                             type="submit"
                             disabled={!stripe || isProcessing}
