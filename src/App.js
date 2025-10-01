@@ -16,26 +16,25 @@ import StatementsPage from './pages/dashboard/statements';
 import StockDetailsPage from './pages/dashboard/research';
 import PricingPlans from './pages/plans';
 import { useIsSubscribed } from './hooks/isSubscribed';
+import DashboardSkeleton from './pages/dashboard/DashboardSkeleton';
 
 function App() {
   const [userIsAuth, setUserIsAuth] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const isSubscribed = useIsSubscribed();
+  const [authLoading, setAuthLoading] = useState(true);
+  const { isSubscribed, loading: subLoading } = useIsSubscribed();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUserIsAuth(!!user);
-      setLoading(false);
+      setAuthLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  if (loading) {
+  if (authLoading || subLoading) {
     return (
-      <div style={{ color: "white", textAlign: "center", paddingTop: "3em", background: "black", height: "100vh" }}>
-        Loading...
-      </div>
+      <DashboardSkeleton />
     ); 
   }
 
