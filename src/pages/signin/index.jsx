@@ -27,7 +27,7 @@ const SignIn = () => {
       Cookies.set("userName", username);
       Cookies.set("userEmail", email);
   
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       console.error('Error signing in with Google', error);
     }
@@ -45,7 +45,7 @@ const SignIn = () => {
         Cookies.set("userEmail", email);
         Cookies.set("userName", name);
         console.info("User is signed in");
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       })
       .catch((error) => {
         setErrorMessage(error.message);
