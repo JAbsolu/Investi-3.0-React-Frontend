@@ -14,7 +14,7 @@ const Signup = () => {
         email: "",
         password: "",
         passwordConfirmation: "",
-        selectedPlan: "free",
+        selectedPlan: "premium",
         subscriptions: null
     });
 
