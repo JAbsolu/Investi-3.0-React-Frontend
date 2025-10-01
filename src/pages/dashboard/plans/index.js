@@ -5,23 +5,24 @@ import theme from '../../../theme';
 import { 
   CheckCircle, 
   Star, 
-  TrendingUp, 
+  // TrendingUp, 
   BarChart3, 
   Shield,
-  Zap,
-  Building2,
-  Sparkles
+  // Zap,
+  // Building2,
+  // Sparkles
 } from 'lucide-react';
 import CheckoutModal from '../stripeCheckout';
 import StripeWrapper from '../stripeWrapper';
 
 const PricingPlans = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
-  const [checkoutModalInfo, setCheckoutModalInfo] 
-    = useState({
-      show: false,
-      stripePriceId: null
-    });
+  const [selectedPlanPriceId, setSelectedPlanPriceId] = useState(null);
+  const [showStripeModal, setShowStripeModal] = useState(false);
+  const [checkoutModalInfo, setCheckoutModalInfo] = useState({
+    show: false,
+    stripePriceId: null
+  });
 
   const bronzeFeatures = [
     { text: "Access to daily movers (Gainers, Losers, Most Traded)", limited: false },
@@ -100,7 +101,8 @@ const PricingPlans = () => {
     icon,
     gradientClass,
     buttonClass,
-    priceId
+    priceId,
+    onSelect,
   }) => (
     <div
       className={`relative h-full transform transition-all duration-500 ${
@@ -164,7 +166,9 @@ const PricingPlans = () => {
         <FeatureList features={features} planType={planType} />
 
         {/* CTA Button */}
-        <button
+        {/* <button
+          type="button"
+          aria-label={`Select ${planName} plan`}
           className={`
             w-full py-4 px-6 font-semibold uppercase tracking-wide rounded-xl transition-all duration-300
             ${comingSoon 
@@ -174,13 +178,13 @@ const PricingPlans = () => {
           `}
           disabled={comingSoon}
           onClick={() => {
-            if (!comingSoon) {
-              setCheckoutModalInfo({ show: true, stripePriceId: priceId });
+            if (!comingSoon && priceId) {
+              onSelect(priceId); 
             }
           }}
         >
           {buttonText}
-        </button>
+        </button> */}
       </div>
     </div>
   );
@@ -207,7 +211,7 @@ const PricingPlans = () => {
             {/* Plans Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
               {/* Bronze Plan */}
-              <PlanCard
+              {/* <PlanCard
                 planName="Bronze"
                 price="10"
                 description="Perfect for getting started with market insights"
@@ -218,7 +222,12 @@ const PricingPlans = () => {
                 icon={<TrendingUp className="w-8 h-8" style={{ color: theme.palette.primary.main }} />}
                 gradientClass="bg-gradient-to-r from-blue-500 to-cyan-400"
                 buttonClass="bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-lg hover:from-blue-400 hover:to-cyan-300"
-              />
+                onSelect={(priceId) => {
+                  alert(`selected price id: ${priceId}`);
+                  setShowStripeModal(true);
+                  setSelectedPlanPriceId(priceId);
+                }} 
+              /> */}
 
               {/* Silver Plan */}
               <PlanCard
@@ -229,11 +238,15 @@ const PricingPlans = () => {
                 buttonText="Upgrade to Silver"
                 popular={true}
                 planType="silver"
-                // priceId="price_1SC5GIFUQWEqeOOpgXTmxfSB" //for testing
-                priceId="price_1S8uqgFUQWEqeOOp8c4aQF3a" // Live price id
+                priceId="price_1SDJSCF0Aklm0cssVTKgyfBN"
                 icon={<BarChart3 className="w-8 h-8" style={{ color: theme.palette.secondary.main }} />}
                 gradientClass="bg-gradient-to-r from-gray-400 to-gray-200"
                 buttonClass="bg-gradient-to-r from-gray-400 to-gray-200 text-slate-900 shadow-lg hover:from-gray-300 hover:to-gray-100"
+                onSelect={(priceId) => {
+                  alert(`selected price id: ${priceId}`);
+                  setShowStripeModal(true);
+                  setSelectedPlanPriceId(priceId);
+                }}
               />
 
               {/* Gold Plan */}
@@ -247,50 +260,18 @@ const PricingPlans = () => {
                 planType="gold"
                 // priceId="price_1SC5HDFUQWEqeOOpyToROeAm" // For testing
                 priceId="price_1SC2S3FUQWEqeOOpLror5Ozp" // Live price id
+                onSelect={(priceId) => {
+                  setShowStripeModal(true);
+                  setSelectedPlanPriceId(priceId);
+                }}
                 icon={<Shield className="w-8 h-8" style={{ color: theme.palette.primary.main }} />}
                 gradientClass="bg-gradient-to-r from-yellow-400 to-yellow-600"
                 buttonClass=""
               />
             </div>
-
-            {/* Additional Features Section */}
-            {/* <div style={{ background: theme.palette.background.paper, border: `1px solid ${theme.palette.text.secondary}20`, borderRadius: '1rem', padding: '2rem', backdropFilter: 'blur(12px)' }}>
-              <h2 style={{ fontSize: theme.typography.h2.fontSize, fontWeight: theme.typography.h2.fontWeight, color: theme.palette.text.primary }} className="text-center mb-8">
-                Why Choose Our Platform?
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <Zap className="w-16 h-16 mx-auto mb-4" style={{ color: theme.palette.primary.main }} />
-                  <h3 style={{ fontSize: theme.typography.h5.fontSize, fontWeight: theme.typography.h5.fontWeight, color: theme.palette.text.primary }} className="mb-2">
-                    Real-Time Data
-                  </h3>
-                  <p style={{ color: theme.palette.text.secondary }}>
-                    Get the most up-to-date market information and analytics
-                  </p>
-                </div>
-                <div className="text-center">
-                  <Building2 className="w-16 h-16 mx-auto mb-4" style={{ color: theme.palette.primary.main }} />
-                  <h3 style={{ fontSize: theme.typography.h5.fontSize, fontWeight: theme.typography.h5.fontWeight, color: theme.palette.text.primary }} className="mb-2">
-                    Institutional Grade
-                  </h3>
-                  <p style={{ color: theme.palette.text.secondary }}>
-                    Professional-level tools used by financial institutions
-                  </p>
-                </div>
-                <div className="text-center">
-                  <Sparkles className="w-16 h-16 mx-auto mb-4" style={{ color: theme.palette.primary.main }} />
-                  <h3 style={{ fontSize: theme.typography.h5.fontSize, fontWeight: theme.typography.h5.fontWeight, color: theme.palette.text.primary }} className="mb-2">
-                    Latest Insights
-                  </h3>
-                  <p style={{ color: theme.palette.text.secondary }}>
-                    Stay ahead with cutting-edge financial analysis and reports
-                  </p>
-                </div>
-              </div>
-            </div> */}
           </div>
           {/* Checkout Modal */}
-          {checkoutModalInfo.show && (
+          {checkoutModalInfo.show && checkoutModalInfo.stripePriceId && (
             <StripeWrapper>
               <CheckoutModal
                 open={checkoutModalInfo.show}
