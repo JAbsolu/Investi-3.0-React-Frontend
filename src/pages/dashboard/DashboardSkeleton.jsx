@@ -1,12 +1,12 @@
 // import { teal } from "@mui/material/colors";
 
 // Dashboard/dark theme colors
-const darkBg = "#0d0d0d";
+// const darkBg = "#0d0d0d";
 const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
 const sidebarBg = darkGradient;
 const sidebarBorder = '#18191a';
 const mainBg = "#121212";
-const skeletonBg = "#131a18ff";
+// const skeletonBg = "#131a18ff";
 
 const DashboardSkeleton = () => {
     return (
@@ -74,7 +74,7 @@ const DashboardSkeleton = () => {
           <div style={{
             width: "98%",
             height: "100vh",
-            background: skeletonBg,
+            background: "transparent",
             borderRadius: "14px",
             marginBottom: "2em",
             display: "flex",
