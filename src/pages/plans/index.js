@@ -229,8 +229,8 @@ const PricingPlans = () => {
             buttonText="Upgrade to Silver"
             popular={true}
             planType="silver"
-            // priceId="price_1S8uqgFUQWEqeOOp8c4aQF3a"
-            priceId="price_1SDJSCF0Aklm0cssVTKgyfBN"v // test id
+            priceId="price_1S8uqgFUQWEqeOOp8c4aQF3a"
+            // priceId="price_1SDJSCF0Aklm0cssVTKgyfBN"v // test id
             icon={<BarChart3 className="w-8 h-8" style={{ color: theme.palette.secondary.main }} />}
             gradientClass="bg-gradient-to-r from-gray-400 to-gray-200"
             buttonClass="bg-gradient-to-r from-gray-400 to-gray-200 text-slate-900 shadow-lg hover:from-gray-300 hover:to-gray-100"
