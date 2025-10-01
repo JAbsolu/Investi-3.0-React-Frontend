@@ -1,4 +1,4 @@
-import { teal } from "@mui/material/colors";
+// import { teal } from "@mui/material/colors";
 
 // Dashboard/dark theme colors
 const darkBg = "#0d0d0d";
@@ -22,7 +22,7 @@ const DashboardSkeleton = () => {
       }}>
         {/* Sidebar skeleton */}
         <div style={{
-          width: "20%",
+          width: "15%",
           minWidth: 180,
           background: sidebarBg,
           borderRight: `1.5px solid ${sidebarBorder}`,
@@ -31,18 +31,11 @@ const DashboardSkeleton = () => {
           padding: "4em 0",
           gap: "0.5em"
         }}>
-          {[...Array(6)].map((_, i) => (
-            <div key={i} style={{
-              width: "60%",
-              height: 38,
-              background: skeletonBg,
-              margin: "0.5em auto",
-              borderRadius: "8px"
-            }} />
-          ))}
         </div>
         {/* Main content skeleton */}
         <div style={{
+          height: "95vh",
+          width: "100%",
           flex: 1,
           background: darkGradient,
           display: "flex",
@@ -52,18 +45,18 @@ const DashboardSkeleton = () => {
           overflow: "auto"
         }}>
           {/* search bar skeleton */}
-          <div style={{
+          {/* <div style={{
             width: "90%",
             height: 44,
             background: skeletonBg,
             borderRadius: "10px",
             marginBottom: "2em"
-          }} />
+          }} /> */}
           {/* Cards skeleton */}
-          <div style={{
+          {/* <div style={{
             display: "flex",
             gap: "2em",
-            width: "90%",
+            width: "100%",
             justifyContent: "center",
             marginBottom: "2em"
           }}>
@@ -76,18 +69,26 @@ const DashboardSkeleton = () => {
                 boxShadow: "0 4px 24px 0 #0002"
               }} />
             ))}
-          </div>
+          </div> */}
           {/* Table/news skeleton */}
           <div style={{
-            width: "90%",
-            height: 360,
+            width: "98%",
+            height: "100vh",
             background: skeletonBg,
             borderRadius: "14px",
-            marginBottom: "2em"
-          }} />
+            marginBottom: "2em",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <div className="loading-wrapper">
+              <div className="h-20 w-20 border-4 border-teal-500 rounded-full animate-spin"></div>
+              <p className="text-white mt-6">Loading...</p>
+            </div>
+          </div>
         </div>
         {/* Right sidebar skeleton */}
-        <div style={{
+        {/* <div style={{
           width: "20%",
           minWidth: 180,
           background: sidebarBg,
@@ -103,7 +104,7 @@ const DashboardSkeleton = () => {
               border: `1.5px solid ${sidebarBorder}`,
             }} />
           ))}
-        </div>
+        </div> */}
       </div>
     );
 }
