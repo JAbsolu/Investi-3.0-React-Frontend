@@ -4,7 +4,7 @@ import {
   Button, useMediaQuery, useTheme, Alert,
   Avatar
 } from '@mui/material';
-import { teal, grey, green, red } from '@mui/material/colors';
+import { teal, green, red } from '@mui/material/colors';
 import { FaFire, FaRedo } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useMarketActivity } from '../../../hooks/useMarketActivity';
@@ -107,76 +107,41 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
 
   // Stock item component
   const StockItem = ({ stock, type }) => (
-    <Card
+    <div
       onClick={() => handleStockClick(stock)}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
-      sx={{
-        // backgroundColor: 'rgba(20, 30, 30, 0.4)',
-        backgroundColor: 'transparent',
-        borderRadius: 2,
-        border: `1px solid ${teal[500]}`,
-        transition: 'all 0.2s ease',
-        cursor: 'pointer',
-        minWidth: isMobile ? '240px' : '280px',
-        width: isMobile ? '240px' : '280px',
-        height: '120px',
-        mt: 1,
-        position: 'relative',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          backgroundColor: 'rgba(20, 30, 30, 0.6)',
-          boxShadow: `0 8px 25px rgba(0, 0, 0, 0.3)`
-        }
-      }}
+      className={`
+        bg-zinc-900 rounded-lg border border-transparent hover:border-zinc-800 transition-all duration-200 cursor-pointer
+        min-w-[240px] md:min-w-[240px] w-[300px] md:w-[280px] h-[140px] mt-1 relative
+      `}
     >
-      <CardContent sx={{ p: 1.5, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <Box display="flex" gap={0.5} justifyContent="start" alignItems="end" mb={0.5}>
-          <StockLogo ticker={stock} size={isMobile ? 32 : 40} />
-          <Typography 
-            variant="body2" 
-            color={teal[300]}
-            sx={{ 
-              mb: 0.5,
-              mt: 0.5,
-              fontSize: '0.85rem',
-              lineHeight: 1.15,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              minHeight: '28px',
-              maxHeight: '28px'
-            }}
-          >
+      <div className="p-3 h-full flex flex-col justify-between">
+          {stock.symbol}
+        <div className="flex gap-1 mt-2 justify-start items-end mb-1">
+          <p className={`
+            text-zinc-500 text-md leading-tight
+            line-clamp-2 overflow-hidden min-h-[28px] max-h-[38px]
+          `}>
             {stock.name}
-          </Typography>
-        </Box>
+          </p>
+        </div>
         
-        <Box display="flex" justifyContent="space-between" alignItems="flex-end" mt="auto">
-          <Typography 
-            variant="h6" 
-            fontWeight="bold" 
-            color="white"
-            sx={{ fontSize: '1rem', lineHeight: 1.2 }}
-          >
+        <div className="flex justify-between items-end mt-auto">
+          <p className="text-zinc-300 text-md leading-tight">
             {formatPrice(stock.price)}
-          </Typography>
+          </p>
 
-          <Box textAlign="right" sx={{ minWidth: '65px' }}>
-            <Typography 
-              variant="body2" 
-              color={getChangeColor(stock.change)}
-              fontWeight="bold"
-              sx={{ fontSize: '0.8rem', lineHeight: 1.15 }}
-            >
+          <div className="text-right min-w-[65px]">
+            <p className={`
+              ${getChangeColor(stock.change)} text-zinc-300 text-sm leading-tight
+            `}>
               {formatPercentage(stock.changesPercentage)}
-            </Typography>
-            
-          </Box>
-        </Box>
-      </CardContent>
-    </Card>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 
   // Section component with infinite scroll for gainers
@@ -279,7 +244,7 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
             }}
           >
             {/* Render cards twice for seamless loop on desktop, once on mobile */}
-            {(isMobile ? data.slice(0, 20) : [...data.slice(0, 20), ...data.slice(0, 20)]).map((stock, index) => (
+            {(isMobile ? data.slice(0, 4) : [...data.slice(0, 20), ...data.slice(0, 20)]).map((stock, index) => (
               <StockItem key={`${stock.symbol}-${index}` || index} stock={stock} type={type} />
             ))}
           </motion.div>
@@ -360,20 +325,10 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
             overflowX: 'auto',
             flexDirection: 'row',
             pb: 1,
-            '&::-webkit-scrollbar': {
-              height: '4px',
-            },
-            '&::-webkit-scrollbar-track': {
-              backgroundColor: grey[900],
-              borderRadius: '2px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: teal[600],
-              borderRadius: '2px',
-            },
+            flexWrap: 'wrap'
           }}
         >
-          {data.slice(0, 10).map((stock, index) => (
+          {data.slice(0, 6).map((stock, index) => (
             <StockItem key={stock.symbol || index} stock={stock} type={type} />
           ))}
         </Box>
@@ -412,14 +367,14 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
           color={red[400]}
         />
           */}
-        
+      {/*         
         <MarketSection
           title="Most Traded"
           icon={FaFire}
           data={mostTraded}
           type="traded"
           color={teal[400]}
-        />
+        /> */}
       
       </Box>
 
