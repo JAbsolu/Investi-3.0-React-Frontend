@@ -22,6 +22,8 @@ import StockDataView from "./components/StockDataView";
 // import ExploreMarket from "./components/ExploreMarket";
 import LatestStockNews from "./components/LatestStockNews";
 import Movers from "./components/Movers";
+import NewsLayout from "./news/components/NewsLayout";
+import useNewsData from "../../hooks/useNewsData";
 
 
 // Constants  
@@ -65,7 +67,7 @@ export default function DashboardPage() {
 
   // Pagination state
   const [newsStartIndex, setNewsStartIndex] = useState(0);
-  const [newsEndIndex, setNewsEndIndex] = useState(5);
+  const [newsEndIndex, setNewsEndIndex] = useState(4);
 
   // Event handlers
   const handleDrawerToggle = () => {
@@ -204,6 +206,8 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, [currentStock, getCandleSticks]);
 
+  const { generalNews } = useNewsData();
+
   return (
     <Box sx={{ 
       display: "flex",
@@ -331,12 +335,7 @@ export default function DashboardPage() {
                   />
                 </Box>
 
-                {/* <Box>
-                  <Paywall
-                    open={showPaywall}
-                    onClose={handleClosePaywall}
-                  />
-                </Box> */}
+                <NewsLayout newsData={generalNews.slice(newsStartIndex, newsEndIndex)} />
 
                 {/* Movers Section */}
                 <Box sx={{ width: '100%' }}>
