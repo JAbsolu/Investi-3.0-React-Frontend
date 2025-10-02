@@ -117,7 +117,9 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
       `}
     >
       <div className="p-3 h-full flex flex-col justify-between text-teal-500">
+        <p className='font-bold text-teal-600'>
           {stock.symbol}
+        </p>
         <div className="flex gap-1 mt-2 justify-start items-end mb-1">
           <p className={`
             text-zinc-300 text-md leading-tight
