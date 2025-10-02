@@ -85,7 +85,7 @@ export default function NewsLayout({ newsData = [] }) {
         <div 
           key={index}
           onClick={(e) => handleNewsClick(article, e)}
-          className="block bg-zinc-900 rounded-lg overflow-hidden hover:ring-2 hover:ring-zinc-700 transition-all cursor-pointer"
+          className="block bg-zinc-900 rounded-lg overflow-hidden hover:ring-2 hover:ring-zinc-800 transition-all cursor-pointer"
         >
           <div className="md:flex">
             <div className="md:w-1/2 p-8">
@@ -127,7 +127,7 @@ export default function NewsLayout({ newsData = [] }) {
       <div 
         key={index}
         onClick={(e) => handleNewsClick(article, e)}
-        className="block bg-zinc-900 rounded-lg overflow-hidden group cursor-pointer hover:ring-2 hover:ring-zinc-700 transition-all"
+        className="block bg-zinc-900 rounded-lg overflow-hidden group cursor-pointer hover:ring-2 hover:ring-zinc-800 transition-all"
       >
         <div className="relative h-64 overflow-hidden">
           <img 
