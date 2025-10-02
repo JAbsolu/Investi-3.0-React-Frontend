@@ -4,7 +4,7 @@ import { HiOutlineMenu } from "react-icons/hi";
 import { AutoAwesome, RemoveRedEye } from '@mui/icons-material';
 import { teal, grey, amber } from '@mui/material/colors';
 import SearchBar from './SearchBar';
-import { FaCrown } from 'react-icons/fa';
+// import { FaCrown } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const DashboardHeader = ({
@@ -13,7 +13,7 @@ const DashboardHeader = ({
   stock,
   setStock,
   handleSearchOnEnter,
-  onAnalysis,
+  // onAnalysis, 
   onAddToWishlist
 }) => {
 
