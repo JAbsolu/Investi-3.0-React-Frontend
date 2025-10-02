@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { 
   Box, Typography,
-  IconButton, Drawer, Fab
+  IconButton, Drawer, Fab,
+  useMediaQuery
 } from "@mui/material";
 import { FaTimes, FaList } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +36,9 @@ export default function DashboardPage() {
 
   // Custom hooks
   const { userId } = useAuth();
-  const { isSmallScreen, isMediumScreen } = useResponsive();
+  const { isSmallScreen, isDesktop } = useResponsive(); // Only use isSmallScreen
+  const isIpadAirSize = useMediaQuery("(min-width: 768px) and (max-width: 1024px)");
+  const isMobile = useMediaQuery("(min-width: 200px) and (max-width: 767px)");
   const {
     stockData,
     currentStock,
@@ -67,7 +70,7 @@ export default function DashboardPage() {
 
   // Pagination state
   const [newsStartIndex, setNewsStartIndex] = useState(0);
-  const [newsEndIndex, setNewsEndIndex] = useState(4);
+  const [newsEndIndex, setNewsEndIndex] = useState(12);
 
   // Event handlers
   const handleDrawerToggle = () => {
@@ -216,33 +219,33 @@ export default function DashboardPage() {
       color: "white", 
       overflow: "hidden",
     }}>
-      {/* Left Sidebar */}
-      {!isSmallScreen && (
-        <Box sx={{ 
-          flexShrink: 0,
-        }}>
+      {/* Sidebar: always show except on mobile */}
+      {(isDesktop || isIpadAirSize) && (
+        <Box sx={{ flexShrink: 0 }}>
           <DashboardSidebar />
         </Box>
       )}
 
-      {/* Mobile sidebar drawer */}
-      <Drawer
-        anchor="left"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        variant="temporary"
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { 
-            width: 240,
-            boxSizing: 'border-box',
-            background: darkGradient,
-          },
-        }}
-      >
-        <DashboardSidebar onClose={handleDrawerToggle} />
-      </Drawer>
+      {/* Mobile sidebar drawer: only show on mobile */}
+      {isSmallScreen && (
+        <Drawer
+          anchor="left"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          variant="temporary"
+          ModalProps={{ keepMounted: true }}
+          sx={{
+            display: { xs: 'block', sm: 'none', md: 'none' },
+            '& .MuiDrawer-paper': { 
+              width: 240,
+              boxSizing: 'border-box',
+              background: darkGradient,
+            },
+          }}
+        >
+          <DashboardSidebar onClose={handleDrawerToggle} />
+        </Drawer>
+      )}
 
       {/* Main Content Area */}
       <Box sx={{ 
@@ -253,7 +256,7 @@ export default function DashboardPage() {
         minWidth: 0,
       }}>
         {/* Fixed Header on Mobile */}
-        {isSmallScreen && (
+        {isMobile && (
           <Box sx={{
             position: 'fixed',
             top: 0,
@@ -272,7 +275,6 @@ export default function DashboardPage() {
               stock={stock}
               setStock={setStock}
               handleOpenPaywall={() => navigate('/upgrades')}
-              // handleClosePaywall={handleClosePaywall}
               handleSearchOnEnter={handleSearchOnEnter}
               onAnalysis={handleAnalysis}
               onAddToWishlist={handleAddToWishlist}
@@ -284,7 +286,7 @@ export default function DashboardPage() {
           flex: 1,
           display: "flex",
           overflow: "hidden",
-          mt: isSmallScreen ? '80px' : 0, // Add top margin on mobile to account for fixed header
+          mt: isMobile ? '80px' : 0, // Add top margin on mobile to account for fixed header
         }}>
           <Box sx={{ 
             flex: 1,
@@ -298,9 +300,9 @@ export default function DashboardPage() {
             '-ms-overflow-style': 'none',
           }}>
             {/* Header with search and actions - Desktop only */}
-            {!isSmallScreen && (
+            {!isMobile && (
               <DashboardHeader
-                isSmallScreen={isSmallScreen}
+                isSmallScreen={isMobile}
                 mobileOpen={mobileOpen}
                 handleDrawerToggle={handleDrawerToggle}
                 stock={stock}
@@ -322,7 +324,7 @@ export default function DashboardPage() {
                 gap: 0
               }}>
                 {/* Stock Data View */}
-                <Box sx={{ width: '100%' }}>
+                {/* <Box sx={{ width: '100%' }}>
                   <StockDataView
                     stockData={stockData}
                     companyMetadata={companyMetadata}
@@ -332,7 +334,7 @@ export default function DashboardPage() {
                     setCurrentView={setCurrentView}
                     isSmallScreen={isSmallScreen}
                   />
-                </Box>
+                </Box> */}
 
                 <NewsLayout newsData={generalNews.slice(newsStartIndex, newsEndIndex)} />
 
@@ -349,25 +351,12 @@ export default function DashboardPage() {
                   <LatestStockNews />
                 </Box>
 
-                {/* Trading Strategies Section */}
-                {/*
-                <Box sx={{ width: '100%', mt: 3 }}>
-                  <TradingStrategies onStrategyClick={handleStrategyClick} />
-                </Box>
-                */}
-
-                {/* Explore Market Section */}
-                {/*}
-                <Box sx={{ width: '100%', mt: 4 }}>
-                  <ExploreMarket onToolClick={handleToolClick} />
-                </Box>
-                */}
               </Box>
             </Box>
           </Box>
 
           {/* Right Sidebar - Wishlist */}
-          {!isSmallScreen && !isMediumScreen && (
+          {!isSmallScreen && (
             <Box sx={{ 
               width: "320px", 
               flexShrink: 0,
