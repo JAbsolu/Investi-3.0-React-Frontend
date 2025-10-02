@@ -341,7 +341,6 @@ const News = () => {
                         <>
                             {/* News Layout Component */}
                             <NewsLayout newsData={currentData.slice(newsStartIndex, newsEndIndex)} />
-                            
                             {/* Pagination */}
                             <Box
                                 sx={{
