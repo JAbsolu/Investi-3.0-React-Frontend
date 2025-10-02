@@ -113,14 +113,14 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
       onMouseLeave={() => setIsPaused(false)}
       className={`
         bg-zinc-900 rounded-lg border border-transparent hover:border-zinc-800 transition-all duration-200 cursor-pointer
-        min-w-[240px] md:min-w-[240px] w-[300px] md:w-[280px] h-[140px] mt-1 relative
+        min-w-[200px] md:min-w-[240px] w-[300px] md:w-[330px] h-[140px] mt-1 grow relative
       `}
     >
-      <div className="p-3 h-full flex flex-col justify-between">
+      <div className="p-3 h-full flex flex-col justify-between text-teal-500">
           {stock.symbol}
         <div className="flex gap-1 mt-2 justify-start items-end mb-1">
           <p className={`
-            text-zinc-500 text-md leading-tight
+            text-zinc-300 text-md leading-tight
             line-clamp-2 overflow-hidden min-h-[28px] max-h-[38px]
           `}>
             {stock.name}
@@ -128,7 +128,7 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
         </div>
         
         <div className="flex justify-between items-end mt-auto">
-          <p className="text-zinc-300 text-md leading-tight">
+          <p className="text-zinc-300 text-sm leading-tight">
             {formatPrice(stock.price)}
           </p>
 
@@ -230,7 +230,7 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
             }}
             style={{
               display: 'flex',
-              gap: '16px',
+              gap: 4,
               paddingLeft: !isMobile ? '16px' : '0',
               width: !isMobile ? '200%' : '100%',
               overflowX: isMobile ? 'auto' : 'visible',
@@ -320,7 +320,7 @@ const Movers = ({ wishlist = [], addToWishlist }) => {
       ) : (
         <Box 
           display="flex"
-          gap={1}
+          gap={3}
           sx={{
             overflowX: 'auto',
             flexDirection: 'row',
