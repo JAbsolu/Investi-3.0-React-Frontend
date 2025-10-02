@@ -219,7 +219,6 @@ export default function DashboardPage() {
       {/* Left Sidebar */}
       {!isSmallScreen && (
         <Box sx={{ 
-          width: "240px", 
           flexShrink: 0,
         }}>
           <DashboardSidebar />
