@@ -4,7 +4,6 @@ import { HiOutlineMenu } from "react-icons/hi";
 import { AutoAwesome, RemoveRedEye } from '@mui/icons-material';
 import { teal, grey, amber } from '@mui/material/colors';
 import SearchBar from './SearchBar';
-import { useIsPremium } from '../../../hooks/isPremium';
 import { FaCrown } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,7 +16,6 @@ const DashboardHeader = ({
   onAnalysis,
   onAddToWishlist
 }) => {
-  const hasPremiumAccess = useIsPremium();
 
   const navigate = useNavigate();
 
@@ -75,46 +73,10 @@ const DashboardHeader = ({
             placeholder="Search stock"
           />
         )}
-        
-        {hasPremiumAccess && (
-          <Button
+
+        <Button
           variant="contained"
           startIcon={<AutoAwesome />}
-          sx={{ 
-            color: 'white', 
-            minWidth: "12em",
-            maxHeight: "3em",
-            backgroundColor: teal[700],
-            textTransform: "none", 
-            borderRadius: '10px',
-            px: isSmallScreen ? 1.2 : 2.5,
-            fontSize: isSmallScreen ? '0.8rem' : '10pt',
-            flexGrow: isSmallScreen ? 1 : 0,
-            transition: 'all 0.2s ease',
-            '&:hover': {
-              backgroundColor: teal[600],
-              transform: 'translateY(-2px)',
-              boxShadow: `0 6px 12px rgba(0,128,128,0.3)`
-            },
-            '&:disabled': { 
-              backgroundColor: teal[200],
-              color: grey[500],
-              border: `1px solid ${grey[700]}`,
-              cursor: 'not-allowed',
-              transform: 'none',
-              boxShadow: 'none'
-            }
-          }}
-          onClick={onAnalysis}
-        >
-          AI Analysis
-        </Button>
-        )}
-
-        {!hasPremiumAccess && (
-          <Button
-          variant="contained"
-          startIcon={<FaCrown color={amber[500]}/>}
           sx={{ 
             color: 'white', 
             minWidth: "12em",
@@ -140,12 +102,10 @@ const DashboardHeader = ({
               boxShadow: 'none'
             }
           }}
-          // onClick={handlePayWallOpen}
-          onClick={() => navigate("/upgrades")}
+          // onClick={() => navigate("/upgrades")}
         >
           AI Analysis
         </Button>
-        )}
         
         <Button
           startIcon={<RemoveRedEye/>}
