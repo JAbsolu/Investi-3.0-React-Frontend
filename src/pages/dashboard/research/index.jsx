@@ -13,7 +13,6 @@ import {
     FaPhone, FaGlobe, FaExternalLinkAlt, FaRocket,
 } from 'react-icons/fa';
 import { AutoAwesome } from '@mui/icons-material';
-import { Heading2 } from 'lucide-react';
 
 const StockDetailsPage = () => {
     const { ticker: urlTicker } = useParams();
@@ -211,7 +210,7 @@ const StockDetailsPage = () => {
     );
 
     return (
-        <div className="flex min-h-screen bg-zinc-900">
+        <div className="flex min-h-screen" style={{ background: 'linear-gradient(to bottom, #121212, #0d0d0d)'}}>
             {/* Sidebar */}
             {!isMobile && (
                 <div className="w-60 flex-shrink-0">
