@@ -63,7 +63,9 @@ export default function NewsLayout({ newsData = [] }) {
             <span className="text-xs font-semibold text-blue-400 bg-blue-950 px-2 py-1 rounded">
               {article.symbol}
             </span>
-            <span className="text-xs text-zinc-500">{article.publisher}</span>
+            <span className="text-xs text-zinc-500">
+              {article.publisher}
+            </span>
           </div>
           <h3 className="text-cyan-400 text-xl font-medium mb-2 leading-snug">
             {article.title}
@@ -104,7 +106,7 @@ export default function NewsLayout({ newsData = [] }) {
                 </svg>
                 Published {formatDate(article.publishedDate)}
               </div>
-              <p className="text-zinc-300 text-lg leading-relaxed mb-8">
+              <p className="text-zinc-300 text-lg leading-relaxed mb-6 max-h-14 overflow-hidden">
                 {article.text}
               </p>
               <div className="flex items-center">
@@ -115,7 +117,7 @@ export default function NewsLayout({ newsData = [] }) {
               <img 
                 src={article.image || '/image/market.jpg'} 
                 alt={article.title}
-                className="w-full h-full object-cover"
+                className="w-full h-[400px] object-cover"
               />
             </div>
           </div>
