@@ -41,7 +41,7 @@ function DashboardSidebar({ onClose }) {
     maxWidth: '90%',
     transition: 'all 0.2s ease',
     '&:hover': {
-      backgroundColor: 'rgba(20, 184, 166, 0.15)',
+      backgroundColor: !isCollapsed && 'rgba(20, 184, 166, 0.15)',
       color: isActive(path) ? teal[300] : grey[100],
       transform: 'translateX(5px)',
     },
