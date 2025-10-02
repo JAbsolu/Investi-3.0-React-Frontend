@@ -145,7 +145,6 @@ const CongressPage = () => {
       {/* Left Sidebar */}
       {!isSmallScreen && (
         <Box sx={{ 
-          width: "240px", 
           flexShrink: 0,
         }}>
           <DashboardSidebar />

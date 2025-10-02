@@ -213,7 +213,7 @@ const StockDetailsPage = () => {
         <div className="flex min-h-screen" style={{ background: 'linear-gradient(to bottom, #121212, #0d0d0d)'}}>
             {/* Sidebar */}
             {!isMobile && (
-                <div className="w-60 flex-shrink-0">
+                <div className="flex-shrink-0">
                     <DashboardSidebar />
                 </div>
             )}

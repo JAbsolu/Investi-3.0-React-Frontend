@@ -132,7 +132,6 @@ const News = () => {
             {/* Left Sidebar - Desktop */}
             {!isSmallScreen && (
                 <Box sx={{ 
-                    width: "240px", 
                     flexShrink: 0,
                 }}>
                     <DashboardSidebar />
