@@ -27,21 +27,9 @@ const DashboardSkeleton = () => {
           background: mainBg,
           gap: 0
         }}>
-          {/* Sidebar skeleton */}
-          <div style={{
-            width: "15%",
-            minWidth: 180,
-            background: sidebarBg,
-            borderRight: `1.5px solid ${sidebarBorder}`,
-            display: "flex",
-            flexDirection: "column",
-            padding: "4em 0",
-            gap: "0.5em"
-          }}>
-          </div>
           {/* Main content skeleton */}
           <div style={{
-            height: "95vh",
+            height: "100vh",
             width: "100%",
             flex: 1,
             background: darkGradient,
