@@ -10,14 +10,13 @@ import {
 import { teal, red, grey, amber } from '@mui/material/colors';
 import { FaExternalLinkAlt, FaDollarSign, FaCrown } from 'react-icons/fa';
 import StockDetailsModal from '../../components/StockDetailsModal';
-import { useIsPremium } from '../../../../hooks/isPremium';
+// import { useIsPremium } from '../../../../hooks/isPremium';
 import { useNavigate } from 'react-router-dom';
 
 const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) => {
   const [stockModalOpen, setStockModalOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
-  const { hasPremiumAccess } = useIsPremium();
-  // const [showPaywall, setShowPaywall] = useState(false);
+  // const { hasPremiumAccess } = useIsPremium();
 
   const {
     symbol,
@@ -89,7 +88,7 @@ const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) =
           boxShadow: '0 6px 20px rgba(0, 0, 0, 0.4)',
         },
       }}
-      onClick={!hasPremiumAccess && index >= 5 ? () => navigate('/upgrades') : handleStockClick}
+      // onClick={!hasPremiumAccess && index >= 5 ? () => navigate('/upgrades') : handleStockClick}
     >
       <CardContent sx={{ p: 3 }}>
         {/* Header with Member Name and Symbol */}
@@ -104,12 +103,15 @@ const TransactionCard = ({ index, transaction, wishlist = [], addToWishlist }) =
           </Box>
           {symbol && (
             <Chip
-              icon={!hasPremiumAccess && index >= 5 && <FaCrown color="black" size={12} />}
-              label={!hasPremiumAccess && index >= 5 ? "UPGRADE" : symbol}
+              // icon={!hasPremiumAccess && index >= 5 && <FaCrown color="black" size={12} />}
+              // label={!hasPremiumAccess && index >= 5 ? "UPGRADE" : symbol}
+              label={symbol}
               size="small"
               sx={{
-                backgroundColor: !hasPremiumAccess && index >= 5 ? amber[600] : teal[500],
-                color: !hasPremiumAccess && index >= 5 ? 'black' : 'white',
+                // backgroundColor: !hasPremiumAccess && index >= 5 ? amber[600] : teal[500],
+                backgroundColor: teal[500],
+                // color: !hasPremiumAccess && index >= 5 ? 'black' : 'white',
+                color: 'white',
                 fontWeight: 'bold',
                 fontSize: '0.75rem',
                 px: 1,
