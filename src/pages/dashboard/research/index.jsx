@@ -19,6 +19,7 @@ import { useIsPremium } from '../../../hooks/isPremium';
 import { ref, get, child } from "firebase/database";
 import { database } from "../../../firebaseConfig";
 import { useWishlist } from '../../../hooks/useWishlist';
+import NewsLayout from '../news/components/NewsLayout';
 
 // Constants for colors matching dashboard
 const darkBg = "#0d0d0d";
@@ -491,6 +492,15 @@ const StockDetailsPage = () => {
                         </Card>
 
                         {/* Tab Content */}
+                        <TabPanel value={activeTab} index={1}>
+                            <ProfileTab 
+                                data={data}
+                                loading={loading}
+                                formatCurrency={formatCurrency}
+                                formatNumber={formatNumber}
+                            />
+                        </TabPanel>
+
                         <TabPanel value={activeTab} index={0}>
                             <OverviewTab 
                                 data={data}
@@ -501,15 +511,6 @@ const StockDetailsPage = () => {
                                 getChangeColor={getChangeColor}
                                 isMobile={isMobile}
                                 onShowPaywall={() => navigate('/upgrades')}
-                            />
-                        </TabPanel>
-                        
-                        <TabPanel value={activeTab} index={1}>
-                            <ProfileTab 
-                                data={data}
-                                loading={loading}
-                                formatCurrency={formatCurrency}
-                                formatNumber={formatNumber}
                             />
                         </TabPanel>
                         
@@ -603,7 +604,7 @@ const StockDetailsPage = () => {
 const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumber, getChangeColor, isMobile, onShowPaywall }) => {
     const quote = data.quote?.[0];
     const priceChange = data.priceChange?.[0];
-    const hasPremiumAccess = useIsPremium();
+    // const hasPremiumAccess = useIsPremium();
     const navigate = useNavigate();
 
 
@@ -688,7 +689,6 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
             {priceChange && (
                 <Card sx={{ backgroundColor: 'transparent' }}>
                     <CardContent>
-                        {hasPremiumAccess ? (
                             <Grid container spacing={2}>
                                 {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
                                     <Grid item xs={6} sm={4} md={4} key={period}>
@@ -711,50 +711,6 @@ const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumbe
                                     </Grid>
                                 ))}
                             </Grid>
-                        ) : (
-                            <Box sx={{ 
-                                textAlign: 'center',
-                                py: 6,
-                                px: 3,
-                                backgroundColor: 'rgba(20, 184, 166, 0.05)',
-                                borderRadius: 2,
-                                border: `1px solid ${teal[800]}`
-                            }}>
-                                <Box display="flex" justifyContent="center" mb={2}>
-                                    <Chip
-                                        icon={<FaRocket color='black' />}
-                                        label="PREMIUM"
-                                        sx={{
-                                            backgroundColor: amber[600],
-                                            color: 'black',
-                                            fontWeight: 'bold',
-                                            fontSize: '0.9rem',
-                                            px: 1
-                                        }}
-                                    />
-                                </Box>
-                                <Typography variant="body1" color={grey[400]} mb={3}>
-                                    Upgrade to Premium to view detailed price performance across different time periods.
-                                </Typography>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<FaRocket color='black' />}
-                                    onClick={onShowPaywall}
-                                    sx={{
-                                        backgroundColor: amber[600],
-                                        color: 'white',
-                                        fontWeight: 'bold',
-                                        px: 4,
-                                        py: 1.5,
-                                        '&:hover': {
-                                            backgroundColor: amber[500],
-                                        }
-                                    }}
-                                >
-                                    Upgrade to Premium
-                                </Button>
-                            </Box>
-                        )}
                     </CardContent>
                 </Card>
             )}
@@ -957,38 +913,20 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                     <CardContent>
                         <Grid container spacing={3}>
                             <Grid item xs={6} sm={2.4}>
-                                {hasPremiumAccess ? (
                                     <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2 }}>
                                     <Typography variant="h5" color={green[400]} fontWeight="bold">
                                         {historicalGrades.analystRatingsStrongBuy}
                                     </Typography>
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Buy</Typography>
                                 </Box>
-                                ): (
-                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2, filter: 'blur(4px)', "&:hover": { cursor: 'pointer' } }} onClick={onShowPaywall}>
-                                    <Typography variant="h6" color={amber[400]} fontWeight="bold">
-                                        UPGRADE
-                                    </Typography>
-                                    <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Buy</Typography>
-                                </Box>
-                                )}
                             </Grid>
                             <Grid item xs={6} sm={2.4}>
-                               { hasPremiumAccess ? (
                                 <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.05)', borderRadius: 2 }}>
                                     <Typography variant="h5" color={green[300]} fontWeight="bold">
                                         {historicalGrades.analystRatingsBuy}
                                     </Typography>
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Buy</Typography>
                                 </Box>
-                                ) : (
-                                    <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2, filter: 'blur(4px)', "&:hover": { cursor: 'pointer' } }} onClick={onShowPaywall}>
-                                    <Typography variant="h6" color={amber[300]} fontWeight="bold">
-                                        UPGRADE
-                                    </Typography>
-                                    <Typography variant="body1" color={grey[400]} fontWeight="bold">Buy</Typography>
-                                </Box>
-                                )}
                             </Grid>
                             <Grid item xs={6} sm={2.4}>
                                 <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(156, 163, 175, 0.1)', borderRadius: 2 }}>
@@ -1113,66 +1051,34 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
             {/* AI Analysis Section */}
             <Card sx={{ mb: 4, backgroundColor: 'transparent', boxShadow: 'none' }}>
                 <CardContent>
-                    {hasPremiumAccess ? (
-                        <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
-                            <Box display="flex" alignItems="center" gap={2}>
-                                <AutoAwesomeIcon sx={{ color: teal[400], fontSize: 28 }} />
-                                <Typography variant="h6" color={teal[300]} fontWeight="bold">
-                                    AI Analysis
-                                </Typography>
-                            </Box>
-                            
-                            <Button
-                                variant="outlined"
-                                size="large"
-                                onClick={handleAIAnalysis}
-                                disabled={loading.aiAnalysis}
-                                startIcon={loading.aiAnalysis ? <CircularProgress size={20} sx={{ color: teal[400] }} /> : <AutoAwesomeIcon />}
-                                sx={{
-                                    color: loading.aiAnalysis ? 'white' : teal[400],
-                                    borderColor: teal[400],
-                                    backgroundColor: 'transparent',
-                                    px: 2,
-                                    py: 1,
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(20, 184, 166, 0.1)'
-                                    }
-                                }}
-                            >
-                                {loading.aiAnalysis ? 'Generating AI Analysis...' : 'Get Full AI Analysis'}
-                            </Button>
+                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+                        <Box display="flex" alignItems="center" gap={2}>
+                            <AutoAwesomeIcon sx={{ color: teal[400], fontSize: 28 }} />
+                            <Typography variant="h6" color={teal[300]} fontWeight="bold">
+                                AI Analysis
+                            </Typography>
                         </Box>
-                    ) : (
-                        <Box sx={{ 
-                                textAlign: 'center',
-                                py: 4,
-                                px: 3,
-                                backgroundColor: 'rgba(20, 184, 166, 0.05)',
-                                borderRadius: 2,
-                                border: `1px solid ${teal[800]}`
-                            }}>
-                                <Typography variant="body1" color={grey[400]} mb={3}>
-                                    Upgrade to Premium to view AI-generated analyst.
-                                </Typography>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<FaRocket color='black' />}
-                                    onClick={onShowPaywall}
-                                    sx={{
-                                        backgroundColor: amber[600],
-                                        color: 'black',
-                                        fontWeight: 'bold',
-                                        px: 4,
-                                        py: 1.5,
-                                        '&:hover': {
-                                            backgroundColor: amber[500],
-                                        }
-                                    }}
-                                >
-                                    Upgrade to Premium
-                                </Button>
-                        </Box>
-                    )}
+                        
+                        <Button
+                            variant="outlined"
+                            size="large"
+                            onClick={handleAIAnalysis}
+                            disabled={loading.aiAnalysis}
+                            startIcon={loading.aiAnalysis ? <CircularProgress size={20} sx={{ color: teal[400] }} /> : <AutoAwesomeIcon />}
+                            sx={{
+                                color: loading.aiAnalysis ? 'white' : teal[400],
+                                borderColor: teal[400],
+                                backgroundColor: 'transparent',
+                                px: 2,
+                                py: 1,
+                                '&:hover': {
+                                    backgroundColor: 'rgba(20, 184, 166, 0.1)'
+                                }
+                            }}
+                        >
+                            {loading.aiAnalysis ? 'Generating AI Analysis...' : 'Get Full AI Analysis'}
+                        </Button>
+                    </Box>
                     
                     {loading.aiAnalysis ? (
                         <Box display="flex" justifyContent="center" py={8}>
@@ -1397,81 +1303,7 @@ const NewsTab = ({ data, loading, currentTicker }) => {
 
     return (
         <Box>
-            <Card sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
-                <CardContent>
-                    <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={3}>
-                        Latest {currentTicker} News
-                    </Typography>
-                    {loading.stockNews ? (
-                        <Box display="flex" justifyContent="center" py={8}>
-                            <CircularProgress sx={{ color: teal[400] }} size={48} />
-                        </Box>
-                    ) : stockNews?.length > 0 ? (
-                        <Box display="flex" flexDirection="column" gap={1}>
-                            {stockNews.map((news, index) => (
-                                <Box 
-                                    key={index}
-                                    onClick={() => handleNewsClick(news)}
-                                    sx={{ 
-                                        p: 2, 
-                                        backgroundColor: 'transparent',
-                                        borderRadius: 2,
-                                        border: `1px solid ${teal[400]}`,
-                                        cursor: 'pointer',
-                                        transition: 'all 0.3s ease',
-                                        '&:hover': {
-                                            borderColor: teal[200],
-                                            // backgroundColor: 'rgba(20, 184, 166, 0.1)',
-                                            // transform: 'translateY(-4px)',
-                                            // boxShadow: '0 8px 25px rgba(20, 184, 166, 0.2)'
-                                        }
-                                    }}
-                                >
-                                    <Box display="flex" gap={3}>
-                                        {news.image && (
-                                            <Box 
-                                                component="img"
-                                                src={news.image}
-                                                alt={news.title}
-                                                sx={{
-                                                    width: 180,
-                                                    height: 130,
-                                                    objectFit: 'cover',
-                                                    borderRadius: 2,
-                                                    flexShrink: 0
-                                                }}
-                                            />
-                                        )}
-                                        <Box flex={1}>
-                                            <Typography variant="h7" color={white} fontWeight="bold" mb={2}>
-                                                {news.title}
-                                            </Typography>
-                                            <Typography variant="body1" color={grey[300]} mb={2} sx={{
-                                                display: '-webkit-box',
-                                                WebkitLineClamp: 3,
-                                                WebkitBoxOrient: 'vertical',
-                                                overflow: 'hidden',
-                                                lineHeight: 1.6
-                                            }}>
-                                                {news.text}
-                                            </Typography>
-                                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                                <Typography variant="body2" color={grey[500]} fontWeight="bold">
-                                                    {news.publisher} • {new Date(news.publishedDate).toLocaleDateString()}
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Box>
-                                </Box>
-                            ))}
-                        </Box>
-                    ) : (
-                        <Typography color={grey[400]} sx={{ textAlign: 'center', py: 4, fontSize: '1.1rem' }}>
-                            No news available for {currentTicker}
-                        </Typography>
-                    )}
-                </CardContent>
-            </Card>
+            <NewsLayout newsData={stockNews} />
         </Box>
     );
 };
