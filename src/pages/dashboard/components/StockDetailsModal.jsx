@@ -12,9 +12,6 @@ import {
 } from 'react-icons/fa';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import StockChart from './stockChart';
-import { useIsPremium } from '../../../hooks/isPremium';
-import { useNavigate } from 'react-router-dom';
-
 
 // Constants
 const darkBg = "#0d0d0d";
@@ -30,12 +27,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
     const [newsModalOpen, setNewsModalOpen] = useState(false);
     const [searchTicker, setSearchTicker] = useState('');
     const [currentStock, setCurrentStock] = useState(stock);
-    // const [showPaywall, setShowPaywall] = useState(false);
-
-    const navigate = useNavigate();
-
-
-    const hasPremiumAccess = useIsPremium();
 
     // Check if stock is in wishlist
     const isInWishlist = currentStock && wishlist.includes(currentStock.symbol);
@@ -368,67 +359,35 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 )}
 
                 {/* Price Performance */}
-                {priceChange && (
-                    hasPremiumAccess ? (
-                        <Card sx={{ backgroundColor: 'transparent', mt: 0, borderRadius: 0, shadow: 'none' }}>
-                            <CardContent>
-                                <Grid container spacing={2}>
-                                    {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
-                                        <Grid item xs={6} sm={4} md={4} key={period}>
-                                            <Box sx={{ 
-                                                backgroundColor: 'transparent',
-                                                minWidth: '6em'
-                                            }}>
-                                                <Typography variant="body2" color={grey[400]} mb={1}>{period}</Typography>
-                                                <Typography  variant="body1" color={getChangeColor(change || 0)} fontWeight="bold">
-                                                    {change !== null && change !== undefined && !isNaN(change) 
-                                                        ? `${change >= 0 ? '+' : ''}${Number(change).toFixed(2)}%`
-                                                        : 'N/A'
-                                                    }
-                                                </Typography>
-                                            </Box>
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </CardContent>
-                        </Card>
-                    ) : (
-                        <Box sx={{ textAlign: 'center', py: 4, px: 3, backgroundColor: 'rgba(20, 184, 166, 0.05)', borderRadius: 2, border: `1px solid ${teal[800]}` }}>
-                            <Box display="flex" justifyContent="center" mb={2}>
-                                <Chip
-                                    icon={<FaCrown color='black' />}
-                                    label="PREMIUM"
-                                    sx={{
-                                        backgroundColor: amber[600],
-                                        color: 'black',
-                                        fontWeight: 'bold',
-                                        fontSize: '0.9rem',
-                                        px: 1
-                                    }}
-                                />
-                            </Box>
-                            <Typography variant="body1" color={grey[400]} mb={3}>
-                                Upgrade to Premium to view detailed price performance across different time periods.
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                // onClick={handleShowPaywall}
-                                onClick={() => navigate('/upgrades')} 
-                                sx={{
-                                    backgroundColor: teal[600],
-                                    color: 'white',
-                                    fontWeight: 'bold',
-                                    px: 4,
-                                    py: 1.5,
-                                    '&:hover': {
-                                        backgroundColor: teal[700],
-                                    }
-                                }}
-                            >
-                                Upgrade to Premium
-                            </Button>
-                    </Box>
-                ))}
+                <Card sx={{ backgroundColor: 'transparent', mt: 0, borderRadius: 0, boxShadow: 'none' }}>
+                    <CardContent>
+                        <Grid container spacing={2}>
+                            {(Object.entries(priceChange ?? {}) // Using ?? {} prevents errors
+                                .filter(([key]) => key !== 'symbol')
+                                .map(([period, change]) => (
+                                    <Grid item xs={6} sm={4} md={4} key={period}>
+                                        <Box sx={{ 
+                                            backgroundColor: 'transparent',
+                                            minWidth: '6em'
+                                        }}>
+                                            <Typography variant="body2" color={grey[400]} mb={1}>{period}</Typography>
+                                            <Typography
+                                                variant="body1"
+                                                color={getChangeColor(change || 0)}
+                                                fontWeight="bold"
+                                            >
+                                                {change !== null && change !== undefined && !isNaN(change) 
+                                                    ? `${change >= 0 ? '+' : ''}${Number(change).toFixed(2)}%`
+                                                    : 'N/A'
+                                                }
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                ))
+                            )}
+                        </Grid>
+                    </CardContent>
+                </Card>
             </Box>
         );
     };
@@ -597,44 +556,20 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                     <CardContent>
                         <Grid container spacing={3}>
                             <Grid item xs={6} sm={2.4}>
-                                {hasPremiumAccess ? (
-                                    <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2 }}>
+                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2 }}>
                                     <Typography variant="h5" color={green[400]} fontWeight="bold">
                                         {historicalGrades.analystRatingsStrongBuy}
                                     </Typography>
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Buy</Typography>
                                 </Box>
-                                ): (
-                                <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2, filter: 'blur(4px)', "&:hover": { cursor: 'pointer' } }} 
-                                    // onClick={() => setShowPaywall(true)}
-                                    onClick={() => navigate('/upgrades')}
-                                >
-                                    <Typography variant="h6" color={amber[400]} fontWeight="bold">
-                                        UPGRADE
-                                    </Typography>
-                                    <Typography variant="body1" color={grey[400]} fontWeight="bold">Strong Buy</Typography>
-                                </Box>
-                                )}
                             </Grid>
                             <Grid item xs={6} sm={2.4}>
-                               { hasPremiumAccess ? (
                                 <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.05)', borderRadius: 2 }}>
                                     <Typography variant="h5" color={green[300]} fontWeight="bold">
                                         {historicalGrades.analystRatingsBuy}
                                     </Typography>
                                     <Typography variant="body1" color={grey[400]} fontWeight="bold">Buy</Typography>
                                 </Box>
-                                ) : (
-                                    <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(34, 197, 94, 0.1)', borderRadius: 2, filter: 'blur(4px)', "&:hover": { cursor: 'pointer' } }} 
-                                    // onClick={() => setShowPaywall(true)}
-                                    onClick={() => navigate('/upgrades')}
-                                    >
-                                    <Typography variant="h6" color={amber[300]} fontWeight="bold">
-                                        UPGRADE
-                                    </Typography>
-                                    <Typography variant="body1" color={grey[400]} fontWeight="bold">Buy</Typography>
-                                </Box>
-                                )}
                             </Grid>
                             <Grid item xs={6} sm={2.4}>
                                 <Box textAlign="center" p={2} sx={{ minWidth: '10em', backgroundColor: 'rgba(156, 163, 175, 0.1)', borderRadius: 2 }}>
@@ -754,8 +689,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 <Divider sx={{ mt: 0, mb:2, backgroundColor: teal[800] }} />
 
                 {/* AI Analysis Section */}
-                {hasPremiumAccess ? (
-                    <Card sx={{ mb: 3, backgroundColor: 'transparent', boxShadow: 'none' }}>
+                <Card sx={{ mb: 3, backgroundColor: 'transparent', boxShadow: 'none' }}>
                     <CardContent>
                         <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
                             <Box display="flex" alignItems="center" gap={2}>
@@ -938,38 +872,6 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                         )}
                     </CardContent>
                 </Card>
-                ): (
-                <Box sx={{ 
-                   textAlign: 'center',
-                   py: 4,
-                   px: 3,
-                   backgroundColor: 'rgba(20, 184, 166, 0.05)',
-                   borderRadius: 2,
-                   border: `1px solid ${teal[800]}`
-                }}>
-                   <Typography variant="body1" color={grey[400]} mb={3}>
-                       Upgrade to Premium to view AI-generated analyst.
-                   </Typography>
-                   <Button
-                       variant="contained"
-                       startIcon={<FaRocket color='black' />}
-                    //  onClick={() => setShowPaywall(true)}
-                       onClick={() => navigate('/upgrades')}
-                       sx={{
-                           backgroundColor: amber[600],
-                           color: 'black',
-                           fontWeight: 'bold',
-                           px: 4,
-                           py: 1.5,
-                           '&:hover': {
-                               backgroundColor: amber[500],
-                           }
-                       }}
-                   >
-                       Upgrade to Premium
-                   </Button>
-                </Box>
-                )}
 
                 <Divider sx={{ mt: 0, mb:2, backgroundColor: teal[800] }} />
 
