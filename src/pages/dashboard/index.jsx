@@ -22,8 +22,6 @@ import StockDataView from "./components/StockDataView";
 // import ExploreMarket from "./components/ExploreMarket";
 import LatestStockNews from "./components/LatestStockNews";
 import Movers from "./components/Movers";
-import { useIsPremium } from "../../hooks/isPremium";
-// import Paywall from "./components/Paywall";
 
 
 // Constants  
@@ -33,11 +31,9 @@ const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
 export default function DashboardPage() {
   const navigate = useNavigate();
 
-  const hasPremiumAccess = useIsPremium();
-
   // Custom hooks
-  const { user, userId, email, plan } = useAuth();
-  const { isMobile, isTablet, isDesktop, isSmallScreen, isMediumScreen } = useResponsive();
+  const { userId } = useAuth();
+  const { isSmallScreen, isMediumScreen } = useResponsive();
   const {
     stockData,
     currentStock,
@@ -64,13 +60,10 @@ export default function DashboardPage() {
   const [stock, setStock] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileWishlistOpen, setMobileWishlistOpen] = useState(false);
-  // const [showPaywall, setShowPaywall] = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [currentView, setCurrentView] = useState('chart');
 
   // Pagination state
-  const [keyStatisticsStartIndex, setKeyStatisticsStartIndex] = useState(0);
-  const [keyStatisticsEndIndex, setKeyStatisticsEndIndex] = useState(5);
   const [newsStartIndex, setNewsStartIndex] = useState(0);
   const [newsEndIndex, setNewsEndIndex] = useState(5);
 
@@ -109,17 +102,6 @@ export default function DashboardPage() {
     setShowAnalysis(true);
     setCurrentView('analysis');
   };
-
-  // const handleClosePaywall = () => {
-  //   setShowPaywall(false);
-  // };
-
-  // const handleOpenPaywall = () => {
-  //   if (!hasPremiumAccess) {
-  //     setShowPaywall(true);
-  //     return;
-  //   }
-  // }
 
   const handleStrategyClick = (strategy) => {
     // console.log('Strategy clicked:', strategy);
@@ -320,8 +302,6 @@ export default function DashboardPage() {
                 handleDrawerToggle={handleDrawerToggle}
                 stock={stock}
                 setStock={setStock}
-                // showPaywall={showPaywall}
-                // setShowPaywall={setShowPaywall}
                 handleSearchOnEnter={handleSearchOnEnter}
                 onAnalysis={handleAnalysis}
                 onAddToWishlist={handleAddToWishlist}
