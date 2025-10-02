@@ -14,13 +14,13 @@ import {
 } from '@mui/material';
 import { teal, red, green, grey, amber } from '@mui/material/colors';
 import { FaCrown, FaExternalLinkAlt } from 'react-icons/fa';
-import { useIsPremium } from '../../../../hooks/isPremium';
+// import { useIsPremium } from '../../../../hooks/isPremium';
 import { useNavigate } from 'react-router-dom';
 
 const TransactionTable = ({ transactions, title, isCompact = false, constrained = false, onStockClick }) => {
   const [orderBy, setOrderBy] = useState('disclosureDate');
   const [order, setOrder] = useState('desc');
-  const hasPremiumAccess = useIsPremium();
+  // const hasPremiumAccess = useIsPremium();
   // const [showPaywall, setShowPaywall] = useState(false);
 
   const navigate = useNavigate();
@@ -171,9 +171,7 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                     </Box>
                   </Box>
                 </TableCell>
-                {hasPremiumAccess ? (
                    <TableCell sx={{ color: 'white' }}>
-                  {transaction.symbol && (
                     <Chip
                       label={transaction.symbol}
                       size="small"
@@ -190,32 +188,8 @@ const TransactionTable = ({ transactions, title, isCompact = false, constrained 
                         } : {}
                       }}
                     />
-                  )}
                 </TableCell>
-                ) : (
-                   <TableCell sx={{ color: 'white' }}>
-                  {transaction.symbol && (
-                    <Chip
-                      icon={!hasPremiumAccess && index >= 5 && <FaCrown color="black" />}
-                      label={index < 5 ? transaction.symbol : "UPGRADE"}
-                      size="small"
-                      onClick={!hasPremiumAccess && index >= 5 ? () => navigate('/upgrades') : () => onStockClick && onStockClick(transaction.symbol)}
-                      sx={{
-                        backgroundColor: !hasPremiumAccess && index >= 5 ? amber[600] : teal[600],
-                        color: !hasPremiumAccess && index >= 5 ? 'black' : 'white',
-                        fontWeight: 'bold',
-                        fontSize: '0.8rem',
-                        padding: 1,
-                        cursor: onStockClick ? 'pointer' : 'default',
-                        '&:hover': onStockClick ? {
-                          backgroundColor:!hasPremiumAccess && index >= 5 ? amber[500] : teal[500],
-                          transform: 'scale(1.05)'
-                        } : {}
-                      }}
-                    />
-                  )}
-                </TableCell>
-                )}
+
                 {!isCompact && (
                   <TableCell sx={{ color: grey[300], maxWidth: 200 }}>
                     <Box sx={{ 
