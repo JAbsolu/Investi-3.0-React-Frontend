@@ -109,7 +109,7 @@ function DashboardSidebar({ onClose }) {
             }}
           >
             <IoAnalyticsSharp size={28} style={{ color: teal[400], marginRight: !isCollapsed && '12px' }} />
-            {isCollapsed && isDesktop && (
+            {isCollapsed && !isMobile && (
               <ChevronRightIcon 
                 sx={{ 
                   color: teal[400], 
@@ -142,7 +142,7 @@ function DashboardSidebar({ onClose }) {
             >
               Investi
             </Typography>
-            {!isCollapsed && isDesktop && (
+            {!isCollapsed && !isMobile && (
               <ChevronLeftIcon 
                 sx={{ 
                   color: teal[400], 
