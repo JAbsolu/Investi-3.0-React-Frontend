@@ -92,7 +92,7 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
             
             if (!isSaved) {
                 setIsProcessing(false);
-                return isS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      aved;
+                return;
             }
 
             setTimeout(() => {
