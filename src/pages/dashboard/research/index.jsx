@@ -234,7 +234,7 @@ const StockDetailsPage = () => {
             {/* Main Content */}
             <div className="flex-1 overflow-auto min-h-screen scrollbar-hide">
                 {/* Header */}
-                <div className="sticky top-0 z-40 bg-black backdrop-blur-sm border-b border-zinc-600 p-4 md:p-6">
+                <div className="sticky top-0 z-40 transparent backdrop-blur-sm px-4 md:p-6 py-2">
                     <div className="flex items-center gap-2 mb-0">
                         {isMobile && (
                             <button 
@@ -246,17 +246,58 @@ const StockDetailsPage = () => {
                         )}
                         
                         <div className="flex items-center gap-6 flex-1">
-                            <StockLogo />
+                           {currentTicker ? (
+                             <>
+                               <StockLogo /> 
+                               <h2 className="text-white font-semibold text-3xl">
+                                   {currentTicker}
+                               </h2>
+                             </>
+                           ): (
                             <h2 className="text-white font-semibold text-3xl">
-                                {!isMobile ? currentTicker || 'Research' : ''}
+                                Research
                             </h2>
+                           )}
                         </div>
+                    </div>
 
+                    {/* Search Bar */}
+                    {/* <div className="relative mt-4"> */}
+                        {/* <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-300" size={14} />
+                        <input
+                            type="text"
+                            placeholder="Search ticker (e.g., AAPL, TSLA)..."
+                            value={searchTicker}
+                            onChange={(e) => setSearchTicker(e.target.value)}
+                            onKeyDown={handleSearchKeyPress}
+                            className="w-full bg-transparent text-white placeholder-gray-400 rounded-lg pl-10 pr-20 py-2 border border-zinc-600 focus:border-teal-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                        /> */}
+                    {/* </div> */}
+
+                    <div className='flex gap-4'>
+                        <div className="relative min-w-[10em] w-[40em] max-w-[90%] self-start mt-4">
+                            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-teal-400 text-sm z-10" />
+                            <input
+                                type="text"
+                                placeholder="Search ticker (e.g., AAPL, TSLA)..."
+                                value={searchTicker}
+                                onChange={(e) => setSearchTicker(e.target.value)}
+                                onKeyDown={handleSearchKeyPress}
+                                className="w-full bg-zinc-900 text-white placeholder-gray-400 pl-10 pr-4 py-2 
+                                         border-2 border-zinc-800 rounded-md focus:outline-none focus:border-teal-800
+                                         text-sm"
+                            />
+
+                            <button onClick={handleStockSearch} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-zinc-300 text-sm font-medium px-3 py-1">
+                                Search
+                            </button>
+                        </div>
+                         {/* Add to watchlist button */}
                         {currentTicker && (
                             <button
                                 onClick={handleAddToWishlist}
                                 disabled={isInWishlist}
-                                className={`px-4 py-2 rounded text-sm font-medium border transition-colors ${
+                                className={`px-4 py-2 h-10 mt-4 text-zinc-300 rounded text-sm font-medium border-2 border-zinc-800 transition-colors ${
                                     isInWishlist 
                                         ? 'bg-teal-400 text-black border-zinc-400' 
                                         : 'text-zinc-400 border-zinc-400 hover:bg-teal-400/10'
@@ -266,33 +307,14 @@ const StockDetailsPage = () => {
                             </button>
                         )}
                     </div>
-
-                    {/* Search Bar */}
-                    <div className="relative mt-4">
-                        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-300" size={14} />
-                        <input
-                            type="text"
-                            placeholder="Search ticker (e.g., AAPL, TSLA)..."
-                            value={searchTicker}
-                            onChange={(e) => setSearchTicker(e.target.value)}
-                            onKeyPress={handleSearchKeyPress}
-                            className="w-full bg-transparent text-white placeholder-gray-400 rounded-lg pl-10 pr-20 py-2 border border-zinc-600 focus:border-teal-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
-                        />
-                        <button
-                            onClick={handleStockSearch}
-                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-zinc-300 text-sm font-medium px-3 py-1"
-                        >
-                            Search
-                        </button>
-                    </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-4 md:p-6 max-w-full">
+                <div className="px-4 md:p-6 max-w-full">
                     {/* Tabs */}
                     <div className="mb-6 border-b border-zinc-600">
                         <div className="flex overflow-x-auto">
-                            {['Overview', 'Profile', 'Analysis', 'News'].map((tab, index) => (
+                            {['Profile', 'Overview', 'Analysis', 'News'].map((tab, index) => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(index)}
@@ -309,6 +331,15 @@ const StockDetailsPage = () => {
                     </div>
 
                     {/* Tab Panels */}
+                    <TabPanel value={activeTab} index={1}>
+                        <ProfileTab 
+                            data={data}
+                            loading={loading}
+                            formatCurrency={formatCurrency}
+                            formatNumber={formatNumber}
+                        />
+                    </TabPanel>
+
                     <TabPanel value={activeTab} index={0}>
                         <OverviewTab 
                             data={data}
@@ -318,15 +349,6 @@ const StockDetailsPage = () => {
                             formatNumber={formatNumber}
                             getChangeColor={getChangeColor}
                             isMobile={isMobile}
-                        />
-                    </TabPanel>
-
-                    <TabPanel value={activeTab} index={1}>
-                        <ProfileTab 
-                            data={data}
-                            loading={loading}
-                            formatCurrency={formatCurrency}
-                            formatNumber={formatNumber}
                         />
                     </TabPanel>
                     
@@ -384,58 +406,61 @@ const StockDetailsPage = () => {
     );
 };
 
-// Overview Tab Component
 const OverviewTab = ({ data, loading, currentTicker, formatCurrency, formatNumber, getChangeColor, isMobile }) => {
     const quote = data.quote?.[0];
     const priceChange = data.priceChange?.[0];
 
     return (
-        <div className="space-y-6">
-            {/* Chart */}
-            <div className="bg-zinc-800 rounded-lg p-4">
-                {currentTicker && <StockChart ticker={currentTicker} />}
-            </div>
+        <div className="space-y-8">
+            {/* Chart - Full width, no padding */}
+            {currentTicker && <StockChart ticker={currentTicker} />}
             
-            {/* Metrics Grid */}
-            {quote && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {[
-                        { label: 'Open', value: formatCurrency(quote.open) },
-                        { label: 'High', value: formatCurrency(quote.dayHigh) },
-                        { label: 'Low', value: formatCurrency(quote.dayLow) },
-                        { label: '52W High', value: formatCurrency(quote.yearHigh) },
-                        { label: '52W Low', value: formatCurrency(quote.yearLow) },
-                        { label: 'Volume', value: formatNumber(quote.volume) },
-                        { label: 'Market Cap', value: formatCurrency(quote.marketCap) },
-                        { label: '50D Avg', value: formatCurrency(quote.priceAvg50) },
-                        { label: '200D Avg', value: formatCurrency(quote.priceAvg200) }
-                    ].map((item, idx) => (
-                        <div key={idx} className="bg-zinc-800 p-3 rounded-lg">
-                            <div className="text-gray-400 text-sm mb-1">{item.label}</div>
-                            <div className="text-white font-semibold">{item.value}</div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Price Performance */}
-            {priceChange && (
-                <div>
-                    <div className="text-gray-400 font-medium mb-4">Price Performance</div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
-                            <div key={period} className="bg-zinc-800 p-3 rounded-lg">
-                                <div className="text-gray-400 text-sm mb-1">{period}</div>
-                                <div className={`text-lg font-bold ${getChangeColor(change)}`}>
-                                    {change !== null && !isNaN(change) 
-                                        ? `${change >= 0 ? '+' : ''}${Number(change).toFixed(2)}%`
-                                        : 'N/A'}
+            {/* Combined Metrics & Performance */}
+            <div className="space-y-6">
+                {/* Key Metrics */}
+                {quote && (
+                    <div className="space-y-3">
+                        <div className="text-zinc-500 text-sm font-medium">Key Metrics</div>
+                        <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+                            {[
+                                { label: 'Open', value: formatCurrency(quote.open) },
+                                { label: 'High', value: formatCurrency(quote.dayHigh) },
+                                { label: 'Low', value: formatCurrency(quote.dayLow) },
+                                { label: '52W High', value: formatCurrency(quote.yearHigh) },
+                                { label: '52W Low', value: formatCurrency(quote.yearLow) },
+                                { label: 'Volume', value: formatNumber(quote.volume) },
+                                { label: 'Market Cap', value: formatCurrency(quote.marketCap) },
+                                { label: '50D Avg', value: formatCurrency(quote.priceAvg50) },
+                                { label: '200D Avg', value: formatCurrency(quote.priceAvg200) }
+                            ].map((item, idx) => (
+                                <div key={idx}>
+                                    <div className="text-zinc-500 text-xs mb-1">{item.label}</div>
+                                    <div className="text-white text-sm">{item.value}</div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+
+                {/* Price Performance */}
+                {priceChange && (
+                    <div className="space-y-3">
+                        <div className="text-zinc-500 text-sm font-medium">Performance</div>
+                        <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+                            {Object.entries(priceChange).filter(([key]) => key !== 'symbol').map(([period, change]) => (
+                                <div key={period}>
+                                    <div className="text-zinc-500 text-xs mb-1">{period}</div>
+                                    <div className={`text-sm ${getChangeColor(change)}`}>
+                                        {change !== null && !isNaN(change) 
+                                            ? `${change >= 0 ? '+' : ''}${Number(change).toFixed(2)}%`
+                                            : 'N/A'}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
@@ -475,9 +500,9 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 bg-zinc-900">
             {/* Company Header */}
-            <div className="bg-zinc-800 p-6 rounded-lg">
+            <div className="bg-zinc-900 p-6 rounded-lg">
                 <div className="flex items-center gap-4 mb-4">
                     {profile.image && <StockLogo/>}
                     <div>
@@ -492,7 +517,7 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
             </div>
 
             {/* Company Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-6 ms-1">
                 {[
                     { icon: <FaUsers className="text-teal-400" />, label: 'CEO', value: profile.ceo },
                     { icon: <FaBuilding className="text-teal-400" />, label: 'Employees', value: formatNumber(profile.fullTimeEmployees) },
@@ -500,7 +525,7 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
                     { icon: <FaMapMarkerAlt className="text-teal-400" />, label: 'Location', value: `${profile.city}, ${profile.state}` },
                     { icon: <FaPhone className="text-teal-400" />, label: 'Phone', value: profile.phone }
                 ].map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-3 bg-zinc-800 p-4 rounded-lg">
+                    <div key={idx} className="flex items-center gap-3 bg-zinc-900 p-4 rounded-lg">
                         {item.icon}
                         <div>
                             <div className="text-gray-400 text-xs">{item.label}</div>
@@ -508,7 +533,7 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
                         </div>
                     </div>
                 ))}
-                <div className="flex items-center gap-3 bg-zinc-800 p-4 rounded-lg">
+                <div className="flex items-center gap-3 bg-zinc-900 p-4 rounded-lg">
                     <FaGlobe className="text-teal-400" />
                     <div>
                         <div className="text-gray-400 text-xs">Website</div>
@@ -525,8 +550,8 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
 
             {/* Financial Metrics */}
             <div>
-                <div className="text-gray-400 font-medium mb-4">Key Metrics</div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="text-gray-400 font-medium mb-4 ms-5">Key Metrics</div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ms-1">
                     {[
                         { label: 'Market Cap', value: formatCurrency(profile.marketCap) },
                         { label: 'Beta', value: profile.beta?.toFixed(2) || 'N/A' },
@@ -535,7 +560,7 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
                         { label: 'Volume', value: formatNumber(profile.volume) },
                         { label: 'Avg Volume', value: formatNumber(profile.averageVolume) }
                     ].map((item, idx) => (
-                        <div key={idx} className="bg-zinc-800 p-4 rounded-lg">
+                        <div key={idx} className="bg-zinc-900 p-4 rounded-lg">
                             <div className="text-gray-400 text-sm mb-1">{item.label}</div>
                             <div className="text-white font-semibold">{item.value}</div>
                         </div>
