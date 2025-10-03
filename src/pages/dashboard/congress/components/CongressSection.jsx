@@ -47,7 +47,9 @@ const TransactionTable = ({ transactions, onStockClick }) => (
 const TransactionCard = ({ transaction, onStockClick }) => (
   <div className="bg-zinc-800/50 rounded-lg p-4 mb-3 border border-zinc-700/50 hover:border-teal-700/50 transition-colors">
     <div className="flex justify-between items-start mb-2">
-      <div className="text-zinc-300 font-medium">{transaction.member || 'N/A'}</div>
+      <div className="text-zinc-300 font-medium">
+        {transaction.office || `${transaction.firstName || ''} ${transaction.lastName || ''}`.trim() || 'N/A'}
+      </div>
       <span className={`px-2 py-1 rounded text-xs ${
         transaction.type === 'Purchase' ? 'bg-emerald-900/30 text-emerald-400' : 'bg-rose-900/30 text-rose-400'
       }`}>
@@ -55,13 +57,13 @@ const TransactionCard = ({ transaction, onStockClick }) => (
       </span>
     </div>
     <button 
-      onClick={() => onStockClick?.(transaction.stock)}
+      onClick={() => onStockClick?.(transaction.symbol)}
       className="text-teal-400 hover:text-teal-300 font-semibold mb-1 transition-colors"
     >
-      {transaction.stock || 'N/A'}
+      {transaction.symbol || transaction.assetDescription || 'N/A'}
     </button>
     <div className="flex justify-between text-sm">
-      <span className="text-zinc-500">{transaction.date || 'N/A'}</span>
+      <span className="text-zinc-500">{transaction.transactionDate || transaction.disclosureDate || 'N/A'}</span>
       <span className="text-zinc-300">{transaction.amount || 'N/A'}</span>
     </div>
   </div>

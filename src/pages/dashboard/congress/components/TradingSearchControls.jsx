@@ -54,9 +54,8 @@ const TradingSearchControls = ({
     debounceTimer.current = setTimeout(() => {
       if (query.trim() && query.length >= 2) {
         lastSearchParams.current = { query: query.trim(), type };
-        onSearch(query.trim());
+        onSearch(query.trim(), type); // <-- pass type!
       }
-      // Note: We don't automatically clear when query is empty anymore
     }, 300); // Reduced debounce time for better UX
   }, [onSearch]);
 
@@ -113,8 +112,8 @@ const TradingSearchControls = ({
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
       }
-      lastSearchParams.current = { query: '', type: '' }; // Force new search
-      onSearch(localQuery.trim());
+      lastSearchParams.current = { query: '', type: '' };
+      onSearch(localQuery.trim(), searchType); // <-- pass searchType!
     }
   };
 
@@ -124,8 +123,8 @@ const TradingSearchControls = ({
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
       }
-      lastSearchParams.current = { query: '', type: '' }; // Force new search
-      onSearch(localQuery.trim());
+      lastSearchParams.current = { query: '', type: '' };
+      onSearch(localQuery.trim(), searchType); // <-- pass searchType!
     }
   };
 
@@ -169,7 +168,7 @@ const TradingSearchControls = ({
               }
             />
             <FormControlLabel
-              value="ticker"
+              value="stock" // <-- was "ticker"
               control={<Radio size="small" />}
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
