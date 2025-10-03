@@ -2,47 +2,82 @@ import React, { useState, useEffect } from 'react';
 import { FaRedo, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 // Sub-components for rendering table, card, and search controls
-const TransactionTable = ({ transactions, onStockClick }) => (
-  <div className="overflow-x-auto">
-    <table className="w-full text-sm">
-      <thead className="border-b border-zinc-700">
-        <tr className="text-zinc-400">
-          <th className="text-left py-3 px-4">Date</th>
-          <th className="text-left py-3 px-4">Member</th>
-          <th className="text-left py-3 px-4">Stock</th>
-          <th className="text-left py-3 px-4">Type</th>
-          <th className="text-right py-3 px-4">Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        {transactions.map((t, i) => (
-          <tr key={i} className="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-            <td className="py-3 px-4 text-zinc-300">{t.transactionDate || t.disclosureDate || 'N/A'}</td>
-            <td className="py-3 px-4 text-zinc-300">
-              {t.office || `${t.firstName || ''} ${t.lastName || ''}`.trim() || 'N/A'}
-            </td>
-            <td className="py-3 px-4">
-              <button 
-                onClick={() => onStockClick?.(t.symbol)}
-                className="text-teal-400 hover:text-teal-300 transition-colors"
-              >
-                {t.symbol || t.assetDescription || 'N/A'}
-              </button>
-            </td>
-            <td className="py-3 px-4">
-              <span className={`px-2 py-1 rounded text-xs ${
-                t.type === 'Purchase' ? 'bg-emerald-900/30 text-emerald-400' : 'bg-rose-900/30 text-rose-400'
-              }`}>
-                {t.type || 'N/A'}
-              </span>
-            </td>
-            <td className="py-3 px-4 text-right text-zinc-300">{t.amount || 'N/A'}</td>
+const TransactionTable = ({ transactions, onStockClick }) => {
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+  const sortedTransactions = React.useMemo(() => {
+    if (!sortConfig.key) return transactions;
+    const sorted = [...transactions].sort((a, b) => {
+      const aValue = a[sortConfig.key] || '';
+      const bValue = b[sortConfig.key] || '';
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return sorted;
+  }, [transactions, sortConfig]);
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { key, direction: 'asc' };
+    });
+  };
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead className="border-b border-zinc-700">
+          <tr className="text-zinc-400">
+            <th className="text-left py-3 px-4 cursor-pointer" onClick={() => handleSort('transactionDate')}>
+              Date {sortConfig.key === 'transactionDate' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+            </th>
+            <th className="text-left py-3 px-4 cursor-pointer" onClick={() => handleSort('office')}>
+              Member {sortConfig.key === 'office' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+            </th>
+            <th className="text-left py-3 px-4 cursor-pointer" onClick={() => handleSort('symbol')}>
+              Stock {sortConfig.key === 'symbol' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+            </th>
+            <th className="text-left py-3 px-4 cursor-pointer" onClick={() => handleSort('type')}>
+              Type {sortConfig.key === 'type' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+            </th>
+            <th className="text-right py-3 px-4 cursor-pointer" onClick={() => handleSort('amount')}>
+              Amount {sortConfig.key === 'amount' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+            </th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
+        </thead>
+        <tbody>
+          {sortedTransactions.map((t, i) => (
+            <tr key={i} className="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
+              <td className="py-3 px-4 text-zinc-300">{t.transactionDate || t.disclosureDate || 'N/A'}</td>
+              <td className="py-3 px-4 text-zinc-300">
+                {t.office || `${t.firstName || ''} ${t.lastName || ''}`.trim() || 'N/A'}
+              </td>
+              <td className="py-3 px-4">
+                <button 
+                  onClick={() => onStockClick?.(t.symbol)}
+                  className="text-teal-400 hover:text-teal-300 transition-colors"
+                >
+                  {t.symbol || t.assetDescription || 'N/A'}
+                </button>
+              </td>
+              <td className="py-3 px-4">
+                <span className={`px-2 py-1 rounded text-xs ${
+                  t.type === 'Purchase' ? 'bg-emerald-900/30 text-emerald-400' : 'bg-rose-900/30 text-rose-400'
+                }`}>
+                  {t.type || 'N/A'}
+                </span>
+              </td>
+              <td className="py-3 px-4 text-right text-zinc-300">{t.amount || 'N/A'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 const TransactionCard = ({ transaction, onStockClick }) => (
   <div className="bg-zinc-800/50 rounded-lg p-4 mb-3 border border-zinc-700/50 hover:border-teal-700/50 transition-colors">
