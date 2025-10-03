@@ -19,8 +19,6 @@ import { useAuth } from "../../hooks/useAuth";
 import { useResponsive } from "../../hooks/useResponsive";
 import DashboardHeader from "./components/DashboardHeader";
 import StockDataView from "./components/StockDataView";
-// import TradingStreategies from "./components/TradingStrategies";
-// import ExploreMarket from "./components/ExploreMarket";
 import LatestStockNews from "./components/LatestStockNews";
 import Movers from "./components/Movers";
 import NewsLayout from "./news/components/NewsLayout";
