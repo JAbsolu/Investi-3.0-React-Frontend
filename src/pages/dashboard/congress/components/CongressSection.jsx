@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { FaRedo, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
+// Helper to format date as "Month Day Year"
+const formatDate = (dateStr) => {
+  if (!dateStr) return 'N/A';
+  const date = new Date(dateStr);
+  if (isNaN(date)) return dateStr;
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
 // Sub-components for rendering table, card, and search controls
 const TransactionTable = ({ transactions, onStockClick }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -32,7 +44,10 @@ const TransactionTable = ({ transactions, onStockClick }) => {
         <thead className="border-b border-zinc-700">
           <tr className="text-zinc-400">
             <th className="text-left py-3 px-4 cursor-pointer" onClick={() => handleSort('transactionDate')}>
-              Date {sortConfig.key === 'transactionDate' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+              Transaction Date {sortConfig.key === 'transactionDate' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+            </th>
+            <th className="text-left py-3 px-4 cursor-pointer" onClick={() => handleSort('disclosureDate')}>
+              Disclosure Date {sortConfig.key === 'disclosureDate' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
             </th>
             <th className="text-left py-3 px-4 cursor-pointer" onClick={() => handleSort('office')}>
               Member {sortConfig.key === 'office' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
@@ -51,7 +66,8 @@ const TransactionTable = ({ transactions, onStockClick }) => {
         <tbody>
           {sortedTransactions.map((t, i) => (
             <tr key={i} className="border-b border-zinc-800 hover:bg-zinc-800/50 transition-colors">
-              <td className="py-3 px-4 text-zinc-300">{t.transactionDate || t.disclosureDate || 'N/A'}</td>
+              <td className="py-3 px-4 text-zinc-300">{formatDate(t.transactionDate)}</td>
+              <td className="py-3 px-4 text-zinc-300">{formatDate(t.disclosureDate)}</td>
               <td className="py-3 px-4 text-zinc-300">
                 {t.office || `${t.firstName || ''} ${t.lastName || ''}`.trim() || 'N/A'}
               </td>
