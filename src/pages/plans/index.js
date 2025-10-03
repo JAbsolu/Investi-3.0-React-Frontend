@@ -194,14 +194,14 @@ const PricingPlans = () => {
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12 max-w-7xl">
         {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-xl sm:text-start sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 px-4 bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent leading-relaxed">
-            Start Making Smarter Investment Decisions with AI-Powered Market Intelligence Today
-          </h1>
-          <p className="text-sm sm:text-base md:text-lg text-gray-400 max-w-3xl mx-auto px-4 leading-relaxed">
-            Get instant access to comprehensive stock analysis, real-time market data, insider trades, congressional activity, and AI-driven insights—all in one powerful platform. Stop guessing. Start investing with confidence.
-          </p>
-        </div>
+      <div className="text-center mb-8 sm:mb-12 min-h-20">
+        <h1 className="text-xl sm:text-start text-center sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 px-4 bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent leading-relaxed" style={{ lineHeight: '1' }}>
+          Start Making Smarter Investment Decisions with AI-Powered Market Intelligence Today
+        </h1>
+        <p className="text-sm sm:text-base md:text-lg text-gray-400 max-w-3xl mx-auto px-4 leading-relaxed" style={{ lineHeight: '2' }}>
+          Get instant access to comprehensive stock analysis, real-time market data, insider trades, congressional activity, and AI-driven insights—all in one powerful platform. Stop guessing. Start investing with confidence.
+        </p>
+      </div>
 
         {/* Plans Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-16 max-w-6xl mx-auto">
