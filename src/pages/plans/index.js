@@ -265,7 +265,7 @@ const PricingPlans = () => {
         <StripeWrapper>
           <CheckoutModal 
             open={showStripeModal} 
-            handleClose={() => setShowStripeModal(false)} 
+            onClose={() => setShowStripeModal(false)} 
             stripePriceId={selectedPlanPriceId}
           />
         </StripeWrapper>
