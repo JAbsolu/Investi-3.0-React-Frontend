@@ -1,8 +1,7 @@
 import { HiOutlineMenu } from "react-icons/hi";
-import { AutoAwesome, RemoveRedEye } from '@mui/icons-material';
 import SearchBar from './SearchBar';
 import { useNavigate } from 'react-router-dom';
-import { min } from "d3";
+import { useResponsive } from "../../../hooks/useResponsive";
 
 const DashboardHeader = ({
   isSmallScreen,
@@ -12,7 +11,8 @@ const DashboardHeader = ({
   handleSearchOnEnter,
   onAddToWishlist
 }) => {
-  const navigate = useNavigate();
+
+  const { isMobile } = useResponsive();
 
   return (
     <>
@@ -53,13 +53,14 @@ const DashboardHeader = ({
       )}
 
       {/* Watch Button */}
-      <button
-        onClick={onAddToWishlist}
-        className="flex items-center gap-2 border-2 border-zinc-800 text-zinc-400 px-3 py-2 rounded text-sm hover:bg-teal-400/10 hover:border-teal-700 transition-colors"
-      >
-        {/* <RemoveRedEye className="text-base" /> */}
-        {!isSmallScreen && 'Add to Watchlist'}
-      </button>
+      {!isMobile && (
+        <button
+          onClick={onAddToWishlist}
+          className="flex items-center gap-2 border-2 border-zinc-800 text-zinc-400 px-3 py-2 rounded text-sm hover:bg-teal-400/10 hover:border-teal-700 transition-colors"
+        >
+          {'Add to Watchlist'}
+        </button>
+      )}
     </div>
     </>
   );

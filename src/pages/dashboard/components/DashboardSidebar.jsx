@@ -14,13 +14,14 @@ import { FaUniversity } from "react-icons/fa";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useState } from "react";
-
+import { useResponsive } from "../../../hooks/useResponsive";
 function DashboardSidebar({ onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+  const { isMobile, isDesktop } = useResponsive();
 
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(isDesktop);
 
   // Check if a route is active
   const isActive = (path) => {
@@ -108,7 +109,7 @@ function DashboardSidebar({ onClose }) {
             }}
           >
             <IoAnalyticsSharp size={28} style={{ color: teal[400], marginRight: !isCollapsed && '12px' }} />
-            {isCollapsed && (
+            {isCollapsed && isDesktop && (
               <ChevronRightIcon 
                 sx={{ 
                   color: teal[400], 
@@ -141,7 +142,7 @@ function DashboardSidebar({ onClose }) {
             >
               Investi
             </Typography>
-            {!isCollapsed && (
+            {!isCollapsed && isDesktop && (
               <ChevronLeftIcon 
                 sx={{ 
                   color: teal[400], 

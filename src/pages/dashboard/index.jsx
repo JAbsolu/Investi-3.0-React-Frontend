@@ -262,9 +262,9 @@ export default function DashboardPage() {
             right: 0,
             zIndex: 1000,
             backgroundColor: darkBg,
-            borderBottom: `1px solid ${teal[900]}`,
             px: 2,
-            py: 1.5,
+            py: 1.5, 
+            height: '3em'
           }}>
             <DashboardHeader
               isSmallScreen={isSmallScreen}
