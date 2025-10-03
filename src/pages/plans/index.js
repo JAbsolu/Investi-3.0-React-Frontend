@@ -51,7 +51,7 @@ const PricingPlans = () => {
     { text: "Advanced portfolio analytics", limited: false },
     { text: "Real-time alerts and notifications", limited: false },
     { text: "Custom screening tools", limited: false },
-    { text: "API access", limited: false },
+    { text: "AI Analyst Chat", limited: false },
     { text: "Priority customer support", limited: false },
     { text: "Advanced charting tools", limited: false },
     { text: "Institutional-grade research", limited: false },
