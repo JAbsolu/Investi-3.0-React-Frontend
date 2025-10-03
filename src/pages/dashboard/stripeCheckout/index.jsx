@@ -354,16 +354,10 @@ const CheckoutModal = ({ open, onClose, stripePriceId }) => {
                             ) : (
                                 <>
                                     <Lock className="w-5 h-5 mr-2" />
-                                    Complete Purchase
+                                    Start Subscription
                                 </>
                             )}
                         </button>
-                        {/* Footer */}
-                        <div className="mt-6 text-center">
-                            <p className="text-xs" style={{ color: teal[200] }}>
-                                Protected by 256-bit SSL encryption
-                            </p>
-                        </div>
                     </form>
                 )}
             </DialogContent>
