@@ -21,7 +21,7 @@ function DashboardSidebar({ onClose }) {
   const currentPath = location.pathname;
   const { isMobile, isDesktop } = useResponsive();
 
-  const [isCollapsed, setIsCollapsed] = useState(isDesktop);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   // Check if a route is active
   const isActive = (path) => {
