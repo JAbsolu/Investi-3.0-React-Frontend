@@ -1,28 +1,10 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Container,
-  Alert,
-  Button,
-  useMediaQuery,
-  useTheme,
-  Tabs,
-  Tab,
-  IconButton,
-  Drawer
-} from '@mui/material';
-import { teal, grey } from '@mui/material/colors';
-import { FaUniversity, FaLandmark, FaRedo, FaExternalLinkAlt, FaTimes, FaBars } from 'react-icons/fa';
+import { FaUniversity, FaLandmark, FaRedo, FaBars } from 'react-icons/fa';
 import CongressSection from './components/CongressSection';
 import { useCongressData } from '../../../hooks/useCongressData';
 import { useWishlist } from '../../../hooks/useWishlist';
 import DashboardSidebar from '../components/DashboardSidebar';
 import StockDetailsModal from '../components/StockDetailsModal';
-
-// Constants matching dashboard background
-const darkBg = "#0d0d0d";
-const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
 
 const CongressPage = () => {
   const { 
@@ -42,9 +24,18 @@ const CongressPage = () => {
   
   const { wishlist, addToWishlist } = useWishlist();
   
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  // Detect screen sizes
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
+  
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+      setIsSmallScreen(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   // State for mobile sidebar, tab navigation, and stock modal
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -58,7 +49,6 @@ const CongressPage = () => {
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
-    // Clear search results when switching tabs
     clearSearchResults();
   };
 
@@ -135,211 +125,114 @@ const CongressPage = () => {
   const currentData = getCurrentData();
 
   return (
-    <Box sx={{ 
-      display: "flex",
-      height: "100vh",
-      backgroundColor: darkBg, 
-      color: "white", 
-      overflow: "hidden",
-    }}>
+    <div className="flex h-screen bg-zinc-950 text-white overflow-hidden">
       {/* Left Sidebar */}
       {!isSmallScreen && (
-        <Box sx={{ 
-          flexShrink: 0,
-        }}>
+        <div className="flex-shrink-0">
           <DashboardSidebar />
-        </Box>
+        </div>
       )}
 
       {/* Mobile sidebar drawer */}
-      <Drawer
-        anchor="left"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        variant="temporary"
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { 
-            width: 240,
-            boxSizing: 'border-box',
-            background: darkGradient,
-          },
-        }}
-      >
-        <DashboardSidebar onClose={handleDrawerToggle} />
-      </Drawer>
+      {isSmallScreen && mobileOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div 
+            className="absolute inset-0 bg-black/50"
+            onClick={handleDrawerToggle}
+          />
+          <div className="absolute left-0 top-0 bottom-0 w-60 bg-gradient-to-b from-zinc-900 to-zinc-950">
+            <DashboardSidebar onClose={handleDrawerToggle} />
+          </div>
+        </div>
+      )}
 
       {/* Main Content Area */}
-      <Box sx={{ 
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        minWidth: 0,
-      }}>
-        <Box sx={{ 
-          flex: 1,
-          display: "flex",
-          overflow: "hidden",
-        }}>
-          <Box sx={{ 
-            flex: 1,
-            px: 1, 
-            py: 1,  
-            overflow: "auto",
-            display: "flex",
-            flexDirection: "column",
-            '&::-webkit-scrollbar': { display: 'none' },
-            scrollbarWidth: 'none',
-            '-ms-overflow-style': 'none',
-          }}>
-            <Container maxWidth="xl" sx={{ py: 3, flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 px-2 py-2 overflow-auto flex flex-col scrollbar-hide">
+            <div className="max-w-7xl mx-auto w-full py-2 flex-1 flex flex-col">
               {/* Sticky Mobile Header */}
               {isSmallScreen && (
-                <Box 
-                  sx={{
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 1100,
-                    backgroundColor: darkBg,
-                    borderBottom: `1px solid ${teal[800]}`,
-                    px: 2,
-                    py: 1.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
-                    mx: -2,
-                    mb: 2
-                  }}
-                >
-                  <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    edge="start"
+                <div className="sticky top-0 z-[1100] bg-zinc-950 border-b border-zinc-800 px-4 py-3 flex items-center gap-3 -mx-4 mb-4">
+                  <button
                     onClick={handleDrawerToggle}
-                    sx={{ color: teal[400] }}
+                    className="text-teal-400 p-1"
+                    aria-label="open drawer"
                   >
                     <FaBars />
-                  </IconButton>
-                  <Typography variant="h6" sx={{ color: teal[300], fontWeight: 600 }}>
+                  </button>
+                  <h1 className="text-lg text-teal-300 font-semibold">
                     Congress Monitor
-                  </Typography>
-                </Box>
+                  </h1>
+                </div>
               )}
 
               {/* Page Header */}
-              <Box sx={{ mb: 0 }}>
+              <div className="mb-0">
                 {!isSmallScreen && (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2}}>
-                    <Typography 
-                      variant="h2" 
-                      sx={{ 
-                        color: "white",
-                        fontWeight: 700,
-                        fontSize: '1.4rem'
-                      }}
-                    >
+                  <div className="flex items-center gap-4">
+                    <h2 className="text-xl text-zinc-100 font-bold">
                       Congressional Trading Monitor
-                    </Typography>
-                    <Button
+                    </h2>
+                    <button
                       onClick={refreshData}
-                      size="small"
-                      sx={{ 
-                        color: teal[400],
-                        ml: 'auto',
-                        py: 1,
-                        px: 2,
-                        border: `1px solid ${teal[600]}`,
-                        '&:hover': {
-                          backgroundColor: teal[900],
-                          borderColor: teal[500],
-                        }
-                      }}
-                      startIcon={<FaRedo />}
                       disabled={loading.senateFinDisclosure || loading.senateTradingActivity || 
                                loading.houseFinDisclosure || loading.houseTradingActivity}
+                      className="ml-auto flex items-center gap-2 px-4 py-2 border border-teal-900 text-zinc-400 rounded-sm hover:bg-teal-900 hover:border-teal-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                     >
-                      Refresh All
-                    </Button>
-                  </Box>
+                      <FaRedo className="text-sm" />
+                      Refresh Table
+                    </button>
+                  </div>
                 )}
                 
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: grey[400],
-                    lineHeight: 1.6,
-                    mb: 1,
-                    fontSize: isMobile ? '0.85rem' : '1rem'
-                  }}
-                >
+                <p className="text-zinc-400 leading-relaxed mb-2 mt-0 text-sm md:text-base">
                   Track financial disclosures and trading activities from members of Congress.
-                </Typography>
-
-                {/* Data Source Info */}
-                {/* <Alert 
-                  severity="info"
-                  sx={{ 
-                    backgroundColor: 'rgba(2, 136, 209, 0.1)',
-                    color: 'white',
-                    border: `1px solid rgba(2, 136, 209, 0.3)`,
-                    '& .MuiAlert-icon': { color: 'rgba(2, 136, 209, 0.8)' }
-                  }}
-                  action={
-                    <Button
-                      size="small"
-                      href="https://disclosures-clerk.house.gov/PublicDisclosure/FinancialDisclosure"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{ color: teal[400] }}
-                      endIcon={<FaExternalLinkAlt />}
-                    >
-                      View Source
-                    </Button>
-                  }
-                >
-                  Data sourced from official House and Senate financial disclosure databases
-                </Alert> */}
-              </Box>
+                </p>
+              </div>
 
               {/* Senate/House Tab Navigation */}
-              <Box sx={{ mb: 0, borderBottom: `1px solid ${teal[800]}` }}>
-                <Tabs
-                  value={activeTab}
-                  onChange={handleTabChange}
-                  sx={{
-                    '& .MuiTab-root': {
-                      color: grey[500],
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      fontSize: isMobile ? '0.8rem' : '.9rem',
-                      minWidth: isMobile ? 100 : 120,
-                      '&.Mui-selected': {
-                        color: teal[300],
-                      },
-                    },
-                    '& .MuiTabs-indicator': {
-                      backgroundColor: teal[500],
-                      height: 3,
-                    },
-                  }}
-                >
-                  <Tab 
-                    icon={<FaLandmark style={{ marginRight: 8 }} />}
-                    iconPosition="start"
-                    label="Senate"
-                  />
-                  <Tab 
-                    icon={<FaUniversity style={{ marginRight: 8 }} />}
-                    iconPosition="start"
-                    label="House"
-                  />
-                </Tabs>
-              </Box>
+              <div className="mb-0 border-b border-zinc-800">
+                <div className="flex">
+                  <button
+                    onClick={(e) => handleTabChange(e, 0)}
+                    className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold transition-colors relative ${
+                      isMobile ? 'text-xs' : 'text-sm'
+                    } ${
+                      activeTab === 0 
+                        ? 'text-teal-300' 
+                        : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                    style={{ minWidth: isMobile ? 100 : 120 }}
+                  >
+                    <FaLandmark />
+                    <span>Senate</span>
+                    {activeTab === 0 && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-500"></div>
+                    )}
+                  </button>
+                  <button
+                    onClick={(e) => handleTabChange(e, 1)}
+                    className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold transition-colors relative ${
+                      isMobile ? 'text-xs' : 'text-sm'
+                    } ${
+                      activeTab === 1 
+                        ? 'text-teal-300' 
+                        : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                    style={{ minWidth: isMobile ? 100 : 120 }}
+                  >
+                    <FaUniversity />
+                    <span>House</span>
+                    {activeTab === 1 && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-500"></div>
+                    )}
+                  </button>
+                </div>
+              </div>
 
               {/* Congressional Section */}
-              <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+              <div className="flex-1 flex flex-col min-h-0">
                 <CongressSection
                   title={currentData.title}
                   icon={currentData.icon}
@@ -358,11 +251,11 @@ const CongressPage = () => {
                   onClearSearch={handleClearSearch}
                   onStockClick={handleStockClick}
                 />
-              </Box>
-            </Container>
-          </Box>
-        </Box>
-      </Box>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Stock Details Modal */}
       {selectedStock && (
@@ -374,7 +267,7 @@ const CongressPage = () => {
           addToWishlist={addToWishlist}
         />
       )}
-    </Box>
+    </div>
   );
 };
 

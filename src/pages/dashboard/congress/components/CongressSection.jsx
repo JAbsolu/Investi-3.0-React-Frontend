@@ -431,7 +431,7 @@ const CongressSection = ({
                 : 'text-zinc-500 hover:text-zinc-300'
             }`}
           >
-            {isCompact ? "Disclosures" : "Financial Disclosures"}
+            {"Financial Disclosures"}
             {activeTab === 0 && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-500"></div>
             )}
@@ -444,7 +444,7 @@ const CongressSection = ({
                 : 'text-zinc-500 hover:text-zinc-300'
             }`}
           >
-            {isCompact ? "Activity" : "Trading Activity"}
+            {"Trading Activity"}
             {activeTab === 1 && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-500"></div>
             )}
