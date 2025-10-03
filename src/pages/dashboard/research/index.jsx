@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import DashboardSidebar from '../components/DashboardSidebar';
 import StockChart from '../components/stockChart';
 import { useAuth } from '../../../hooks/useAuth';
-import { useIsPremium } from '../../../hooks/isPremium';
+// import { useIsPremium } from '../../../hooks/isPremium';
 import { ref, get, child } from "firebase/database";
 import { database } from "../../../firebaseConfig";
 import { useWishlist } from '../../../hooks/useWishlist';
@@ -234,7 +234,7 @@ const StockDetailsPage = () => {
             {/* Main Content */}
             <div className="flex-1 overflow-auto min-h-screen scrollbar-hide">
                 {/* Header */}
-                <div className="sticky top-0 z-40 transparent backdrop-blur-sm px-4 md:p-6 py-2">
+                <div className="sticky top-0 z-40 transparent backdrop-blur-sm px-4 md:p-6 py-0 my-0">
                     <div className="flex items-center gap-2 mb-0">
                         {isMobile && (
                             <button 
@@ -570,6 +570,328 @@ const ProfileTab = ({ data, loading, formatCurrency, formatNumber }) => {
         </div>
     );
 };
+
+// Analysis Tab Component
+// const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGradeColor, currentTicker, onShowPaywall }) => {
+//     const grades = data.grades;
+//     const historicalGrades = data.historicalGrades?.[0];
+//     const gradesNews = data.gradesNews;
+//     const priceTarget = data.priceTarget?.[0];
+//     const aiAnalysis = data.aiAnalysis;
+//     const hasPremiumAccess = useIsPremium();
+//     const navigate = useNavigate();
+
+//     return (
+//         <div className="space-y-6">
+//             {/* Historical Ratings Distribution */}
+//             {historicalGrades && (
+//                 <div className="bg-transparent mb-1">
+//                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+//                         <div className="text-center p-4 min-w-[10em] bg-green-500/10 rounded-lg">
+//                             <div className="text-2xl text-green-400 font-bold">
+//                                 {historicalGrades.analystRatingsStrongBuy}
+//                             </div>
+//                             <div className="text-gray-400 font-bold">Strong Buy</div>
+//                         </div>
+//                         <div className="text-center p-4 min-w-[10em] bg-green-500/5 rounded-lg">
+//                             <div className="text-2xl text-green-300 font-bold">
+//                                 {historicalGrades.analystRatingsBuy}
+//                             </div>
+//                             <div className="text-gray-400 font-bold">Buy</div>
+//                         </div>
+//                         <div className="text-center p-4 min-w-[10em] bg-gray-500/10 rounded-lg">
+//                             <div className="text-2xl text-gray-400 font-bold">
+//                                 {historicalGrades.analystRatingsHold}
+//                             </div>
+//                             <div className="text-gray-400 font-bold">Hold</div>
+//                         </div>
+//                         <div className="text-center p-4 min-w-[10em] bg-red-500/5 rounded-lg">
+//                             <div className="text-2xl text-red-300 font-bold">
+//                                 {historicalGrades.analystRatingsSell}
+//                             </div>
+//                             <div className="text-gray-400 font-bold">Sell</div>
+//                         </div>
+//                         <div className="text-center p-4 min-w-[10em] bg-red-500/10 rounded-lg">
+//                             <div className="text-2xl text-red-400 font-bold">
+//                                 {historicalGrades.analystRatingsStrongSell}
+//                             </div>
+//                             <div className="text-gray-400 font-bold">Strong Sell</div>
+//                         </div>
+//                     </div>
+//                 </div>
+//             )}
+
+//             {/* Current Grades */}
+//             <div className="bg-transparent mb-0">
+//                 <div className="p-4">
+//                     <h3 className="text-teal-300 font-bold text-lg mb-4">
+//                         Recent Analyst Ratings
+//                     </h3>
+//                     {loading.grades ? (
+//                         <div className="flex justify-center py-4">
+//                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400"></div>
+//                         </div>
+//                     ) : grades?.length > 0 ? (
+//                         <div className="flex flex-wrap gap-2">
+//                             {grades.slice(0, 8).map((grade, index) => (
+//                                 <span
+//                                     key={index}
+//                                     className={`${getGradeColor(grade.newGrade)} text-white text-xs py-2 px-3 rounded-full font-medium`}
+//                                 >
+//                                     {grade.gradingCompany}: {grade.newGrade}
+//                                 </span>
+//                             ))}
+//                         </div>
+//                     ) : (
+//                         <div className="text-gray-400">No recent ratings available</div>
+//                     )}
+//                 </div>
+//             </div>
+
+//             {/* Price Targets */}
+//             {priceTarget && (
+//                 <div className="bg-transparent mb-4">
+//                     <div className="p-4">
+//                         <h3 className="text-teal-300 font-bold text-lg mb-4">
+//                             Price Targets
+//                         </h3>
+//                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+//                             <div>
+//                                 <div className="text-gray-400 text-sm mb-2 min-w-[7em]">Last Month</div>
+//                                 <div className="text-white text-lg font-bold">
+//                                     {formatCurrency(priceTarget.lastMonthAvgPriceTarget)}
+//                                 </div>
+//                                 <div className="text-gray-500 text-xs">
+//                                     ({priceTarget.lastMonthCount} analysts)
+//                                 </div>
+//                             </div>
+//                             <div>
+//                                 <div className="text-gray-400 text-sm mb-2 min-w-[7em]">Last Quarter</div>
+//                                 <div className="text-white text-lg font-bold">
+//                                     {formatCurrency(priceTarget.lastQuarterAvgPriceTarget)}
+//                                 </div>
+//                                 <div className="text-gray-500 text-xs">
+//                                     ({priceTarget.lastQuarterCount} analysts)
+//                                 </div>
+//                             </div>
+//                             <div>
+//                                 <div className="text-gray-400 text-sm mb-2 min-w-[7em]">Last Year</div>
+//                                 <div className="text-white text-lg font-bold">
+//                                     {formatCurrency(priceTarget.lastYearAvgPriceTarget)}
+//                                 </div>
+//                                 <div className="text-gray-500 text-xs">
+//                                     ({priceTarget.lastYearCount} analysts)
+//                                 </div>
+//                             </div>
+//                             <div>
+//                                 <div className="text-gray-400 text-sm mb-2 min-w-[7em]">All Time</div>
+//                                 <div className="text-white text-lg font-bold">
+//                                     {formatCurrency(priceTarget.allTimeAvgPriceTarget)}
+//                                 </div>
+//                                 <div className="text-gray-500 text-xs">
+//                                     ({priceTarget.allTimeCount} analysts)
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+//             )}
+
+//             <div className="border-t border-teal-800 my-4"></div>
+
+//             {/* AI Analysis Section */}
+//             <div className="bg-transparent mb-6">
+//                 <div className="p-4">
+//                     <div className="flex items-center justify-between mb-6">
+//                         <div className="flex items-center gap-3">
+//                             <AutoAwesome className="text-teal-400 text-2xl" />
+//                             <h3 className="text-teal-300 font-bold text-lg">
+//                                 AI Analysis
+//                             </h3>
+//                         </div>
+                        
+//                         <button
+//                             onClick={handleAIAnalysis}
+//                             disabled={loading.aiAnalysis}
+//                             className="border border-teal-400 text-teal-400 px-4 py-2 rounded hover:bg-teal-400/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+//                         >
+//                             {loading.aiAnalysis ? (
+//                                 <>
+//                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teal-400"></div>
+//                                     Generating AI Analysis...
+//                                 </>
+//                             ) : (
+//                                 <>
+//                                     <AutoAwesome className="text-sm" />
+//                                     Get Full AI Analysis
+//                                 </>
+//                             )}
+//                         </button>
+//                     </div>
+                    
+//                     {loading.aiAnalysis ? (
+//                         <div className="flex justify-center py-8">
+//                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-400"></div>
+//                         </div>
+//                     ) : data.aiAnalysis?.error ? (
+//                         <div className="bg-red-500/10 text-red-200 p-4 rounded-lg">
+//                             {data.aiAnalysis.error}
+//                         </div>
+//                     ) : data.aiAnalysis ? (
+//                         <div>
+//                             {/* HTML Content Analysis */}
+//                             {data.aiAnalysis.htmlContent && data.aiAnalysis.format === 'html' ? (
+//                                 <div
+//                                     dangerouslySetInnerHTML={{ __html: data.aiAnalysis.htmlContent }}
+//                                     className="text-gray-300 text-lg [&_h1]:text-teal-300 [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-6
+//                                                [&_h2]:text-teal-300 [&_h2]:font-bold [&_h2]:mb-4 [&_h2]:mt-6
+//                                                [&_h3]:text-teal-400 [&_h3]:font-bold [&_h3]:mb-4 [&_h3]:mt-6 [&_h3]:text-xl
+//                                                [&_h4]:text-teal-300 [&_h4]:font-bold [&_h4]:mb-4 [&_h4]:mt-6
+//                                                [&_h5]:text-teal-300 [&_h5]:font-bold [&_h5]:mb-4 [&_h5]:mt-6
+//                                                [&_h6]:text-teal-300 [&_h6]:font-bold [&_h6]:mb-4 [&_h6]:mt-6
+//                                                [&_p]:mb-4 [&_p]:leading-relaxed [&_p]:text-gray-300
+//                                                [&_span]:font-inherit
+//                                                [&_span[style*='color:#ef4444']]:text-red-400 [&_span[style*='color:#ef4444']]:font-bold
+//                                                [&_span[style*='font-weight:bold']]:font-bold
+//                                                [&_span[style*='font-size:2rem']]:text-4xl"
+//                                 />
+//                             ) : (
+//                                 // Legacy format support
+//                                 <>
+//                                     {data.aiAnalysis.summary && (
+//                                         <div className="mb-6">
+//                                             <h4 className="text-teal-300 font-bold text-lg mb-3">
+//                                                 Executive Summary
+//                                             </h4>
+//                                             <p className="text-gray-300 leading-relaxed text-lg">
+//                                                 {data.aiAnalysis.summary}
+//                                             </p>
+//                                         </div>
+//                                     )}
+
+//                                     {data.aiAnalysis.recommendation && (
+//                                         <div className="mb-6">
+//                                             <h4 className="text-teal-300 font-bold text-lg mb-3">
+//                                                 Investment Recommendation
+//                                             </h4>
+//                                             <div className="flex items-center gap-4 mb-3 flex-wrap">
+//                                                 <span className={`${getGradeColor(data.aiAnalysis.recommendation.rating)} text-white font-bold py-2 px-4 rounded-full text-base`}>
+//                                                     {data.aiAnalysis.recommendation.rating}
+//                                                 </span>
+//                                                 {data.aiAnalysis.recommendation.confidence && (
+//                                                     <div className="text-gray-400">
+//                                                         Confidence: {data.aiAnalysis.recommendation.confidence}%
+//                                                     </div>
+//                                                 )}
+//                                             </div>
+//                                             <p className="text-gray-300 leading-relaxed text-lg">
+//                                                 {data.aiAnalysis.recommendation.reasoning}
+//                                             </p>
+//                                         </div>
+//                                     )}
+
+//                                     {data.aiAnalysis.priceTargets && (
+//                                         <div>
+//                                             <h4 className="text-teal-300 font-bold text-lg mb-3">
+//                                                 AI Price Targets
+//                                             </h4>
+//                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+//                                                 {data.aiAnalysis.priceTargets.bearCase && (
+//                                                     <div className="text-center p-6 bg-red-500/10 rounded-lg">
+//                                                         <div className="text-red-400 mb-2">Bear Case</div>
+//                                                         <div className="text-white text-3xl font-bold">
+//                                                             {formatCurrency(data.aiAnalysis.priceTargets.bearCase)}
+//                                                         </div>
+//                                                     </div>
+//                                                 )}
+//                                                 {data.aiAnalysis.priceTargets.baseCase && (
+//                                                     <div className="text-center p-6 bg-gray-500/10 rounded-lg">
+//                                                         <div className="text-gray-400 mb-2">Base Case</div>
+//                                                         <div className="text-white text-3xl font-bold">
+//                                                             {formatCurrency(data.aiAnalysis.priceTargets.baseCase)}
+//                                                         </div>
+//                                                     </div>
+//                                                 )}
+//                                                 {data.aiAnalysis.priceTargets.bullCase && (
+//                                                     <div className="text-center p-6 bg-green-500/10 rounded-lg">
+//                                                         <div className="text-green-400 mb-2">Bull Case</div>
+//                                                         <div className="text-white text-3xl font-bold">
+//                                                             {formatCurrency(data.aiAnalysis.priceTargets.bullCase)}
+//                                                         </div>
+//                                                     </div>
+//                                                 )}
+//                                             </div>
+//                                         </div>
+//                                     )}
+//                                 </>
+//                             )}
+
+//                             {/* Timestamp */}
+//                             {data.aiAnalysis.timestamp && (
+//                                 <div className="mt-6 pt-4 border-t border-gray-700">
+//                                     <div className="text-gray-500 text-sm">
+//                                         Analysis generated on {new Date(data.aiAnalysis.timestamp).toLocaleString()}
+//                                     </div>
+//                                 </div>
+//                             )}
+//                         </div>
+//                     ) : null}
+//                 </div>
+//             </div>
+
+//             <div className="border-t border-teal-800 my-4"></div>
+
+//             {/* Grade News */}
+//             <div className="bg-transparent">
+//                 <div className="p-4">
+//                     <h3 className="text-teal-300 font-bold text-lg mb-4">
+//                         Recent Rating News
+//                     </h3>
+//                     {loading.gradesNews ? (
+//                         <div className="flex justify-center py-4">
+//                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400"></div>
+//                         </div>
+//                     ) : gradesNews?.length > 0 ? (
+//                         <div className="space-y-3">
+//                             {gradesNews.slice(0, 5).map((news, index) => (
+//                                 <div 
+//                                     key={index}
+//                                     className="p-4 bg-transparent rounded-lg border border-teal-800 hover:border-teal-300 cursor-pointer transition-colors"
+//                                     onClick={() => window.open(news.newsURL, '_blank')}
+//                                 >
+//                                     <div className="flex justify-between items-start mb-2">
+//                                         <div className="text-white font-bold text-sm flex-1 mr-3">
+//                                             {news.newsTitle}
+//                                         </div>
+//                                         <span className={`${getGradeColor(news.newGrade)} text-white text-xs py-1 px-2 rounded-full whitespace-nowrap`}>
+//                                             {news.newGrade}
+//                                         </span>
+//                                     </div>
+//                                     <div className="text-gray-400 text-sm mb-3">
+//                                         {news.gradingCompany} • {new Date(news.publishedDate).toLocaleDateString()}
+//                                     </div>
+//                                     <a 
+//                                         href={news.newsURL} 
+//                                         target="_blank" 
+//                                         rel="noopener"
+//                                         className="text-teal-400 text-xs font-bold hover:underline flex items-center gap-1 justify-end"
+//                                     >
+//                                         <span className="flex gap-2 items-center justify-end">
+//                                             Read Full Article <FaExternalLinkAlt size={12} />
+//                                         </span>
+//                                     </a>
+//                                 </div>
+//                             ))}
+//                         </div>
+//                     ) : (
+//                         <div className="text-gray-400">No rating news available</div>
+//                     )}
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
 // Analysis Tab Component
 const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGradeColor, currentTicker, onShowPaywall }) => {
     const grades = data.grades;
@@ -577,315 +899,341 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
     const gradesNews = data.gradesNews;
     const priceTarget = data.priceTarget?.[0];
     const aiAnalysis = data.aiAnalysis;
-    const hasPremiumAccess = useIsPremium();
-    const navigate = useNavigate();
 
     return (
         <div className="space-y-6">
             {/* Historical Ratings Distribution */}
             {historicalGrades && (
-                <div className="bg-transparent mb-1">
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div className="text-center p-4 min-w-[10em] bg-green-500/10 rounded-lg">
-                            <div className="text-2xl text-green-400 font-bold">
+                <div className="bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 backdrop-blur-sm rounded-xl p-5 border border-zinc-700/50 shadow-xl">
+                    <h3 className="text-sm font-semibold text-zinc-400 bg-clip-text bg-gradient-to-r from-teal-400 to-teal-300 mb-4">
+                        Analyst Consensus
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                        <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/20 to-green-500/10 rounded-lg p-4 border border-emerald-500/30 hover:border-emerald-400/50 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/20">
+                            <div className="text-2xl text-emerald-400 font-bold mb-1">
                                 {historicalGrades.analystRatingsStrongBuy}
                             </div>
-                            <div className="text-gray-400 font-bold">Strong Buy</div>
+                            <div className="text-emerald-300/80 font-medium text-xs">Strong Buy</div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         </div>
-                        <div className="text-center p-4 min-w-[10em] bg-green-500/5 rounded-lg">
-                            <div className="text-2xl text-green-300 font-bold">
+                        <div className="group relative overflow-hidden bg-gradient-to-br from-green-500/15 to-green-500/5 rounded-lg p-4 border border-green-500/20 hover:border-green-400/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/10">
+                            <div className="text-2xl text-green-400 font-bold mb-1">
                                 {historicalGrades.analystRatingsBuy}
                             </div>
-                            <div className="text-gray-400 font-bold">Buy</div>
+                            <div className="text-green-300/80 font-medium text-xs">Buy</div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         </div>
-                        <div className="text-center p-4 min-w-[10em] bg-gray-500/10 rounded-lg">
-                            <div className="text-2xl text-gray-400 font-bold">
+                        <div className="group relative overflow-hidden bg-gradient-to-br from-zinc-500/15 to-zinc-500/5 rounded-lg p-4 border border-zinc-500/20 hover:border-zinc-400/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-zinc-500/10">
+                            <div className="text-2xl text-zinc-300 font-bold mb-1">
                                 {historicalGrades.analystRatingsHold}
                             </div>
-                            <div className="text-gray-400 font-bold">Hold</div>
+                            <div className="text-zinc-400 font-medium text-xs">Hold</div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-zinc-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         </div>
-                        <div className="text-center p-4 min-w-[10em] bg-red-500/5 rounded-lg">
-                            <div className="text-2xl text-red-300 font-bold">
+                        <div className="group relative overflow-hidden bg-gradient-to-br from-orange-500/15 to-orange-500/5 rounded-lg p-4 border border-orange-500/20 hover:border-orange-400/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/10">
+                            <div className="text-2xl text-orange-400 font-bold mb-1">
                                 {historicalGrades.analystRatingsSell}
                             </div>
-                            <div className="text-gray-400 font-bold">Sell</div>
+                            <div className="text-orange-300/80 font-medium text-xs">Sell</div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         </div>
-                        <div className="text-center p-4 min-w-[10em] bg-red-500/10 rounded-lg">
-                            <div className="text-2xl text-red-400 font-bold">
+                        <div className="group relative overflow-hidden bg-gradient-to-br from-red-500/20 to-red-500/10 rounded-lg p-4 border border-red-500/30 hover:border-red-400/50 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-500/20">
+                            <div className="text-2xl text-red-400 font-bold mb-1">
                                 {historicalGrades.analystRatingsStrongSell}
                             </div>
-                            <div className="text-gray-400 font-bold">Strong Sell</div>
+                            <div className="text-red-300/80 font-medium text-xs">Strong Sell</div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         </div>
                     </div>
                 </div>
             )}
 
             {/* Current Grades */}
-            <div className="bg-transparent mb-0">
-                <div className="p-4">
-                    <h3 className="text-teal-300 font-bold text-lg mb-4">
-                        Recent Analyst Ratings
-                    </h3>
-                    {loading.grades ? (
-                        <div className="flex justify-center py-4">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400"></div>
-                        </div>
-                    ) : grades?.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                            {grades.slice(0, 8).map((grade, index) => (
-                                <span
-                                    key={index}
-                                    className={`${getGradeColor(grade.newGrade)} text-white text-xs py-2 px-3 rounded-full font-medium`}
-                                >
-                                    {grade.gradingCompany}: {grade.newGrade}
-                                </span>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-gray-400">No recent ratings available</div>
-                    )}
-                </div>
+            <div className="bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 backdrop-blur-sm rounded-xl p-5 border border-zinc-700/50 shadow-xl">
+                <h3 className="text-sm font-semibold text-zinc-400 bg-clip-text bg-gradient-to-r from-teal-400 to-teal-300 mb-4">
+                    Recent Analyst Ratings
+                </h3>
+                {loading.grades ? (
+                    <div className="flex justify-center py-6">
+                        <div className="animate-spin rounded-full h-8 w-8 border-4 border-teal-400/30 border-t-teal-400"></div>
+                    </div>
+                ) : grades?.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                        {grades.slice(0, 8).map((grade, index) => (
+                            <div
+                                key={index}
+                                className={`${getGradeColor(grade.newGrade)} text-white text-xs py-2 px-3 rounded-full font-medium shadow-lg hover:scale-105 transition-transform duration-200 cursor-default`}
+                            >
+                                {grade.gradingCompany}: {grade.newGrade}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-zinc-400 text-center py-4 text-sm">No recent ratings available</div>
+                )}
             </div>
 
             {/* Price Targets */}
             {priceTarget && (
-                <div className="bg-transparent mb-4">
-                    <div className="p-4">
-                        <h3 className="text-teal-300 font-bold text-lg mb-4">
-                            Price Targets
-                        </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            <div>
-                                <div className="text-gray-400 text-sm mb-2 min-w-[7em]">Last Month</div>
-                                <div className="text-white text-lg font-bold">
-                                    {formatCurrency(priceTarget.lastMonthAvgPriceTarget)}
-                                </div>
-                                <div className="text-gray-500 text-xs">
-                                    ({priceTarget.lastMonthCount} analysts)
-                                </div>
+                <div className="bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 backdrop-blur-sm rounded-xl p-5 border border-zinc-700/50 shadow-xl">
+                    <h3 className="text-sm font-semibold text-zinc-400 bg-clip-text bg-gradient-to-r from-teal-400 to-teal-300 mb-4">
+                        Price Targets
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                        <div className="group hover:scale-105 transition-transform duration-200">
+                            <div className="text-zinc-400 text-xs font-medium mb-2 uppercase tracking-wide">Last Month</div>
+                            <div className="text-white text-xl font-bold mb-0.5">
+                                {formatCurrency(priceTarget.lastMonthAvgPriceTarget)}
                             </div>
-                            <div>
-                                <div className="text-gray-400 text-sm mb-2 min-w-[7em]">Last Quarter</div>
-                                <div className="text-white text-lg font-bold">
-                                    {formatCurrency(priceTarget.lastQuarterAvgPriceTarget)}
-                                </div>
-                                <div className="text-gray-500 text-xs">
-                                    ({priceTarget.lastQuarterCount} analysts)
-                                </div>
+                            <div className="text-teal-400/70 text-xs">
+                                {priceTarget.lastMonthCount} analysts
                             </div>
-                            <div>
-                                <div className="text-gray-400 text-sm mb-2 min-w-[7em]">Last Year</div>
-                                <div className="text-white text-lg font-bold">
-                                    {formatCurrency(priceTarget.lastYearAvgPriceTarget)}
-                                </div>
-                                <div className="text-gray-500 text-xs">
-                                    ({priceTarget.lastYearCount} analysts)
-                                </div>
+                        </div>
+                        <div className="group hover:scale-105 transition-transform duration-200">
+                            <div className="text-zinc-400 text-xs font-medium mb-2 uppercase tracking-wide">Last Quarter</div>
+                            <div className="text-white text-xl font-bold mb-0.5">
+                                {formatCurrency(priceTarget.lastQuarterAvgPriceTarget)}
                             </div>
-                            <div>
-                                <div className="text-gray-400 text-sm mb-2 min-w-[7em]">All Time</div>
-                                <div className="text-white text-lg font-bold">
-                                    {formatCurrency(priceTarget.allTimeAvgPriceTarget)}
-                                </div>
-                                <div className="text-gray-500 text-xs">
-                                    ({priceTarget.allTimeCount} analysts)
-                                </div>
+                            <div className="text-teal-400/70 text-xs">
+                                {priceTarget.lastQuarterCount} analysts
+                            </div>
+                        </div>
+                        <div className="group hover:scale-105 transition-transform duration-200">
+                            <div className="text-zinc-400 text-xs font-medium mb-2 uppercase tracking-wide">Last Year</div>
+                            <div className="text-white text-xl font-bold mb-0.5">
+                                {formatCurrency(priceTarget.lastYearAvgPriceTarget)}
+                            </div>
+                            <div className="text-teal-400/70 text-xs">
+                                {priceTarget.lastYearCount} analysts
+                            </div>
+                        </div>
+                        <div className="group hover:scale-105 transition-transform duration-200">
+                            <div className="text-zinc-400 text-xs font-medium mb-2 uppercase tracking-wide">All Time</div>
+                            <div className="text-white text-xl font-bold mb-0.5">
+                                {formatCurrency(priceTarget.allTimeAvgPriceTarget)}
+                            </div>
+                            <div className="text-teal-400/70 text-xs">
+                                {priceTarget.allTimeCount} analysts
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            <div className="border-t border-teal-800 my-4"></div>
-
-            {/* AI Analysis Section */}
-            <div className="bg-transparent mb-6">
-                <div className="p-4">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <AutoAwesome className="text-teal-400 text-2xl" />
-                            <h3 className="text-teal-300 font-bold text-lg">
-                                AI Analysis
-                            </h3>
-                        </div>
-                        
-                        <button
-                            onClick={handleAIAnalysis}
-                            disabled={loading.aiAnalysis}
-                            className="border border-teal-400 text-teal-400 px-4 py-2 rounded hover:bg-teal-400/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
-                        >
-                            {loading.aiAnalysis ? (
-                                <>
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teal-400"></div>
-                                    Generating AI Analysis...
-                                </>
-                            ) : (
-                                <>
-                                    <AutoAwesome className="text-sm" />
-                                    Get Full AI Analysis
-                                </>
-                            )}
-                        </button>
-                    </div>
-                    
-                    {loading.aiAnalysis ? (
-                        <div className="flex justify-center py-8">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-400"></div>
-                        </div>
-                    ) : data.aiAnalysis?.error ? (
-                        <div className="bg-red-500/10 text-red-200 p-4 rounded-lg">
-                            {data.aiAnalysis.error}
-                        </div>
-                    ) : data.aiAnalysis ? (
-                        <div>
-                            {/* HTML Content Analysis */}
-                            {data.aiAnalysis.htmlContent && data.aiAnalysis.format === 'html' ? (
-                                <div
-                                    dangerouslySetInnerHTML={{ __html: data.aiAnalysis.htmlContent }}
-                                    className="text-gray-300 text-lg [&_h1]:text-teal-300 [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-6
-                                               [&_h2]:text-teal-300 [&_h2]:font-bold [&_h2]:mb-4 [&_h2]:mt-6
-                                               [&_h3]:text-teal-400 [&_h3]:font-bold [&_h3]:mb-4 [&_h3]:mt-6 [&_h3]:text-xl
-                                               [&_h4]:text-teal-300 [&_h4]:font-bold [&_h4]:mb-4 [&_h4]:mt-6
-                                               [&_h5]:text-teal-300 [&_h5]:font-bold [&_h5]:mb-4 [&_h5]:mt-6
-                                               [&_h6]:text-teal-300 [&_h6]:font-bold [&_h6]:mb-4 [&_h6]:mt-6
-                                               [&_p]:mb-4 [&_p]:leading-relaxed [&_p]:text-gray-300
-                                               [&_span]:font-inherit
-                                               [&_span[style*='color:#ef4444']]:text-red-400 [&_span[style*='color:#ef4444']]:font-bold
-                                               [&_span[style*='font-weight:bold']]:font-bold
-                                               [&_span[style*='font-size:2rem']]:text-4xl"
-                                />
-                            ) : (
-                                // Legacy format support
-                                <>
-                                    {data.aiAnalysis.summary && (
-                                        <div className="mb-6">
-                                            <h4 className="text-teal-300 font-bold text-lg mb-3">
-                                                Executive Summary
-                                            </h4>
-                                            <p className="text-gray-300 leading-relaxed text-lg">
-                                                {data.aiAnalysis.summary}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {data.aiAnalysis.recommendation && (
-                                        <div className="mb-6">
-                                            <h4 className="text-teal-300 font-bold text-lg mb-3">
-                                                Investment Recommendation
-                                            </h4>
-                                            <div className="flex items-center gap-4 mb-3 flex-wrap">
-                                                <span className={`${getGradeColor(data.aiAnalysis.recommendation.rating)} text-white font-bold py-2 px-4 rounded-full text-base`}>
-                                                    {data.aiAnalysis.recommendation.rating}
-                                                </span>
-                                                {data.aiAnalysis.recommendation.confidence && (
-                                                    <div className="text-gray-400">
-                                                        Confidence: {data.aiAnalysis.recommendation.confidence}%
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <p className="text-gray-300 leading-relaxed text-lg">
-                                                {data.aiAnalysis.recommendation.reasoning}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {data.aiAnalysis.priceTargets && (
-                                        <div>
-                                            <h4 className="text-teal-300 font-bold text-lg mb-3">
-                                                AI Price Targets
-                                            </h4>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                {data.aiAnalysis.priceTargets.bearCase && (
-                                                    <div className="text-center p-6 bg-red-500/10 rounded-lg">
-                                                        <div className="text-red-400 mb-2">Bear Case</div>
-                                                        <div className="text-white text-3xl font-bold">
-                                                            {formatCurrency(data.aiAnalysis.priceTargets.bearCase)}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                {data.aiAnalysis.priceTargets.baseCase && (
-                                                    <div className="text-center p-6 bg-gray-500/10 rounded-lg">
-                                                        <div className="text-gray-400 mb-2">Base Case</div>
-                                                        <div className="text-white text-3xl font-bold">
-                                                            {formatCurrency(data.aiAnalysis.priceTargets.baseCase)}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                {data.aiAnalysis.priceTargets.bullCase && (
-                                                    <div className="text-center p-6 bg-green-500/10 rounded-lg">
-                                                        <div className="text-green-400 mb-2">Bull Case</div>
-                                                        <div className="text-white text-3xl font-bold">
-                                                            {formatCurrency(data.aiAnalysis.priceTargets.bullCase)}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-                                </>
-                            )}
-
-                            {/* Timestamp */}
-                            {data.aiAnalysis.timestamp && (
-                                <div className="mt-6 pt-4 border-t border-gray-700">
-                                    <div className="text-gray-500 text-sm">
-                                        Analysis generated on {new Date(data.aiAnalysis.timestamp).toLocaleString()}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    ) : null}
+            {/* Divider */}
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-teal-800/40"></div>
+                </div>
+                <div className="relative flex justify-center">
+                    <span className="bg-zinc-900 px-3 text-teal-500/50 text-xs font-medium">AI Analysis</span>
                 </div>
             </div>
 
-            <div className="border-t border-teal-800 my-4"></div>
+            {/* AI Analysis Section */}
+            <div className="bg-gradient-to-br from-teal-900/20 via-zinc-900/50 to-zinc-800/30 backdrop-blur-sm rounded-xl p-5 border border-teal-700/30 shadow-xl">
+                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+                    <div className="flex items-center gap-2.5">
+                        <div className="p-1.5 bg-teal-500/10 rounded-lg">
+                            <AutoAwesome className="text-teal-400 text-xl" />
+                        </div>
+                        <h3 className="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-teal-300">
+                            AI-Powered Analysis
+                        </h3>
+                    </div>
+                    
+                    <button
+                        onClick={handleAIAnalysis}
+                        disabled={loading.aiAnalysis}
+                        className="relative group border-2 border-teal-400/50 text-teal-400 px-4 py-2 rounded-lg hover:bg-teal-400/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all duration-300 font-medium text-xs hover:border-teal-400 hover:shadow-lg hover:shadow-teal-500/20"
+                    >
+                        {loading.aiAnalysis ? (
+                            <>
+                                <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-teal-400/30 border-t-teal-400"></div>
+                                Generating...
+                            </>
+                        ) : (
+                            <>
+                                <AutoAwesome className="text-xs" />
+                                Get AI Analysis
+                            </>
+                        )}
+                    </button>
+                </div>
+                
+                {loading.aiAnalysis ? (
+                    <div className="flex flex-col items-center justify-center py-10">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-400/30 border-t-teal-400 mb-3"></div>
+                        <p className="text-teal-300/70 font-medium text-sm">Analyzing market data...</p>
+                    </div>
+                ) : data.aiAnalysis?.error ? (
+                    <div className="bg-red-500/10 text-red-200 p-4 rounded-lg border border-red-500/30 backdrop-blur-sm text-sm">
+                        {data.aiAnalysis.error}
+                    </div>
+                ) : data.aiAnalysis ? (
+                    <div>
+                        {/* HTML Content Analysis */}
+                        {data.aiAnalysis.htmlContent && data.aiAnalysis.format === 'html' ? (
+                            <div
+                                dangerouslySetInnerHTML={{ __html: data.aiAnalysis.htmlContent }}
+                                className="text-zinc-300 text-sm leading-relaxed
+                                           [&_h1]:text-base [&_h1]:text-teal-300 [&_h1]:font-semibold [&_h1]:mb-3 [&_h1]:mt-4
+                                           [&_h2]:text-base [&_h2]:text-teal-300 [&_h2]:font-semibold [&_h2]:mb-3 [&_h2]:mt-4
+                                           [&_h3]:text-sm [&_h3]:text-teal-400 [&_h3]:font-semibold [&_h3]:mb-2 [&_h3]:mt-3
+                                           [&_h4]:text-sm [&_h4]:text-teal-300 [&_h4]:font-medium [&_h4]:mb-2 [&_h4]:mt-3
+                                           [&_p]:mb-3 [&_p]:leading-relaxed [&_p]:text-sm
+                                           [&_span]:font-inherit
+                                           [&_span[style*='color:#ef4444']]:text-red-400 [&_span[style*='color:#ef4444']]:font-semibold
+                                           [&_span[style*='font-weight:bold']]:font-semibold
+                                           [&_ul]:list-disc [&_ul]:ml-5 [&_ul]:mb-3 [&_ul]:space-y-1 [&_ul]:text-sm
+                                           [&_ol]:list-decimal [&_ol]:ml-5 [&_ol]:mb-3 [&_ol]:space-y-1 [&_ol]:text-sm"
+                            />
+                        ) : (
+                            // Legacy format support
+                            <div className="space-y-4">
+                                {data.aiAnalysis.summary && (
+                                    <div className="bg-zinc-800/30 rounded-lg p-4 border border-zinc-700/30">
+                                        <h4 className="text-sm font-semibold text-teal-300 mb-2 flex items-center gap-2">
+                                            <span className="w-1 h-1 bg-teal-400 rounded-full"></span>
+                                            Executive Summary
+                                        </h4>
+                                        <p className="text-zinc-300 leading-relaxed text-sm">
+                                            {data.aiAnalysis.summary}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {data.aiAnalysis.recommendation && (
+                                    <div className="bg-zinc-800/30 rounded-lg p-4 border border-zinc-700/30">
+                                        <h4 className="text-sm font-semibold text-teal-300 mb-3 flex items-center gap-2">
+                                            <span className="w-1 h-1 bg-teal-400 rounded-full"></span>
+                                            Investment Recommendation
+                                        </h4>
+                                        <div className="flex items-center gap-3 mb-3 flex-wrap">
+                                            <span className={`${getGradeColor(data.aiAnalysis.recommendation.rating)} text-white font-semibold py-2 px-4 rounded-full text-xs shadow-lg`}>
+                                                {data.aiAnalysis.recommendation.rating}
+                                            </span>
+                                            {data.aiAnalysis.recommendation.confidence && (
+                                                <div className="flex items-center gap-1.5 bg-teal-500/10 px-3 py-1.5 rounded-lg border border-teal-500/20">
+                                                    <span className="text-teal-300 font-medium text-xs">Confidence:</span>
+                                                    <span className="text-white font-semibold text-xs">{data.aiAnalysis.recommendation.confidence}%</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <p className="text-zinc-300 leading-relaxed text-sm">
+                                            {data.aiAnalysis.recommendation.reasoning}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {data.aiAnalysis.priceTargets && (
+                                    <div className="bg-zinc-800/30 rounded-lg p-4 border border-zinc-700/30">
+                                        <h4 className="text-sm font-semibold text-teal-300 mb-3 flex items-center gap-2">
+                                            <span className="w-1 h-1 bg-teal-400 rounded-full"></span>
+                                            AI Price Targets
+                                        </h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                            {data.aiAnalysis.priceTargets.bearCase && (
+                                                <div className="group text-center p-4 bg-gradient-to-br from-red-500/15 to-red-500/5 rounded-lg border border-red-500/30 hover:border-red-400/50 transition-all duration-300 hover:scale-105">
+                                                    <div className="text-red-400 mb-2 font-medium text-xs uppercase tracking-wide">Bear Case</div>
+                                                    <div className="text-white text-2xl font-bold">
+                                                        {formatCurrency(data.aiAnalysis.priceTargets.bearCase)}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {data.aiAnalysis.priceTargets.baseCase && (
+                                                <div className="group text-center p-4 bg-gradient-to-br from-zinc-500/15 to-zinc-500/5 rounded-lg border border-zinc-500/30 hover:border-zinc-400/50 transition-all duration-300 hover:scale-105">
+                                                    <div className="text-zinc-300 mb-2 font-medium text-xs uppercase tracking-wide">Base Case</div>
+                                                    <div className="text-white text-2xl font-bold">
+                                                        {formatCurrency(data.aiAnalysis.priceTargets.baseCase)}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {data.aiAnalysis.priceTargets.bullCase && (
+                                                <div className="group text-center p-4 bg-gradient-to-br from-green-500/15 to-green-500/5 rounded-lg border border-green-500/30 hover:border-green-400/50 transition-all duration-300 hover:scale-105">
+                                                    <div className="text-green-400 mb-2 font-medium text-xs uppercase tracking-wide">Bull Case</div>
+                                                    <div className="text-white text-2xl font-bold">
+                                                        {formatCurrency(data.aiAnalysis.priceTargets.bullCase)}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Timestamp */}
+                        {data.aiAnalysis.timestamp && (
+                            <div className="mt-4 pt-3 border-t border-zinc-700/50">
+                                <div className="text-zinc-500 text-xs flex items-center gap-1.5">
+                                    <span className="w-1 h-1 bg-teal-400/50 rounded-full"></span>
+                                    Analysis generated on {new Date(data.aiAnalysis.timestamp).toLocaleString()}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ) : null}
+            </div>
+
+            {/* Divider */}
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-teal-800/40"></div>
+                </div>
+                <div className="relative flex justify-center">
+                    <span className="bg-zinc-900 px-3 text-teal-500/50 text-xs font-medium">Latest News</span>
+                </div>
+            </div>
 
             {/* Grade News */}
-            <div className="bg-transparent">
-                <div className="p-4">
-                    <h3 className="text-teal-300 font-bold text-lg mb-4">
-                        Recent Rating News
-                    </h3>
-                    {loading.gradesNews ? (
-                        <div className="flex justify-center py-4">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400"></div>
-                        </div>
-                    ) : gradesNews?.length > 0 ? (
-                        <div className="space-y-3">
-                            {gradesNews.slice(0, 5).map((news, index) => (
-                                <div 
-                                    key={index}
-                                    className="p-4 bg-transparent rounded-lg border border-teal-800 hover:border-teal-300 cursor-pointer transition-colors"
-                                    onClick={() => window.open(news.newsURL, '_blank')}
-                                >
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div className="text-white font-bold text-sm flex-1 mr-3">
-                                            {news.newsTitle}
-                                        </div>
-                                        <span className={`${getGradeColor(news.newGrade)} text-white text-xs py-1 px-2 rounded-full whitespace-nowrap`}>
-                                            {news.newGrade}
-                                        </span>
+            <div className="bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 backdrop-blur-sm rounded-xl p-5 border border-zinc-700/50 shadow-xl">
+                <h3 className="text-sm font-semibold text-zinc-400 bg-clip-text bg-gradient-to-r from-teal-400 to-teal-300 mb-4">
+                    Recent Rating News
+                </h3>
+                {loading.gradesNews ? (
+                    <div className="flex justify-center py-6">
+                        <div className="animate-spin rounded-full h-8 w-8 border-4 border-teal-400/30 border-t-teal-400"></div>
+                    </div>
+                ) : gradesNews?.length > 0 ? (
+                    <div className="space-y-3">
+                        {gradesNews.slice(0, 5).map((news, index) => (
+                            <div 
+                                key={index}
+                                className="group p-4 bg-zinc-800/40 rounded-lg border border-zinc-700/50 hover:border-teal-500/50 hover:bg-zinc-800/60 cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-teal-500/10 hover:scale-[1.01]"
+                                onClick={() => window.open(news.newsURL, '_blank')}
+                            >
+                                <div className="flex justify-between items-start gap-3 mb-2">
+                                    <div className="text-white font-medium text-sm flex-1 leading-snug group-hover:text-teal-300 transition-colors">
+                                        {news.newsTitle}
                                     </div>
-                                    <div className="text-gray-400 text-sm mb-3">
-                                        {news.gradingCompany} • {new Date(news.publishedDate).toLocaleDateString()}
+                                    <span className={`${getGradeColor(news.newGrade)} text-white text-xs py-1 px-2.5 rounded-full whitespace-nowrap font-medium shadow-md`}>
+                                        {news.newGrade}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <div className="text-zinc-400 text-xs">
+                                        <span className="font-medium">{news.gradingCompany}</span>
+                                        <span className="mx-1.5">•</span>
+                                        <span>{new Date(news.publishedDate).toLocaleDateString()}</span>
                                     </div>
                                     <a 
                                         href={news.newsURL} 
                                         target="_blank" 
                                         rel="noopener"
-                                        className="text-teal-400 text-xs font-bold hover:underline flex items-center gap-1 justify-end"
+                                        className="text-teal-400 text-xs font-medium hover:text-teal-300 flex items-center gap-1.5 transition-colors"
+                                        onClick={(e) => e.stopPropagation()}
                                     >
-                                        <span className="flex gap-2 items-center justify-end">
-                                            Read Full Article <FaExternalLinkAlt size={12} />
-                                        </span>
+                                        Read Article 
+                                        <FaExternalLinkAlt size={9} className="group-hover:translate-x-0.5 transition-transform" />
                                     </a>
                                 </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-gray-400">No rating news available</div>
-                    )}
-                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-zinc-400 text-center py-4 text-sm">No rating news available</div>
+                )}
             </div>
         </div>
     );
