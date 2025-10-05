@@ -267,7 +267,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                     {loading.grades ? (
                         <div className="flex justify-center py-4"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-400"></div></div>
                     ) : grades?.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">{grades.slice(0, 5).map((grade, index) => (
+                        <div className="flex flex-wrap gap-2">{grades.slice(0, 10).map((grade, index) => (
                             <span key={index} className={`px-3 py-1 rounded text-white text-xs ${getGradeColorClass(grade.newGrade)}`}>{grade.gradingCompany}: {grade.newGrade}</span>
                         ))}</div>
                     ) : (
