@@ -899,7 +899,7 @@ const AnalysisTab = ({ data, loading, handleAIAnalysis, formatCurrency, getGrade
                                     <a 
                                         href={news.newsURL} 
                                         target="_blank" 
-                                        rel="noopener"
+                                        rel="noreferrer"
                                         className="text-teal-400 text-xs font-medium hover:text-teal-300 flex items-center gap-1.5 transition-colors"
                                         onClick={(e) => e.stopPropagation()}
                                     >

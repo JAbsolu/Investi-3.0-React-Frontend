@@ -215,7 +215,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             <div className="flex items-center gap-2"><FaMapMarkerAlt className="text-teal-400" /><span className="text-zinc-400 text-sm">Location:</span><span className="text-white text-sm">{profile.city}, {profile.state}, {profile.country}</span></div>
                             <div className="flex items-center gap-2"><FaPhone className="text-teal-400" /><span className="text-zinc-400 text-sm">Phone:</span><span className="text-white text-sm">{profile.phone}</span></div>
                             <div className="flex items-center gap-2"><FaGlobe className="text-teal-400" /><span className="text-zinc-400 text-sm">Website:</span>
-                                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-teal-400 text-sm hover:text-teal-300">Visit Website</a>
+                                <a href={profile.website} target="_blank" rel="noreferrer" className="text-teal-400 text-sm hover:text-teal-300">Visit Website</a>
                             </div>
                         </div>
                     </div>
@@ -483,7 +483,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                             <div key={index} className="p-3 bg-teal-500/5 rounded-lg border border-zinc-800">
                                 <div className="flex justify-between items-start mb-2 gap-2"><p className="text-white font-bold text-sm flex-1">{news.newsTitle}</p><span className={`px-2 py-1 rounded text-white text-xs flex-shrink-0 ${getGradeColorClass(news.newGrade)}`}>{news.newGrade}</span></div>
                                 <p className="text-zinc-400 mb-2 text-xs">{news.gradingCompany} • {new Date(news.publishedDate).toLocaleDateString()}</p>
-                                <a href={news.newsURL} target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:text-teal-300 text-xs inline-flex items-center gap-1">Read Full Article <FaExternalLinkAlt size={10} /></a>
+                                <a href={news.newsURL} target="_blank" rel="noreferrer" className="text-teal-400 hover:text-teal-300 text-xs inline-flex items-center gap-1">Read Full Article <FaExternalLinkAlt size={10} /></a>
                             </div>
                         ))}</div>
                     ) : (
@@ -530,7 +530,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                                 <span className="text-zinc-400 text-sm">{new Date(selectedNews.publishedDate).toLocaleDateString()}</span>
                             </div>
                             <p className="text-zinc-300 mb-6 leading-relaxed">{selectedNews.text}</p>
-                            <a href={selectedNews.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg transition-colors"><FaExternalLinkAlt />Read Full Article</a>
+                            <a href={selectedNews.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg transition-colors"><FaExternalLinkAlt />Read Full Article</a>
                         </div>
                     )}
                 </div>
