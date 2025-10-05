@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaTimes, FaPlus, FaCheck, FaExternalLinkAlt, FaBuilding, FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaGlobe, FaNewspaper } from 'react-icons/fa';
 import StockChart from './stockChart';
 import NewsLayout from '../news/components/NewsLayout';
+import { AutoAwesome } from '@mui/icons-material';
 
 // --- Styles to match research/index ---
 const darkBg = "linear-gradient(135deg, #181c20 0%, #0d0d0d 100%)";
@@ -241,6 +242,14 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
         const gradesNews = data.gradesNews;
         const priceTarget = data.priceTarget?.[0];
         const aiAnalysis = data.aiAnalysis;
+
+        const getGradeColor = (grade) => {
+        const lowerGrade = grade?.toLowerCase();
+        if (lowerGrade?.includes('buy') || lowerGrade?.includes('strong')) return 'bg-green-500';
+        if (lowerGrade?.includes('sell')) return 'bg-red-500';
+        return 'bg-gray-500';
+    };
+
         return (
             <div>
                 {historicalGrades && (
@@ -280,11 +289,24 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                         <div className="my-4 h-px bg-zinc-800" />
                     </>
                 )}
-                <div className="mb-6 bg-transparent rounded-2xl p-4">
+                {/* <div className="mb-6 bg-transparent rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-                        <div className="flex items-center gap-2"><svg className="w-5 h-5 text-teal-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg><h3 className="text-teal-400 font-semibold text-base sm:text-lg">AI Analysis</h3></div>
+                        <div className="flex items-center gap-2">
+                            <AutoAwesome/>
+                            <h3 className="text-teal-400 font-semibold text-base sm:text-lg">AI Analysis</h3>
+                        </div>
                         <button onClick={handleAIAnalysis} disabled={loading.aiAnalysis} className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-teal-400 text-teal-400 rounded-lg hover:bg-teal-400/10 disabled:opacity-50 transition-colors text-xs sm:text-sm">
-                            {loading.aiAnalysis ? (<><div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teal-400"></div><span className="hidden sm:inline">Analyzing...</span></>) : (<><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>Get Analysis</>)}
+                            {loading.aiAnalysis ? (
+                            <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teal-400"></div>
+                                <span className="hidden sm:inline">Analyzing...</span>
+                            </>
+                            ) : (
+                            <>
+                                <AutoAwesome/>
+                                Get Analysis
+                            </>
+                        )}
                         </button>
                     </div>
                     {loading.aiAnalysis ? (
@@ -307,7 +329,151 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                     ) : (
                         <p className="text-zinc-400 text-sm">Click "Get Analysis" to see AI-powered insights for {currentStock?.symbol}</p>
                     )}
-                </div>
+                </div> */}
+                <div className="bg-gradient-to-br from-teal-900/20 via-zinc-900/50 to-zinc-800/30 backdrop-blur-sm rounded-xl p-5 border border-teal-700/30 shadow-xl">
+                                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="p-1.5 bg-teal-500/10 rounded-lg">
+                                            <AutoAwesome className="text-teal-400 text-xl" />
+                                        </div>
+                                        <h3 className="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-teal-300">
+                                            AI-Powered Analysis
+                                        </h3>
+                                    </div>
+                                    
+                                    <button
+                                        onClick={handleAIAnalysis}
+                                        disabled={loading.aiAnalysis}
+                                        className="relative group border-2 border-teal-400/50 text-teal-400 px-4 py-2 rounded-lg hover:bg-teal-400/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all duration-300 font-medium text-xs hover:border-teal-400 hover:shadow-lg hover:shadow-teal-500/20"
+                                    >
+                                        {loading.aiAnalysis ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-teal-400/30 border-t-teal-400"></div>
+                                                Generating...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <AutoAwesome className="text-xs" />
+                                                Get AI Analysis
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                                
+                                {loading.aiAnalysis ? (
+                                    <div className="flex flex-col items-center justify-center py-10">
+                                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-400/30 border-t-teal-400 mb-3"></div>
+                                        <p className="text-teal-300/70 font-medium text-sm">Analyzing market data...</p>
+                                    </div>
+                                ) : data.aiAnalysis?.error ? (
+                                    <div className="bg-red-500/10 text-red-200 p-4 rounded-lg border border-red-500/30 backdrop-blur-sm text-sm">
+                                        {data.aiAnalysis.error}
+                                    </div>
+                                ) : data.aiAnalysis ? (
+                                    <div>
+                                        {/* HTML Content Analysis */}
+                                        {data.aiAnalysis.htmlContent && data.aiAnalysis.format === 'html' ? (
+                                            <div
+                                                dangerouslySetInnerHTML={{ __html: data.aiAnalysis.htmlContent }}
+                                                className="text-zinc-300 text-sm leading-relaxed
+                                                           [&_h1]:text-base [&_h1]:text-teal-300 [&_h1]:font-semibold [&_h1]:mb-3 [&_h1]:mt-4
+                                                           [&_h2]:text-base [&_h2]:text-teal-300 [&_h2]:font-semibold [&_h2]:mb-3 [&_h2]:mt-4
+                                                           [&_h3]:text-sm [&_h3]:text-teal-400 [&_h3]:font-semibold [&_h3]:mb-2 [&_h3]:mt-3
+                                                           [&_h4]:text-sm [&_h4]:text-teal-300 [&_h4]:font-medium [&_h4]:mb-2 [&_h4]:mt-3
+                                                           [&_p]:mb-3 [&_p]:leading-relaxed [&_p]:text-sm
+                                                           [&_span]:font-inherit
+                                                           [&_span[style*='color:#ef4444']]:text-red-400 [&_span[style*='color:#ef4444']]:font-semibold
+                                                           [&_span[style*='font-weight:bold']]:font-semibold
+                                                           [&_ul]:list-disc [&_ul]:ml-5 [&_ul]:mb-3 [&_ul]:space-y-1 [&_ul]:text-sm
+                                                           [&_ol]:list-decimal [&_ol]:ml-5 [&_ol]:mb-3 [&_ol]:space-y-1 [&_ol]:text-sm"
+                                            />
+                                        ) : (
+                                            // Legacy format support
+                                            <div className="space-y-4">
+                                                {data.aiAnalysis.summary && (
+                                                    <div className="bg-zinc-800/30 rounded-lg p-4 border border-zinc-700/30">
+                                                        <h4 className="text-sm font-semibold text-teal-300 mb-2 flex items-center gap-2">
+                                                            <span className="w-1 h-1 bg-teal-400 rounded-full"></span>
+                                                            Executive Summary
+                                                        </h4>
+                                                        <p className="text-zinc-300 leading-relaxed text-sm">
+                                                            {data.aiAnalysis.summary}
+                                                        </p>
+                                                    </div>
+                                                )}
+                
+                                                {data.aiAnalysis.recommendation && (
+                                                    <div className="bg-zinc-800/30 rounded-lg p-4 border border-zinc-700/30">
+                                                        <h4 className="text-sm font-semibold text-teal-300 mb-3 flex items-center gap-2">
+                                                            <span className="w-1 h-1 bg-teal-400 rounded-full"></span>
+                                                            Investment Recommendation
+                                                        </h4>
+                                                        <div className="flex items-center gap-3 mb-3 flex-wrap">
+                                                            <span className={`${getGradeColor(data.aiAnalysis.recommendation.rating)} text-white font-semibold py-2 px-4 rounded-full text-xs shadow-lg`}>
+                                                                {data.aiAnalysis.recommendation.rating}
+                                                            </span>
+                                                            {data.aiAnalysis.recommendation.confidence && (
+                                                                <div className="flex items-center gap-1.5 bg-teal-500/10 px-3 py-1.5 rounded-lg border border-teal-500/20">
+                                                                    <span className="text-teal-300 font-medium text-xs">Confidence:</span>
+                                                                    <span className="text-white font-semibold text-xs">{data.aiAnalysis.recommendation.confidence}%</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-zinc-300 leading-relaxed text-sm">
+                                                            {data.aiAnalysis.recommendation.reasoning}
+                                                        </p>
+                                                    </div>
+                                                )}
+                
+                                                {data.aiAnalysis.priceTargets && (
+                                                    <div className="bg-zinc-800/30 rounded-lg p-4 border border-zinc-700/30">
+                                                        <h4 className="text-sm font-semibold text-teal-300 mb-3 flex items-center gap-2">
+                                                            <span className="w-1 h-1 bg-teal-400 rounded-full"></span>
+                                                            AI Price Targets
+                                                        </h4>
+                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                            {data.aiAnalysis.priceTargets.bearCase && (
+                                                                <div className="group text-center p-4 bg-gradient-to-br from-red-500/15 to-red-500/5 rounded-lg border border-red-500/30 hover:border-red-400/50 transition-all duration-300 hover:scale-105">
+                                                                    <div className="text-red-400 mb-2 font-medium text-xs uppercase tracking-wide">Bear Case</div>
+                                                                    <div className="text-white text-2xl font-bold">
+                                                                        {formatCurrency(data.aiAnalysis.priceTargets.bearCase)}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            {data.aiAnalysis.priceTargets.baseCase && (
+                                                                <div className="group text-center p-4 bg-gradient-to-br from-zinc-500/15 to-zinc-500/5 rounded-lg border border-zinc-500/30 hover:border-zinc-400/50 transition-all duration-300 hover:scale-105">
+                                                                    <div className="text-zinc-300 mb-2 font-medium text-xs uppercase tracking-wide">Base Case</div>
+                                                                    <div className="text-white text-2xl font-bold">
+                                                                        {formatCurrency(data.aiAnalysis.priceTargets.baseCase)}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            {data.aiAnalysis.priceTargets.bullCase && (
+                                                                <div className="group text-center p-4 bg-gradient-to-br from-green-500/15 to-green-500/5 rounded-lg border border-green-500/30 hover:border-green-400/50 transition-all duration-300 hover:scale-105">
+                                                                    <div className="text-green-400 mb-2 font-medium text-xs uppercase tracking-wide">Bull Case</div>
+                                                                    <div className="text-white text-2xl font-bold">
+                                                                        {formatCurrency(data.aiAnalysis.priceTargets.bullCase)}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                
+                                        {/* Timestamp */}
+                                        {data.aiAnalysis.timestamp && (
+                                            <div className="mt-4 pt-3 border-t border-zinc-700/50">
+                                                <div className="text-zinc-500 text-xs flex items-center gap-1.5">
+                                                    <span className="w-1 h-1 bg-teal-400/50 rounded-full"></span>
+                                                    Analysis generated on {new Date(data.aiAnalysis.timestamp).toLocaleString()}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : null}
+                            </div>
                 <div className="my-4 h-px bg-zinc-800" />
                 <div className="bg-transparent rounded-2xl p-4">
                     {loading.gradesNews ? (
@@ -337,22 +503,7 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {loading.stockNews ? (
                     <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400"></div></div>
                 ) : stockNews?.length > 0 ? (
-                    // <div className="flex flex-col gap-3">{stockNews.map((news, index) => (
-                        // <div key={index} onClick={() => handleNewsClick(news)} className="p-3 bg-transparent rounded-lg cursor-pointer transition-all hover:bg-teal-500/10 hover:-translate-y-1">
-                        //     <div className="flex gap-3">
-                        //         {news.image && (<img src={news.image} alt={news.title} className="w-20 h-16 object-cover rounded flex-shrink-0" />)}
-                        //         <div className="flex-1 min-w-0">
-                        //             <p className="text-white font-bold mb-1 text-sm line-clamp-2">{news.title}</p>
-                        //             <p className="text-zinc-300 mb-2 text-xs line-clamp-2">{news.text}</p>
-                        //             <div className="flex justify-between items-center">
-                        //                 <p className="text-zinc-500 text-xs">{news.publisher} • {new Date(news.publishedDate).toLocaleDateString()}</p>
-                        //                 <FaNewspaper className="text-teal-400 flex-shrink-0" size={14} />
-                        //             </div>
-                        //         </div>
-                        //     </div>
-                        // </div>
-                        <NewsLayout newsData={stockNews} />
-                    // ))}</div>
+                    <NewsLayout newsData={stockNews} />
                 ) : (
                     <p className="text-zinc-400 text-sm">No news available</p>
                 )}
