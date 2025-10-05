@@ -160,7 +160,7 @@ function DashboardSidebar({ onClose }) {
 
           {/* Navigation Section */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 1 }}>
-            <Tooltip title="Dashboard" placement="right" arrow>
+            <Tooltip title="Home" placement="right" arrow>
               <Button
                 onClick={() => {
                   navigate("/dashboard");
@@ -169,20 +169,7 @@ function DashboardSidebar({ onClose }) {
                 startIcon={<IoHomeSharp size={20} />}
                 sx={getButtonStyle("/dashboard")}
               >
-                Dashboard
-              </Button>
-            </Tooltip>
-
-            <Tooltip title="AI Research Analysis" placement="right" arrow>
-              <Button
-                onClick={() => {
-                  navigate("/dashboard/research");
-                  handleItemClick();
-                }}
-                startIcon={<IoSearchOutline size={20} />}
-                sx={getButtonStyle("/dashboard/research")}
-              >
-                AI Research
+                Home
               </Button>
             </Tooltip>
 
@@ -199,6 +186,19 @@ function DashboardSidebar({ onClose }) {
               </Button>
             </Tooltip>
 
+            <Tooltip title="AI Research Analysis" placement="right" arrow>
+              <Button
+                onClick={() => {
+                  navigate("/dashboard/research");
+                  handleItemClick();
+                }}
+                startIcon={<IoSearchOutline size={20} />}
+                sx={getButtonStyle("/dashboard/research")}
+              >
+                Research
+              </Button>
+            </Tooltip>
+
             <Tooltip title="Congressional Trading" placement="right" arrow>
               <Button
                 onClick={() => {
@@ -212,19 +212,6 @@ function DashboardSidebar({ onClose }) {
               </Button>
             </Tooltip>
 
-            <Tooltip title="Movers" placement="right" arrow>
-              <Button
-                onClick={() => {
-                  navigate("/dashboard/movers");
-                  handleItemClick();
-                }}
-                startIcon={<IoTrendingUpOutline size={20} />}
-                sx={getButtonStyle("/dashboard/movers")}
-              >
-                Movers
-              </Button>
-            </Tooltip>
-
             <Tooltip title="Financial Statements" placement="right" arrow>
               <Button
                 onClick={() => {
@@ -235,6 +222,19 @@ function DashboardSidebar({ onClose }) {
                 sx={getButtonStyle("/dashboard/statements")}
               >
                 Statements
+              </Button>
+            </Tooltip>
+
+            <Tooltip title="Movers" placement="right" arrow>
+              <Button
+                onClick={() => {
+                  navigate("/dashboard/movers");
+                  handleItemClick();
+                }}
+                startIcon={<IoTrendingUpOutline size={20} />}
+                sx={getButtonStyle("/dashboard/movers")}
+              >
+                Movers
               </Button>
             </Tooltip>
 
@@ -334,7 +334,7 @@ function DashboardSidebar({ onClose }) {
 
         {/* Navigation Section */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 1 }}>
-          <Tooltip title="Dashboard" placement="right" arrow>
+          <Tooltip title="Home" placement="right" arrow>
             <Button
               onClick={() => {
                 navigate("/dashboard");
@@ -342,18 +342,6 @@ function DashboardSidebar({ onClose }) {
               }}
               startIcon={<IoHomeSharp size={24} />}
               sx={getButtonStyle("/dashboard")}
-            >
-            </Button>
-          </Tooltip>
-
-          <Tooltip title="AI Research Analysis" placement="right" arrow>
-            <Button
-              onClick={() => {
-                navigate("/dashboard/research");
-                handleItemClick();
-              }}
-              startIcon={<IoSearchOutline size={24} />}
-              sx={getButtonStyle("/dashboard/research")}
             >
             </Button>
           </Tooltip>
@@ -370,6 +358,18 @@ function DashboardSidebar({ onClose }) {
             </Button>
           </Tooltip>
 
+          <Tooltip title="AI Research Analysis" placement="right" arrow>
+            <Button
+              onClick={() => {
+                navigate("/dashboard/research");
+                handleItemClick();
+              }}
+              startIcon={<IoSearchOutline size={24} />}
+              sx={getButtonStyle("/dashboard/research")}
+            >
+            </Button>
+          </Tooltip>
+
           <Tooltip title="Congressional Trading" placement="right" arrow>
             <Button
               onClick={() => {
@@ -382,18 +382,6 @@ function DashboardSidebar({ onClose }) {
             </Button>
           </Tooltip>
 
-          <Tooltip title="Movers" placement="right" arrow>
-            <Button
-              onClick={() => {
-                navigate("/dashboard/movers");
-                handleItemClick();
-              }}
-              startIcon={<IoTrendingUpOutline size={24} />}
-              sx={getButtonStyle("/dashboard/movers")}
-            >
-            </Button>
-          </Tooltip>
-
           <Tooltip title="Financial Statements" placement="right" arrow>
             <Button
               onClick={() => {
@@ -402,6 +390,18 @@ function DashboardSidebar({ onClose }) {
               }}
               startIcon={<IoDocumentTextOutline size={24} />}
               sx={getButtonStyle("/dashboard/statements")}
+            >
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Movers" placement="right" arrow>
+            <Button
+              onClick={() => {
+                navigate("/dashboard/movers");
+                handleItemClick();
+              }}
+              startIcon={<IoTrendingUpOutline size={24} />}
+              sx={getButtonStyle("/dashboard/movers")}
             >
             </Button>
           </Tooltip>
