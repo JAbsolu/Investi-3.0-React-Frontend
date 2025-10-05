@@ -64,7 +64,7 @@ const News = () => {
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
         setNewsStartIndex(0);
-        setNewsEndIndex(8);
+        setNewsEndIndex(100);
         
         if (searchActive) {
             handleClearSearch();
