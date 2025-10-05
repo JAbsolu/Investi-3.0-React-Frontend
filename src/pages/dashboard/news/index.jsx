@@ -25,7 +25,7 @@ const News = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchActive, setSearchActive] = useState(false);
     const [newsStartIndex, setNewsStartIndex] = useState(0);
-    const [newsEndIndex, setNewsEndIndex] = useState(8);
+    const [newsEndIndex, setNewsEndIndex] = useState(100);
     
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
