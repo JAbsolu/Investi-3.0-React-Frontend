@@ -68,7 +68,7 @@ export default function DashboardPage() {
 
   // Pagination state
   const [newsStartIndex, setNewsStartIndex] = useState(0);
-  const [newsEndIndex, setNewsEndIndex] = useState(11);
+  const [newsEndIndex, setNewsEndIndex] = useState(12);
 
   // Event handlers
   const handleDrawerToggle = () => {
