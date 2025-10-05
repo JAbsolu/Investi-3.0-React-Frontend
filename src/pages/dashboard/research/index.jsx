@@ -249,7 +249,7 @@ const StockDetailsPage = () => {
                            {currentTicker ? (
                              <>
                                <StockLogo /> 
-                               <h2 className="text-white font-semibold text-3xl">
+                               <h2 className="text-xl text-zinc-100 font-bold">
                                    {currentTicker}
                                </h2>
                              </>
@@ -262,18 +262,6 @@ const StockDetailsPage = () => {
                     </div>
 
                     {/* Search Bar */}
-                    {/* <div className="relative mt-4"> */}
-                        {/* <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-300" size={14} />
-                        <input
-                            type="text"
-                            placeholder="Search ticker (e.g., AAPL, TSLA)..."
-                            value={searchTicker}
-                            onChange={(e) => setSearchTicker(e.target.value)}
-                            onKeyDown={handleSearchKeyPress}
-                            className="w-full bg-transparent text-white placeholder-gray-400 rounded-lg pl-10 pr-20 py-2 border border-zinc-600 focus:border-teal-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
-                        /> */}
-                    {/* </div> */}
-
                     <div className='flex gap-4'>
                         <div className="relative min-w-[10em] w-[40em] max-w-[90%] self-start mt-4">
                             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-teal-400 text-sm z-10" />
