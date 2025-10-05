@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaTimes, FaPlus, FaCheck, FaExternalLinkAlt, FaBuilding, FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaGlobe, FaNewspaper } from 'react-icons/fa';
 import StockChart from './stockChart';
+import NewsLayout from '../news/components/NewsLayout';
 
 // --- Styles to match research/index ---
 const darkBg = "linear-gradient(135deg, #181c20 0%, #0d0d0d 100%)";
@@ -336,21 +337,22 @@ const StockDetailsModal = ({ open, onClose, stock, wishlist = [], addToWishlist,
                 {loading.stockNews ? (
                     <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400"></div></div>
                 ) : stockNews?.length > 0 ? (
-                    <div className="flex flex-col gap-3">{stockNews.map((news, index) => (
-                        <div key={index} onClick={() => handleNewsClick(news)} className="p-3 bg-transparent rounded-lg cursor-pointer transition-all hover:bg-teal-500/10 hover:-translate-y-1">
-                            <div className="flex gap-3">
-                                {news.image && (<img src={news.image} alt={news.title} className="w-20 h-16 object-cover rounded flex-shrink-0" />)}
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-white font-bold mb-1 text-sm line-clamp-2">{news.title}</p>
-                                    <p className="text-zinc-300 mb-2 text-xs line-clamp-2">{news.text}</p>
-                                    <div className="flex justify-between items-center">
-                                        <p className="text-zinc-500 text-xs">{news.publisher} • {new Date(news.publishedDate).toLocaleDateString()}</p>
-                                        <FaNewspaper className="text-teal-400 flex-shrink-0" size={14} />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ))}</div>
+                    // <div className="flex flex-col gap-3">{stockNews.map((news, index) => (
+                        // <div key={index} onClick={() => handleNewsClick(news)} className="p-3 bg-transparent rounded-lg cursor-pointer transition-all hover:bg-teal-500/10 hover:-translate-y-1">
+                        //     <div className="flex gap-3">
+                        //         {news.image && (<img src={news.image} alt={news.title} className="w-20 h-16 object-cover rounded flex-shrink-0" />)}
+                        //         <div className="flex-1 min-w-0">
+                        //             <p className="text-white font-bold mb-1 text-sm line-clamp-2">{news.title}</p>
+                        //             <p className="text-zinc-300 mb-2 text-xs line-clamp-2">{news.text}</p>
+                        //             <div className="flex justify-between items-center">
+                        //                 <p className="text-zinc-500 text-xs">{news.publisher} • {new Date(news.publishedDate).toLocaleDateString()}</p>
+                        //                 <FaNewspaper className="text-teal-400 flex-shrink-0" size={14} />
+                        //             </div>
+                        //         </div>
+                        //     </div>
+                        // </div>
+                        <NewsLayout newsData={stockNews} />
+                    // ))}</div>
                 ) : (
                     <p className="text-zinc-400 text-sm">No news available</p>
                 )}
