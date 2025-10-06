@@ -1,20 +1,14 @@
-import React from "react";
-import {
-    Box, Typography, Grid, Card, CardContent,
-    Table, TableBody, TableCell, TableContainer,
-    TableHead, TableRow, Chip, useMediaQuery, useTheme
-} from "@mui/material";
-import { teal, green, red, grey } from "@mui/material/colors";
+import React, { useState, useEffect } from "react";
 import { FaEquals, FaCalendarAlt } from "react-icons/fa";
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-
-const darkBg = "#0d0d0d";
-const white = "#ffffff";
 
 const IncomeStatementView = ({ data }) => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Format currency values
     const formatCurrency = (value) => {
@@ -30,6 +24,15 @@ const IncomeStatementView = ({ data }) => {
         return `$${num.toLocaleString()}`;
     };
 
+    const formatNumber = (value) => {
+        if (!value && value !== 0) return 'N/A';
+        const num = Number(value);
+        if (Math.abs(num) >= 1e9) return `${(num / 1e9).toFixed(2)}B`;
+        if (Math.abs(num) >= 1e6) return `${(num / 1e6).toFixed(2)}M`;
+        if (Math.abs(num) >= 1e3) return `${(num / 1e3).toFixed(2)}K`;
+        return num.toLocaleString();
+    };
+
     // Calculate percentage change between periods
     const calculateChange = (current, previous) => {
         if (!previous || previous === 0) return null;
@@ -39,9 +42,15 @@ const IncomeStatementView = ({ data }) => {
     // Get trend icon and color
     const getTrendIcon = (current, previous) => {
         const change = calculateChange(current, previous);
-        if (change === null || Math.abs(change) < 0.1) return { icon: <FaEquals />, color: grey[400] };
-        if (change > 0) return { icon: <TrendingUpIcon />, color: green[400] };
-        return { icon: <TrendingDownIcon />, color: red[400] };
+        if (change === null || Math.abs(change) < 0.1) return { icon: <FaEquals />, color: 'text-zinc-400' };
+        if (change > 0) return { 
+            icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" /></svg>, 
+            color: 'text-emerald-400' 
+        };
+        return { 
+            icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M12 13a1 1 0 100 2h5a1 1 0 001-1V9a1 1 0 10-2 0v2.586l-4.293-4.293a1 1 0 00-1.414 0L8 9.586 3.707 5.293a1 1 0 00-1.414 1.414l5 5a1 1 0 001.414 0L11 9.414 14.586 13H12z" clipRule="evenodd" /></svg>, 
+            color: 'text-rose-400' 
+        };
     };
 
     // Key metrics to highlight
@@ -55,11 +64,9 @@ const IncomeStatementView = ({ data }) => {
 
     if (!data || data.length === 0) {
         return (
-            <Box textAlign="center" py={8}>
-                <Typography color={grey[400]}>
-                    No income statement data available
-                </Typography>
-            </Box>
+            <div className="text-center py-16">
+                <p className="text-zinc-400">No income statement data available</p>
+            </div>
         );
     }
 
@@ -68,257 +75,157 @@ const IncomeStatementView = ({ data }) => {
     const keyMetrics = getKeyMetrics(currentPeriod);
 
     return (
-        <Box>
+        <div>
             {/* Key Metrics Cards */}
             {isMobile ? (
-                <Box 
-                    sx={{ 
-                        display: 'flex',
-                        overflowX: 'auto',
-                        gap: 2,
-                        mb: 4,
-                        pb: 1,
-                        '&::-webkit-scrollbar': {
-                            height: 6,
-                        },
-                        '&::-webkit-scrollbar-track': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                            borderRadius: 3,
-                        },
-                        '&::-webkit-scrollbar-thumb': {
-                            backgroundColor: teal[400],
-                            borderRadius: 3,
-                        },
-                    }}
-                >
+                <div className="flex overflow-x-auto gap-4 mb-6 pb-2 scrollbar-thin scrollbar-thumb-teal-400 scrollbar-track-white/10">
                     {keyMetrics.map((metric) => {
                         const trend = previousPeriod ? getTrendIcon(metric.value, previousPeriod[metric.key]) : null;
                         const change = previousPeriod ? calculateChange(metric.value, previousPeriod[metric.key]) : null;
                         
                         return (
-                            <Card
+                            <div
                                 key={metric.key}
-                                sx={{
-                                    background: 'rgba(20, 184, 166, 0.05)',
-                                    borderRadius: '12px',
-                                    height: '120px',
-                                    minWidth: '200px',
-                                    flexShrink: 0,
-                                }}
+                                className="bg-zinc-900 rounded-xl h-[120px] min-w-[200px] flex-shrink-0 p-4"
                             >
-                                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                                    <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-                                        <Box sx={{ color: teal[400], fontSize: '0.8rem' }}>
-                                            {metric.icon || <FaEquals />}
-                                        </Box>
-                                        <Typography
-                                            variant="body2"
-                                            color={grey[400]}
-                                            fontSize="0.8rem"
-                                        >
-                                            {metric.label}
-                                        </Typography>
-                                    </Box>
-                                    <Typography
-                                        variant="h6"
-                                        color={white}
-                                        fontWeight="bold"
-                                        fontSize="0.9rem"
-                                        mb={1}
-                                    >
-                                        {metric.isCurrency === false 
-                                            ? metric.value?.toFixed(2) || 'N/A'
-                                            : formatCurrency(metric.value)
-                                        }
-                                    </Typography>
-                                    {trend && change !== null && (
-                                        <Box display="flex" alignItems="center" gap={0.5}>
-                                            <Box sx={{ color: trend.color, fontSize: '0.7rem' }}>
-                                                {trend.icon}
-                                            </Box>
-                                            <Typography
-                                                variant="caption"
-                                                sx={{ 
-                                                    color: trend.color,
-                                                    fontSize: '0.7rem',
-                                                    fontWeight: 'medium'
-                                                }}
-                                            >
-                                                {Math.abs(change).toFixed(1)}%
-                                            </Typography>
-                                        </Box>
-                                    )}
-                                </CardContent>
-                            </Card>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <div className="text-teal-400 text-xs">
+                                        {metric.icon || <FaEquals />}
+                                    </div>
+                                    <p className="text-zinc-400 text-xs">
+                                        {metric.label}
+                                    </p>
+                                </div>
+                                <p className="text-white text-md font-bold mb-2">
+                                    {metric.isCurrency === false 
+                                        ? metric.value?.toFixed(2) || 'N/A'
+                                        : formatCurrency(metric.value)
+                                    }
+                                </p>
+                                {trend && change !== null && (
+                                    <div className="flex items-center gap-1">
+                                        <div className={trend.color}>
+                                            {trend.icon}
+                                        </div>
+                                        <span className={`text-xs font-medium ${trend.color}`}>
+                                            {Math.abs(change).toFixed(1)}%
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
                         );
                     })}
-                </Box>
+                </div>
             ) : (
-                <Grid container spacing={2} mb={4}>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                     {keyMetrics.map((metric) => {
                         const trend = previousPeriod ? getTrendIcon(metric.value, previousPeriod[metric.key]) : null;
                         const change = previousPeriod ? calculateChange(metric.value, previousPeriod[metric.key]) : null;
                         
                         return (
-                            <Grid item xs={12} sm={6} md={2.4} key={metric.key}>
-                                <Card
-                                    sx={{
-                                        background: 'rgba(20, 184, 166, 0.05)',
-                                        borderRadius: '12px',
-                                        height: '120px',
-                                    }}
-                                >
-                                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 }, minWidth: '13.4em' }}>
-                                        <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-                                            <Box sx={{ color: teal[400], fontSize: '0.8rem' }}>
-                                                {metric.icon || <FaEquals />}
-                                            </Box>
-                                            <Typography
-                                                variant="body2"
-                                                color={grey[400]}
-                                                fontSize="0.8rem"
-                                            >
-                                                {metric.label}
-                                            </Typography>
-                                        </Box>
-                                        <Typography
-                                            variant="h6"
-                                            color={white}
-                                            fontWeight="bold"
-                                            fontSize="1.1rem"
-                                            mb={1}
-                                        >
-                                            {metric.isCurrency === false 
-                                                ? metric.value?.toFixed(2) || 'N/A'
-                                                : formatCurrency(metric.value)
-                                            }
-                                        </Typography>
-                                        {trend && change !== null && (
-                                            <Box display="flex" alignItems="center" gap={0.5}>
-                                                <Box sx={{ color: trend.color, fontSize: '0.7rem' }}>
-                                                    {trend.icon}
-                                                </Box>
-                                                <Typography
-                                                    variant="caption"
-                                                    sx={{ 
-                                                        color: trend.color,
-                                                        fontSize: '0.7rem',
-                                                        fontWeight: 'medium'
-                                                    }}
-                                                >
-                                                    {Math.abs(change).toFixed(1)}%
-                                                </Typography>
-                                            </Box>
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            </Grid>
+                            <div
+                                key={metric.key}
+                                className="bg-zinc-900 rounded-xl h-[120px] p-4 min-w-[13.4em]"
+                            >
+                                <div className="flex items-center gap-2 mb-1">
+                                    <div className="text-teal-400 text-xs">
+                                        {metric.icon || <FaEquals />}
+                                    </div>
+                                    <p className="text-zinc-400 text-xs">
+                                        {metric.label}
+                                    </p>
+                                </div>
+                                <p className="text-white text-md font-bold mb-2">
+                                    {metric.isCurrency === false 
+                                        ? metric.value?.toFixed(2) || 'N/A'
+                                        : formatCurrency(metric.value)
+                                    }
+                                </p>
+                                {trend && change !== null && (
+                                    <div className="flex items-center gap-1">
+                                        <div className={trend.color}>
+                                            {trend.icon}
+                                        </div>
+                                        <span className={`text-xs font-medium ${trend.color}`}>
+                                            {Math.abs(change).toFixed(1)}%
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
                         );
                     })}
-                </Grid>
+                </div>
             )}
 
             {/* Detailed Income Statement Table */}
-            <Card
-                sx={{
-                    background: 'rgba(20, 30, 20, 0.3)',
-                    borderRadius: '12px',
-                }}
-            >
-                <CardContent sx={{ p: 0 }}>
-                    <Box p={3} pb={0}>
-                        <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
-                            Detailed Income Statement
-                        </Typography>
-                    </Box>
-                    
-                    <TableContainer sx={{ maxHeight: isMobile ? 400 : 600 }}>
-                        <Table stickyHeader size={isMobile ? "small" : "medium"}>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sx={{ 
-                                        backgroundColor: darkBg, 
-                                        color: teal[300],
-                                        borderBottom: `1px solid ${teal[800]}`,
-                                        fontWeight: 'bold',
-                                        fontSize: isMobile ? '0.8rem' : '0.9rem'
-                                    }}>
-                                        Metric
-                                    </TableCell>
-                                    {data.slice(0, isMobile ? 2 : 3).map((period, index) => (
-                                        <TableCell
-                                            key={period.calendarYear}
-                                            align="right"
-                                            sx={{ 
-                                                backgroundColor: darkBg, 
-                                                color: white,
-                                                borderBottom: `1px solid ${teal[800]}`,
-                                                fontWeight: 'bold',
-                                                fontSize: isMobile ? '0.8rem' : '0.9rem'
-                                            }}
+            <div className="bg-zinc-900/30 rounded-xl overflow-hidden">
+                <div className="p-6 pb-0">
+                    <h3 className="text-teal-300 text-xl font-bold mb-4">Detailed Income Statement</h3>
+                </div>
+                
+                <div className="overflow-x-auto" style={{ maxHeight: isMobile ? 400 : 600 }}>
+                    <table className="w-full text-sm">
+                        <thead className="sticky top-0">
+                            <tr>
+                                <th className="bg-zinc-950 text-teal-300 border-b border-zinc-800 font-bold text-left px-4 py-3 text-xs sm:text-sm">
+                                    Metric
+                                </th>
+                                {data.slice(0, isMobile ? 2 : 3).map((period) => (
+                                    <th
+                                        key={period.calendarYear}
+                                        className="bg-zinc-950 text-white border-b border-zinc-800 font-bold text-right px-4 py-3 text-xs sm:text-sm"
+                                    >
+                                        <div className="flex items-center justify-end gap-1">
+                                            <FaCalendarAlt size={12} />
+                                            {period.calendarYear}
+                                        </div>
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {[
+                                { label: 'Revenue', key: 'revenue' },
+                                { label: 'Cost of Revenue', key: 'costOfRevenue' },
+                                { label: 'Gross Profit', key: 'grossProfit' },
+                                { label: 'R&D Expenses', key: 'researchAndDevelopmentExpenses' },
+                                { label: 'SG&A Expenses', key: 'sellingGeneralAndAdministrativeExpenses' },
+                                { label: 'Operating Expenses', key: 'operatingExpenses' },
+                                { label: 'Operating Income', key: 'operatingIncome' },
+                                { label: 'Interest Income', key: 'interestIncome' },
+                                { label: 'Interest Expense', key: 'interestExpense' },
+                                { label: 'Income Before Tax', key: 'incomeBeforeTax' },
+                                { label: 'Income Tax Expense', key: 'incomeTaxExpense' },
+                                { label: 'Net Income', key: 'netIncome' },
+                                { label: 'EPS', key: 'eps' },
+                                { label: 'EPS Diluted', key: 'epsdiluted' },
+                                { label: 'Weighted Avg Shares', key: 'weightedAverageShsOut' },
+                                { label: 'EBITDA', key: 'ebitda' },
+                            ].map((item) => (
+                                <tr key={item.key}>
+                                    <td className="text-white border-b border-zinc-900 px-4 py-2 text-xs sm:text-sm font-medium">
+                                        {item.label}
+                                    </td>
+                                    {data.slice(0, isMobile ? 2 : 3).map((period) => (
+                                        <td
+                                            key={`${period.calendarYear}-${item.key}`}
+                                            className="text-white border-b border-zinc-900 text-right px-4 py-2 text-xs sm:text-sm"
                                         >
-                                            <Box display="flex" alignItems="center" justifyContent="flex-end" gap={0.5}>
-                                                <FaCalendarAlt size={12} />
-                                                {period.calendarYear}
-                                            </Box>
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {[
-                                    { label: 'Revenue', key: 'revenue' },
-                                    { label: 'Cost of Revenue', key: 'costOfRevenue' },
-                                    { label: 'Gross Profit', key: 'grossProfit' },
-                                    { label: 'R&D Expenses', key: 'researchAndDevelopmentExpenses' },
-                                    { label: 'SG&A Expenses', key: 'sellingGeneralAndAdministrativeExpenses' },
-                                    { label: 'Operating Expenses', key: 'operatingExpenses' },
-                                    { label: 'Operating Income', key: 'operatingIncome' },
-                                    { label: 'Interest Income', key: 'interestIncome' },
-                                    { label: 'Interest Expense', key: 'interestExpense' },
-                                    { label: 'Income Before Tax', key: 'incomeBeforeTax' },
-                                    { label: 'Income Tax Expense', key: 'incomeTaxExpense' },
-                                    { label: 'Net Income', key: 'netIncome' },
-                                    { label: 'EPS', key: 'eps' },
-                                    { label: 'EPS Diluted', key: 'epsdiluted' },
-                                    { label: 'Weighted Avg Shares', key: 'weightedAverageShsOut' },
-                                    { label: 'EBITDA', key: 'ebitda' },
-                                ].map((item) => (
-                                    <TableRow key={item.key}>
-                                        <TableCell 
-                                            sx={{ 
-                                                color: white, 
-                                                borderBottom: `1px solid ${teal[900]}`,
-                                                fontSize: isMobile ? '0.75rem' : '0.85rem',
-                                                fontWeight: 'medium'
-                                            }}
-                                        >
-                                            {item.label}
-                                        </TableCell>
-                                        {data.slice(0, isMobile ? 2 : 3).map((period) => (
-                                            <TableCell
-                                                key={`${period.calendarYear}-${item.key}`}
-                                                align="right"
-                                                sx={{ 
-                                                    color: white,
-                                                    borderBottom: `1px solid ${teal[900]}`,
-                                                    fontSize: isMobile ? '0.75rem' : '0.85rem'
-                                                }}
-                                            >
-                                                {item.key.includes('eps') || item.key === 'weightedAverageShsOut'
+                                            {item.key === 'weightedAverageShsOut'
+                                                ? formatNumber(period[item.key])
+                                                : item.key.includes('eps')
                                                     ? (period[item.key]?.toFixed(2) || 'N/A')
                                                     : formatCurrency(period[item.key])
-                                                }
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </CardContent>
-            </Card>
-        </Box>
+                                            }
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     );
 };
 
