@@ -1,23 +1,17 @@
-import React from "react";
-import {
-    Box, Typography, Grid, Card, CardContent,
-    Table, TableBody, TableCell, TableContainer,
-    TableHead, TableRow, useMediaQuery, useTheme                                            
-} from "@mui/material";
-import { teal, green, red, grey } from "@mui/material/colors";
+import React, { useState, useEffect } from "react";
 import { 
     FaEquals, FaCalendarAlt, 
-    FaChartLine, FaCoins, FaCog, FaExchangeAlt 
+    FaChartLine, FaCoins, FaExchangeAlt 
 } from "react-icons/fa";
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-
-const darkBg = "#0d0d0d";
-const white = "#ffffff";
 
 const CashFlowView = ({ data }) => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Format currency values
     const formatCurrency = (value) => {
@@ -42,9 +36,15 @@ const CashFlowView = ({ data }) => {
     // Get trend icon and color
     const getTrendIcon = (current, previous) => {
         const change = calculateChange(current, previous);
-        if (change === null || Math.abs(change) < 0.1) return { icon: <FaEquals />, color: grey[400] };
-        if (change > 0) return { icon: <TrendingUpIcon />, color: green[400] };
-        return { icon: <TrendingDownIcon />, color: red[400] };
+        if (change === null || Math.abs(change) < 0.1) return { icon: <FaEquals />, color: 'text-zinc-400' };
+        if (change > 0) return { 
+            icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" /></svg>, 
+            color: 'text-emerald-400' 
+        };
+        return { 
+            icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M12 13a1 1 0 100 2h5a1 1 0 001-1V9a1 1 0 10-2 0v2.586l-4.293-4.293a1 1 0 00-1.414 0L8 9.586 3.707 5.293a1 1 0 00-1.414 1.414l5 5a1 1 0 001.414 0L11 9.414 14.586 13H12z" clipRule="evenodd" /></svg>, 
+            color: 'text-rose-400' 
+        };
     };
 
     // Key metrics to highlight
@@ -71,7 +71,7 @@ const CashFlowView = ({ data }) => {
             label: 'Free Cash Flow', 
             value: statement.freeCashFlow, 
             key: 'freeCashFlow',
-            icon: <TrendingUpIcon />
+            icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" /></svg>
         },
         { 
             label: 'Net Change in Cash', 
@@ -83,11 +83,9 @@ const CashFlowView = ({ data }) => {
 
     if (!data || data.length === 0) {
         return (
-            <Box textAlign="center" py={8}>
-                <Typography color={grey[400]}>
-                    No cash flow data available
-                </Typography>
-            </Box>
+            <div className="text-center py-16">
+                <p className="text-zinc-400">No cash flow data available</p>
+            </div>
         );
     }
 
@@ -99,7 +97,7 @@ const CashFlowView = ({ data }) => {
     const cashFlowCategories = [
         {
             title: 'Operating Activities',
-            color: green[400],
+            color: 'text-emerald-400',
             items: [
                 { label: 'Net Income', key: 'netIncome' },
                 { label: 'Depreciation & Amortization', key: 'depreciationAndAmortization' },
@@ -115,7 +113,7 @@ const CashFlowView = ({ data }) => {
         },
         {
             title: 'Investing Activities',
-            color: teal[400],
+            color: 'text-teal-400',
             items: [
                 { label: 'Capital Expenditures', key: 'capitalExpenditure' },
                 { label: 'Acquisitions Net', key: 'acquisitionsNet' },
@@ -127,7 +125,7 @@ const CashFlowView = ({ data }) => {
         },
         {
             title: 'Financing Activities',
-            color: red[400],
+            color: 'text-rose-400',
             items: [
                 { label: 'Debt Repayment', key: 'debtRepayment' },
                 { label: 'Common Stock Issued', key: 'commonStockIssued' },
@@ -140,373 +138,215 @@ const CashFlowView = ({ data }) => {
     ];
 
     return (
-        <Box>
+        <div>
             {/* Key Metrics Cards */}
             {isMobile ? (
-                <Box 
-                    sx={{ 
-                        display: 'flex',
-                        overflowX: 'auto',
-                        gap: 2,
-                        mb: 4,
-                        pb: 1,
-                        '&::-webkit-scrollbar': {
-                            height: 6,
-                        },
-                        '&::-webkit-scrollbar-track': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                            borderRadius: 3,
-                        },
-                        '&::-webkit-scrollbar-thumb': {
-                            backgroundColor: teal[400],
-                            borderRadius: 3,
-                        },
-                    }}
-                >
+                <div className="flex overflow-x-auto gap-4 mb-6 pb-2 scrollbar-thin scrollbar-thumb-teal-400 scrollbar-track-white/10">
                     {keyMetrics.map((metric) => {
                         const trend = previousPeriod ? getTrendIcon(metric.value, previousPeriod[metric.key]) : null;
                         const change = previousPeriod ? calculateChange(metric.value, previousPeriod[metric.key]) : null;
                         
                         return (
-                            <Card
+                            <div
                                 key={metric.key}
-                                sx={{
-                                    background: 'rgba(20, 184, 166, 0.05)',
-                                    borderRadius: '12px',
-                                    height: '120px',
-                                    minWidth: '200px',
-                                    flexShrink: 0,
-                                }}
+                                className="bg-zinc-900 rounded-xl h-[110px] min-w-[200px] flex-shrink-0 p-4"
                             >
-                                <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                                    <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-                                        <Box sx={{ color: teal[400], fontSize: '0.8rem' }}>
-                                            {metric.icon}
-                                        </Box>
-                                        <Typography
-                                            variant="body2"
-                                            color={grey[400]}
-                                            fontSize="0.8rem"
-                                        >
-                                            {metric.label}
-                                        </Typography>
-                                    </Box>
-                                    <Typography
-                                        variant="h6"
-                                        color={white}
-                                        fontWeight="bold"
-                                        fontSize="0.9rem"
-                                        mb={1}
-                                    >
-                                        {formatCurrency(metric.value)}
-                                    </Typography>
-                                    {trend && change !== null && (
-                                        <Box display="flex" alignItems="center" gap={0.5}>
-                                            <Box sx={{ color: trend.color, fontSize: '0.7rem' }}>
-                                                {trend.icon}
-                                            </Box>
-                                            <Typography
-                                                variant="caption"
-                                                sx={{ 
-                                                    color: trend.color,
-                                                    fontSize: '0.7rem',
-                                                    fontWeight: 'medium'
-                                                }}
-                                            >
-                                                {Math.abs(change).toFixed(1)}%
-                                            </Typography>
-                                        </Box>
-                                    )}
-                                </CardContent>
-                            </Card>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <div className="text-teal-400 text-xs">
+                                        {metric.icon}
+                                    </div>
+                                    <p className="text-zinc-400 text-xs">
+                                        {metric.label}
+                                    </p>
+                                </div>
+                                <p className="text-white text-md font-bold mb-2">
+                                    {formatCurrency(metric.value)}
+                                </p>
+                                {trend && change !== null && (
+                                    <div className="flex items-center gap-1">
+                                        <div className={trend.color}>
+                                            {trend.icon}
+                                        </div>
+                                        <span className={`text-xs font-medium ${trend.color}`}>
+                                            {Math.abs(change).toFixed(1)}%
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
                         );
                     })}
-                </Box>
+                </div>
             ) : (
-                <Grid container spacing={2} mb={4}>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                     {keyMetrics.map((metric) => {
                         const trend = previousPeriod ? getTrendIcon(metric.value, previousPeriod[metric.key]) : null;
                         const change = previousPeriod ? calculateChange(metric.value, previousPeriod[metric.key]) : null;
                         
                         return (
-                            <Grid item xs={12} sm={6} md={2.4} key={metric.key}>
-                                <Card
-                                    sx={{
-                                        background: 'rgba(20, 184, 166, 0.05)',
-                                        borderRadius: '12px',
-                                        height: '120px',
-                                    }}
-                                >
-                                    <CardContent sx={{ p: 2, '&:last-child': { pb: 2 }, minWidth: '13.4em' }}>
-                                        <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-                                            <Box sx={{ color: teal[400], fontSize: '0.8rem' }}>
-                                                {metric.icon}
-                                            </Box>
-                                            <Typography
-                                                variant="body2"
-                                                color={grey[400]}
-                                                fontSize="0.8rem"
-                                            >
-                                                {metric.label}
-                                            </Typography>
-                                        </Box>
-                                        <Typography
-                                            variant="h6"
-                                            color={white}
-                                            fontWeight="bold"
-                                            fontSize="1.1rem"
-                                            mb={1}
-                                        >
-                                            {formatCurrency(metric.value)}
-                                        </Typography>
-                                        {trend && change !== null && (
-                                            <Box display="flex" alignItems="center" gap={0.5}>
-                                                <Box sx={{ color: trend.color, fontSize: '0.7rem' }}>
-                                                    {trend.icon}
-                                                </Box>
-                                                <Typography
-                                                    variant="caption"
-                                                    sx={{ 
-                                                        color: trend.color,
-                                                        fontSize: '0.7rem',
-                                                        fontWeight: 'medium'
-                                                    }}
-                                                >
-                                                    {Math.abs(change).toFixed(1)}%
-                                                </Typography>
-                                            </Box>
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            </Grid>
+                            <div
+                                key={metric.key}
+                                className="bg-zinc-900 rounded-xl h-[120px] p-4 min-w-[13.4em]"
+                            >
+                                <div className="flex items-center gap-2 mb-1">
+                                    <div className="text-teal-400 text-xs">
+                                        {metric.icon}
+                                    </div>
+                                    <p className="text-zinc-400 text-xs">
+                                        {metric.label}
+                                    </p>
+                                </div>
+                                <p className="text-white text-md font-bold mb-2">
+                                    {formatCurrency(metric.value)}
+                                </p>
+                                {trend && change !== null && (
+                                    <div className="flex items-center gap-1">
+                                        <div className={trend.color}>
+                                            {trend.icon}
+                                        </div>
+                                        <span className={`text-xs font-medium ${trend.color}`}>
+                                            {Math.abs(change).toFixed(1)}%
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
                         );
                     })}
-                </Grid>
+                </div>
             )}
 
             {/* Cash Flow Statement */}
-            <Card
-                sx={{
-                    background: 'rgba(20, 30, 20, 0.3)',
-                    borderRadius: '12px',
-                }}
-            >
-                <CardContent sx={{ p: 0 }}>
-                    <Box p={3} pb={0}>
-                        <Typography variant="h6" color={teal[300]} fontWeight="bold" mb={2}>
-                            Cash Flow Statement
-                        </Typography>
-                    </Box>
-                    
-                    <TableContainer sx={{ maxHeight: isMobile ? 600 : 800 }}>
-                        <Table stickyHeader size={isMobile ? "small" : "medium"}>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sx={{ 
-                                        backgroundColor: darkBg, 
-                                        color: teal[300],
-                                        borderBottom: `1px solid ${teal[800]}`,
-                                        fontWeight: 'bold',
-                                        fontSize: isMobile ? '0.8rem' : '0.9rem'
-                                    }}>
-                                        Cash Flow Item
-                                    </TableCell>
-                                    {data.slice(0, isMobile ? 2 : 3).map((period) => (
-                                        <TableCell
-                                            key={period.calendarYear}
-                                            align="right"
-                                            sx={{ 
-                                                backgroundColor: darkBg, 
-                                                color: white,
-                                                borderBottom: `1px solid ${teal[800]}`,
-                                                fontWeight: 'bold',
-                                                fontSize: isMobile ? '0.8rem' : '0.9rem'
-                                            }}
-                                        >
-                                            <Box display="flex" alignItems="center" justifyContent="flex-end" gap={0.5}>
-                                                <FaCalendarAlt size={12} />
-                                                {period.calendarYear}
-                                            </Box>
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {cashFlowCategories.map((category) => (
-                                    <React.Fragment key={category.title}>
-                                        <TableRow>
-                                            <TableCell 
-                                                colSpan={data.slice(0, isMobile ? 2 : 3).length + 1}
-                                                sx={{ 
-                                                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
-                                                    color: category.color,
-                                                    fontWeight: 'bold',
-                                                    fontSize: isMobile ? '0.8rem' : '0.9rem',
-                                                    borderBottom: `1px solid ${teal[800]}`
-                                                }}
-                                            >
-                                                {category.title}
-                                            </TableCell>
-                                        </TableRow>
-                                        {category.items.map((item) => (
-                                            <TableRow key={item.key}>
-                                                <TableCell 
-                                                    sx={{ 
-                                                        color: white, 
-                                                        borderBottom: `1px solid ${teal[900]}`,
-                                                        fontSize: isMobile ? '0.75rem' : '0.85rem',
-                                                        fontWeight: item.isTotal ? 'bold' : 'normal',
-                                                        pl: item.isTotal ? 2 : 3,
-                                                        backgroundColor: item.isTotal ? 'rgba(20, 184, 166, 0.05)' : 'transparent'
-                                                    }}
-                                                >
-                                                    {item.label}
-                                                </TableCell>
-                                                {data.slice(0, isMobile ? 2 : 3).map((period) => {
-                                                    const value = period[item.key];
-                                                    const isNegative = value < 0;
-                                                    
-                                                    return (
-                                                        <TableCell
-                                                            key={`${period.calendarYear}-${item.key}`}
-                                                            align="right"
-                                                            sx={{ 
-                                                                color: item.isTotal 
-                                                                    ? category.color 
-                                                                    : isNegative 
-                                                                        ? red[300] 
-                                                                        : white,
-                                                                borderBottom: `1px solid ${teal[900]}`,
-                                                                fontSize: isMobile ? '0.75rem' : '0.85rem',
-                                                                fontWeight: item.isTotal ? 'bold' : 'normal',
-                                                                backgroundColor: item.isTotal ? 'rgba(20, 184, 166, 0.05)' : 'transparent'
-                                                            }}
-                                                        >
-                                                            {formatCurrency(value)}
-                                                        </TableCell>
-                                                    );
-                                                })}
-                                            </TableRow>
-                                        ))}
-                                    </React.Fragment>
+            <div className="bg-zinc-900/30 rounded-xl overflow-hidden">
+                <div className="p-4 pb-0">
+                    <h3 className="text-teal-300 text-md font-bold mb-4">Cash Flow Statement</h3>
+                </div>
+                
+                <div className="overflow-x-auto" style={{ maxHeight: isMobile ? 600 : 800 }}>
+                    <table className="w-full text-sm">
+                        <thead className="sticky top-0">
+                            <tr>
+                                <th className="bg-zinc-950 text-teal-300 border-b border-zinc-800 font-bold text-left px-4 py-3 text-xs sm:text-sm">
+                                    Cash Flow Item
+                                </th>
+                                {data.slice(0, isMobile ? 2 : 3).map((period) => (
+                                    <th
+                                        key={period.calendarYear}
+                                        className="bg-zinc-950 text-white border-b border-zinc-800 font-bold text-right px-4 py-3 text-xs sm:text-sm"
+                                    >
+                                        <div className="flex items-center justify-end gap-1">
+                                            <FaCalendarAlt size={12} />
+                                            {period.calendarYear}
+                                        </div>
+                                    </th>
                                 ))}
-                                
-                                {/* Net Change in Cash */}
-                                <TableRow>
-                                    <TableCell 
-                                        sx={{ 
-                                            color: teal[300], 
-                                            borderBottom: `2px solid ${teal[600]}`,
-                                            fontSize: isMobile ? '0.8rem' : '0.9rem',
-                                            fontWeight: 'bold',
-                                            backgroundColor: 'rgba(20, 184, 166, 0.15)'
-                                        }}
-                                    >
-                                        NET CHANGE IN CASH
-                                    </TableCell>
-                                    {data.slice(0, isMobile ? 2 : 3).map((period) => (
-                                        <TableCell
-                                            key={`${period.calendarYear}-netChangeInCash`}
-                                            align="right"
-                                            sx={{ 
-                                                color: teal[300],
-                                                borderBottom: `2px solid ${teal[600]}`,
-                                                fontSize: isMobile ? '0.8rem' : '0.9rem',
-                                                fontWeight: 'bold',
-                                                backgroundColor: 'rgba(20, 184, 166, 0.15)'
-                                            }}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {cashFlowCategories.map((category) => (
+                                <React.Fragment key={category.title}>
+                                    <tr>
+                                        <td 
+                                            colSpan={data.slice(0, isMobile ? 2 : 3).length + 1}
+                                            className={`bg-teal-500/10 ${category.color} font-bold border-b border-zinc-800 px-4 py-2 text-xs sm:text-sm`}
                                         >
-                                            {formatCurrency(period.netChangeInCash)}
-                                        </TableCell>
+                                            {category.title}
+                                        </td>
+                                    </tr>
+                                    {category.items.map((item) => (
+                                        <tr key={item.key}>
+                                            <td 
+                                                className={`text-white border-b border-zinc-900 px-4 py-2 text-xs sm:text-sm ${
+                                                    item.isTotal ? 'font-bold pl-4 bg-teal-500/5' : 'pl-6'
+                                                }`}
+                                            >
+                                                {item.label}
+                                            </td>
+                                            {data.slice(0, isMobile ? 2 : 3).map((period) => {
+                                                const value = period[item.key];
+                                                const isNegative = value < 0;
+                                                
+                                                return (
+                                                    <td
+                                                        key={`${period.calendarYear}-${item.key}`}
+                                                        className={`border-b border-zinc-900 text-right px-4 py-2 text-xs sm:text-sm ${
+                                                            item.isTotal 
+                                                                ? `${category.color} font-bold bg-teal-500/5` 
+                                                                : isNegative 
+                                                                    ? 'text-rose-300' 
+                                                                    : 'text-white'
+                                                        }`}
+                                                    >
+                                                        {formatCurrency(value)}
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
                                     ))}
-                                </TableRow>
-                                
-                                {/* Cash at Beginning and End of Period */}
-                                <TableRow>
-                                    <TableCell 
-                                        sx={{ 
-                                            color: grey[300], 
-                                            borderBottom: `1px solid ${teal[900]}`,
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem'
-                                        }}
+                                </React.Fragment>
+                            ))}
+                            
+                            {/* Net Change in Cash */}
+                            <tr>
+                                <td className="text-teal-300 border-b-2 border-teal-600 font-bold bg-teal-500/15 px-4 py-3 text-xs sm:text-sm">
+                                    NET CHANGE IN CASH
+                                </td>
+                                {data.slice(0, isMobile ? 2 : 3).map((period) => (
+                                    <td
+                                        key={`${period.calendarYear}-netChangeInCash`}
+                                        className="text-teal-300 border-b-2 border-teal-600 font-bold bg-teal-500/15 text-right px-4 py-3 text-xs sm:text-sm"
                                     >
-                                        Cash at Beginning of Period
-                                    </TableCell>
-                                    {data.slice(0, isMobile ? 2 : 3).map((period) => (
-                                        <TableCell
-                                            key={`${period.calendarYear}-cashAtBeginning`}
-                                            align="right"
-                                            sx={{ 
-                                                color: grey[300],
-                                                borderBottom: `1px solid ${teal[900]}`,
-                                                fontSize: isMobile ? '0.75rem' : '0.85rem'
-                                            }}
-                                        >
-                                            {formatCurrency(period.cashAtBeginningOfPeriod)}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                                
-                                <TableRow>
-                                    <TableCell 
-                                        sx={{ 
-                                            color: grey[300], 
-                                            borderBottom: `1px solid ${teal[900]}`,
-                                            fontSize: isMobile ? '0.75rem' : '0.85rem'
-                                        }}
+                                        {formatCurrency(period.netChangeInCash)}
+                                    </td>
+                                ))}
+                            </tr>
+                            
+                            {/* Cash at Beginning and End of Period */}
+                            <tr>
+                                <td className="text-zinc-300 border-b border-zinc-900 px-4 py-2 text-xs sm:text-sm">
+                                    Cash at Beginning of Period
+                                </td>
+                                {data.slice(0, isMobile ? 2 : 3).map((period) => (
+                                    <td
+                                        key={`${period.calendarYear}-cashAtBeginning`}
+                                        className="text-zinc-300 border-b border-zinc-900 text-right px-4 py-2 text-xs sm:text-sm"
                                     >
-                                        Cash at End of Period
-                                    </TableCell>
-                                    {data.slice(0, isMobile ? 2 : 3).map((period) => (
-                                        <TableCell
-                                            key={`${period.calendarYear}-cashAtEnd`}
-                                            align="right"
-                                            sx={{ 
-                                                color: grey[300],
-                                                borderBottom: `1px solid ${teal[900]}`,
-                                                fontSize: isMobile ? '0.75rem' : '0.85rem'
-                                            }}
-                                        >
-                                            {formatCurrency(period.cashAtEndOfPeriod)}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                                
-                                {/* Free Cash Flow */}
-                                <TableRow>
-                                    <TableCell 
-                                        sx={{ 
-                                            color: green[300], 
-                                            borderBottom: `2px solid ${green[600]}`,
-                                            fontSize: isMobile ? '0.8rem' : '0.9rem',
-                                            fontWeight: 'bold',
-                                            backgroundColor: 'rgba(76, 175, 80, 0.1)'
-                                        }}
+                                        {formatCurrency(period.cashAtBeginningOfPeriod)}
+                                    </td>
+                                ))}
+                            </tr>
+                            
+                            <tr>
+                                <td className="text-zinc-300 border-b border-zinc-900 px-4 py-2 text-xs sm:text-sm">
+                                    Cash at End of Period
+                                </td>
+                                {data.slice(0, isMobile ? 2 : 3).map((period) => (
+                                    <td
+                                        key={`${period.calendarYear}-cashAtEnd`}
+                                        className="text-zinc-300 border-b border-zinc-900 text-right px-4 py-2 text-xs sm:text-sm"
                                     >
-                                        FREE CASH FLOW
-                                    </TableCell>
-                                    {data.slice(0, isMobile ? 2 : 3).map((period) => (
-                                        <TableCell
-                                            key={`${period.calendarYear}-freeCashFlow`}
-                                            align="right"
-                                            sx={{ 
-                                                color: green[300],
-                                                borderBottom: `2px solid ${green[600]}`,
-                                                fontSize: isMobile ? '0.8rem' : '0.9rem',
-                                                fontWeight: 'bold',
-                                                backgroundColor: 'rgba(76, 175, 80, 0.1)'
-                                            }}
-                                        >
-                                            {formatCurrency(period.freeCashFlow)}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </CardContent>
-            </Card>
-        </Box>
+                                        {formatCurrency(period.cashAtEndOfPeriod)}
+                                    </td>
+                                ))}
+                            </tr>
+                            
+                            {/* Free Cash Flow */}
+                            <tr>
+                                <td className="text-emerald-300 border-b-2 border-emerald-600 font-bold bg-emerald-500/10 px-4 py-3 text-xs sm:text-sm">
+                                    FREE CASH FLOW
+                                </td>
+                                {data.slice(0, isMobile ? 2 : 3).map((period) => (
+                                    <td
+                                        key={`${period.calendarYear}-freeCashFlow`}
+                                        className="text-emerald-300 border-b-2 border-emerald-600 font-bold bg-emerald-500/10 text-right px-4 py-3 text-xs sm:text-sm"
+                                    >
+                                        {formatCurrency(period.freeCashFlow)}
+                                    </td>
+                                ))}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     );
 };
 
