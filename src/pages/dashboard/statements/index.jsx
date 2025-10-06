@@ -1,27 +1,13 @@
 import React, { useState, useEffect } from "react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import { 
-    Box, Typography, Container, Divider,
-    useMediaQuery, useTheme, IconButton, Drawer,
-    Tabs, Tab, CircularProgress, Alert, Button,
-    TextField, InputAdornment, Select, MenuItem,
-    FormControl, InputLabel
-} from "@mui/material";
-import { teal, grey, green, red } from "@mui/material/colors";
-import { 
     FaBars, FaFileInvoiceDollar, FaChartLine, FaMoneyBillWave,
-    FaArrowLeft, FaRedo, FaSearch
+    FaRedo, FaSearch
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { useFinancialStatements } from "../../../hooks/useFinancialStatements";
 import IncomeStatementView from "./components/IncomeStatementView";
 import BalanceSheetView from "./components/BalanceSheetView";
 import CashFlowView from "./components/CashFlowView";
-
-// Constants for colors matching dashboard
-const darkBg = "#0d0d0d";
-const darkGradient = 'linear-gradient(to bottom, #121212, #0d0d0d)';
-const white = "#ffffff";
 
 const StatementsPage = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -29,11 +15,8 @@ const StatementsPage = () => {
     const [ticker, setTicker] = useState("AAPL");
     const [searchInput, setSearchInput] = useState("AAPL");
     const [period, setPeriod] = useState("annual");
-    
-    const theme = useTheme();
-    const navigate = useNavigate();
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
     const {
         data,
@@ -43,7 +26,15 @@ const StatementsPage = () => {
         refreshAllData
     } = useFinancialStatements();
 
-    // Period options
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth < 768);
+            setIsMobile(window.innerWidth < 640);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const periodOptions = [
         { value: 'Q1', label: 'Q1' },
         { value: 'Q2', label: 'Q2' },
@@ -54,7 +45,6 @@ const StatementsPage = () => {
         { value: 'quarter', label: 'Quarter' },
     ];
 
-    // Tab configuration
     const tabs = [
         { 
             label: 'Income Statement', 
@@ -76,41 +66,26 @@ const StatementsPage = () => {
         },
     ];
 
-    // Toggle drawer for mobile
-    const handleDrawerToggle = () => {
-        setMobileOpen(!mobileOpen);
-    };
-
-    // Handle tab change
-    const handleTabChange = (event, newValue) => {
-        setActiveTab(newValue);
-    };
-
-    // Handle search
+    const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+    const handleTabChange = (event, newValue) => setActiveTab(newValue);
     const handleSearch = () => {
         if (searchInput.trim()) {
             setTicker(searchInput.trim().toUpperCase());
         }
     };
-
     const handleSearchOnEnter = (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
             handleSearch();
         }
     };
-
-    // Handle period change
-    const handlePeriodChange = (event) => {
-        setPeriod(event.target.value);
-    };
+    const handlePeriodChange = (event) => setPeriod(event.target.value);
 
     const currentTab = tabs[activeTab];
     const currentData = data[currentTab?.key] || [];
     const currentLoading = loading[currentTab?.key];
     const currentError = errors[currentTab?.key];
 
-    // Effects
     useEffect(() => {
         if (ticker) {
             fetchFinancialStatements(ticker, period);
@@ -120,377 +95,116 @@ const StatementsPage = () => {
     const CurrentComponent = currentTab?.component;
 
     return (
-        <Box sx={{ 
-            display: "flex",
-            height: "100vh",
-            backgroundColor: darkBg, 
-            color: white, 
-            background: darkGradient,
-            overflow: "hidden"
-        }}>
-            {/* Left Sidebar - Desktop */}
+        <div className="flex h-screen bg-zinc-950 text-white overflow-hidden">
             {!isSmallScreen && (
-                <Box sx={{ 
-                    flexShrink: 0,
-                }}>
+                <div className="flex-shrink-0">
                     <DashboardSidebar />
-                </Box>
+                </div>
             )}
             
-            {/* Mobile sidebar drawer */}
-            <Drawer
-                anchor="left"
-                open={mobileOpen}
-                onClose={handleDrawerToggle}
-                variant="temporary"
-                ModalProps={{
-                    keepMounted: true,
-                }}
-                sx={{
-                    display: { xs: 'block', md: 'none' },
-                    '& .MuiDrawer-paper': { 
-                        width: 240,
-                        boxSizing: 'border-box',
-                        background: darkGradient,
-                        borderRight: `1px solid ${teal[900]}`,
-                    },
-                }}
-            >
-                <DashboardSidebar onClose={handleDrawerToggle} />
-            </Drawer>
+            {isSmallScreen && mobileOpen && (
+                <div className="fixed inset-0 z-50 md:hidden">
+                    <div className="absolute inset-0 bg-black/50" onClick={handleDrawerToggle} />
+                    <div className="absolute left-0 top-0 bottom-0 w-60 bg-gradient-to-b from-zinc-900 to-zinc-950 border-r border-zinc-800">
+                        <DashboardSidebar onClose={handleDrawerToggle} />
+                    </div>
+                </div>
+            )}
             
-            {/* Main Content */}
-            <Box 
-                data-scrollable="true"
-                sx={{ 
-                    overflow: "auto",
-                    height: "100vh",
-                    width: "100%",
-                    '&::-webkit-scrollbar': { 
-                        display: 'none'
-                    },
-                    scrollbarWidth: 'none',
-                    '-ms-overflow-style': 'none',
-                }}>
-                {/* Sticky Mobile Header - only visible on mobile */}
+            <div className="overflow-auto h-screen w-full scrollbar-hide">
                 {isSmallScreen && (
-                    <Box 
-                        sx={{
-                            position: 'sticky',
-                            top: 0,
-                            zIndex: 1100,
-                            backgroundColor: darkBg,
-                            borderBottom: `1px solid ${teal[800]}`,
-                            px: 2,
-                            py: 1.5,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 2
-                        }}
-                    >
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            edge="start"
-                            onClick={handleDrawerToggle}
-                            sx={{ 
-                                color: teal[400],
-                                '&:hover': { 
-                                    backgroundColor: 'rgba(0, 128, 128, 0.1)',
-                                }
-                            }}
-                        >
+                    <div className="sticky top-0 z-[1100] bg-zinc-950 border-b border-zinc-800 px-4 py-3 flex items-center gap-3">
+                        <button onClick={handleDrawerToggle} className="text-teal-400 hover:bg-teal-500/10 p-1 rounded transition-colors">
                             <FaBars />
-                        </IconButton>
-                        <Typography 
-                            variant="h6" 
-                            fontWeight="bold" 
-                            color={white}
-                            sx={{ fontSize: '1.2rem' }}
-                        >
-                            Financial Statements
-                        </Typography>
-                    </Box>
+                        </button>
+                        <h1 className="text-lg font-bold text-white">Financial Statements</h1>
+                    </div>
                 )}
                 
-                <Container maxWidth="xl" sx={{ mt: isSmallScreen ? 0 : 4, pb: 5 }}>
-                    <Box mb={1}>
-                        {/* Back Button */}
-                        {/* <Button
-                            onClick={() => navigate('/dashboard')}
-                            startIcon={<FaArrowLeft />}
-                            sx={{
-                                color: teal[400],
-                                textTransform: 'none',
-                                mb: 2,
-                                '&:hover': {
-                                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
-                                },
-                            }}
-                        >
-                            Back to Dashboard
-                        </Button> */}
+                <div className="max-w-7xl mx-auto px-4 pb-10" style={{ marginTop: isSmallScreen ? 0 : '.5rem' }}>
+                    <div className="mb-2">
+                        {!isSmallScreen && <h2 className="text-xl font-bold text-white mb-2">Financial Statements</h2>}
+                        <p className="text-zinc-300 mb-6 text-sm">Comprehensive financial data and analysis</p>
 
-                        {/* Desktop Title */}
-                        {!isSmallScreen && (
-                            <Typography 
-                                variant="h5" 
-                                fontWeight="bold" 
-                                color={white} 
-                                mb={1}
-                                sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}
-                            >
-                                Financial Statements
-                            </Typography>
-                        )}
-                        <Typography 
-                            variant="body2" 
-                            color={grey[300]} 
-                            mb={3}
-                            sx={{ fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
-                        >
-                            Comprehensive financial data and analysis
-                        </Typography> 
+                        <div className="mb-0 flex gap-4 flex-col sm:flex-row items-stretch sm:items-end">
+                            <div className="flex-1 max-w-full sm:max-w-md">
+                                <div className="relative">
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-teal-400">
+                                        <FaSearch />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter ticker symbol (e.g., AAPL)"
+                                        value={searchInput}
+                                        onChange={(e) => setSearchInput(e.target.value.toUpperCase())}
+                                        onKeyPress={handleSearchOnEnter}
+                                        className="w-full bg-zinc-900 border border-zinc-800 text-zinc-300 rounded-lg pl-10 pr-24 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent hover:border-zinc-700 transition-colors"
+                                        style={{ fontSize: isMobile ? '12pt' : '10pt' }}
+                                    />
+                                    <button onClick={handleSearch} className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-300 hover:text-teal-300 px-3 transition-colors">
+                                        Search
+                                    </button>
+                                </div>
+                            </div>
 
-                        {/* Search Bar and Period Selector */}
-                        <Box sx={{ 
-                            mb: 0, 
-                            display: 'flex', 
-                            gap: 2, 
-                            flexDirection: { xs: 'column', sm: 'row' },
-                            alignItems: { xs: 'stretch', sm: 'flex-end' }
-                        }}>
-                            <Box sx={{ flex: 1, maxWidth: { xs: '100%', sm: 400 } }}>
-                                <TextField
-                                    fullWidth
-                                    placeholder="Enter ticker symbol (e.g., AAPL)"
-                                    value={searchInput}
-                                    onChange={(e) => setSearchInput(e.target.value.toUpperCase())}
-                                    onKeyPress={handleSearchOnEnter}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <FaSearch color={teal[400]} />
-                                            </InputAdornment>
-                                        ),
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <Button
-                                                    onClick={handleSearch}
-                                                    sx={{
-                                                        color: teal[400],
-                                                        minWidth: 'auto',
-                                                        px: 1,
-                                                    }}
-                                                >
-                                                    Search
-                                                </Button>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            // backgroundColor: 'rgba(20, 184, 166, 0.05)',
-                                            color: '#b1afafff',
-                                            fontSize: isMobile ? '12pt' : '10pt',
-                                            height: '3.4em',
-                                            '& fieldset': {
-                                                borderColor: teal[800],
-                                            },
-                                            '&:hover fieldset': {
-                                                borderColor: teal[600],
-                                            },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: teal[400],
-                                            },
-                                        },
-                                    }}
-                                />
-                            </Box>
-
-                            <FormControl sx={{ minWidth: 150 }}>
-                                <InputLabel 
-                                    sx={{ 
-                                        color: grey[400],
-                                        '&.Mui-focused': { color: teal[400] },
-                                    }}
-                                >
-                                    Period
-                                </InputLabel>
-                                <Select
-                                    value={period}
-                                    onChange={handlePeriodChange}
-                                    label="Period"
-                                    sx={{
-                                        color: white,
-                                        height: '3.4em',
-                                        fontSize: isMobile ? '12pt' : '10pt',
-                                        '& .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: teal[800],
-                                        },
-                                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: teal[600],
-                                        },
-                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: teal[400],
-                                        },
-                                        '& .MuiSvgIcon-root': {
-                                            color: teal[400],
-                                        },
-                                    }}
-                                    MenuProps={{
-                                        PaperProps: {
-                                            sx: {
-                                                backgroundColor: '#1a1a1a',
-                                                color: white,
-                                                '& .MuiMenuItem-root': {
-                                                    '&:hover': {
-                                                        backgroundColor: 'rgba(20, 184, 166, 0.1)',
-                                                    },
-                                                    '&.Mui-selected': {
-                                                        backgroundColor: 'rgba(20, 184, 166, 0.2)',
-                                                        '&:hover': {
-                                                            backgroundColor: 'rgba(20, 184, 166, 0.3)',
-                                                        },
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    }}
-                                >
+                            <div className="min-w-[150px]">
+                                <select value={period} onChange={handlePeriodChange} className="w-full bg-zinc-900 border border-zinc-800 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent hover:border-zinc-700 transition-colors" style={{ fontSize: isMobile ? '12pt' : '10pt' }}>
                                     {periodOptions.map((option) => (
-                                        <MenuItem key={option.value} value={option.value}>
-                                            {option.label}
-                                        </MenuItem>
+                                        <option key={option.value} value={option.value} className="bg-zinc-900">{option.label}</option>
                                     ))}
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        
-                        {/* <Divider sx={{ bgcolor: teal[900], opacity: 0.5, my: 3 }} /> */}
-                    </Box>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-                    {/* Financial Statement Tabs */}
-                    <Box sx={{ mb: 2, borderBottom: `1px solid ${teal[800]}` }}>
-                        <Tabs
-                            value={activeTab}
-                            onChange={handleTabChange}
-                            variant={isMobile ? "scrollable" : "standard"}
-                            scrollButtons={isMobile ? "auto" : false}
-                            allowScrollButtonsMobile
-                            sx={{
-                                '& .MuiTab-root': {
-                                    color: grey[500],
-                                    textTransform: 'none',
-                                    fontWeight: 600,
-                                    fontSize: isMobile ? '0.8rem' : '1rem',
-                                    minWidth: isMobile ? 120 : 160,
-                                    '&.Mui-selected': {
-                                        color: teal[300],
-                                    },
-                                },
-                                '& .MuiTabs-indicator': {
-                                    backgroundColor: teal[500],
-                                    height: 3,
-                                },
-                                '& .MuiTabs-scrollButtons': {
-                                    color: teal[400],
-                                },
-                            }}
-                        >
+                    <div className="mb-4 border-b border-zinc-800">
+                        <div className={`flex ${isMobile ? 'overflow-x-auto scrollbar-hide' : ''}`}>
                             {tabs.map((tab, index) => (
-                                <Tab
-                                    key={tab.key}
-                                    icon={tab.icon}
-                                    iconPosition="start"
-                                    label={tab.label}
-                                    sx={{
-                                        '& .MuiTab-iconWrapper': {
-                                            marginRight: 1,
-                                        },
-                                    }}
-                                />
+                                <button key={tab.key} onClick={(e) => handleTabChange(e, index)} className={`flex items-center gap-2 px-6 py-3 font-semibold transition-colors relative whitespace-nowrap ${isMobile ? 'text-xs min-w-[120px]' : 'text-base min-w-[160px]'} ${activeTab === index ? 'text-teal-300' : 'text-zinc-500 hover:text-zinc-300'}`}>
+                                    {tab.icon}
+                                    <span className="text-sm">{tab.label}</span>
+                                    {activeTab === index && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-500"></div>}
+                                </button>
                             ))}
-                        </Tabs>
-                    </Box>
+                        </div>
+                    </div>
                     
-                    {/* Financial Statement Content */}      
                     {currentLoading ? (
-                        <Box 
-                            display="flex" 
-                            justifyContent="center" 
-                            alignItems="center" 
-                            minHeight="400px"
-                            sx={{
-                                backgroundColor: 'rgba(20, 30, 20, 0.3)',
-                                borderRadius: '10px',
-                                border: `1px solid ${teal[900]}`,
-                                my: 4,
-                                width: "100%"
-                            }}
-                        >
-                            <CircularProgress sx={{ color: teal[400] }} />
-                        </Box>
+                        <div className="flex justify-center items-center min-h-[400px] bg-zinc-900/30 rounded-xl border border-zinc-800 my-8 w-full">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-400"></div>
+                        </div>
                     ) : currentError ? (
-                        <Alert 
-                            severity="error" 
-                            sx={{ 
-                                backgroundColor: 'rgba(211, 47, 47, 0.1)',
-                                color: 'white',
-                                border: `1px solid rgba(211, 47, 47, 0.3)`,
-                                '& .MuiAlert-icon': { color: 'rgba(211, 47, 47, 0.8)' }
-                            }}
-                            action={
-                                <Button
-                                    size="small"
-                                    onClick={() => refreshAllData(ticker, period)}
-                                    sx={{ color: teal[400] }}
-                                    startIcon={<FaRedo />}
-                                >
+                        <div className="bg-rose-950/20 border border-rose-900/30 rounded-lg p-4 my-8">
+                            <div className="flex justify-between items-center flex-wrap gap-3">
+                                <div className="flex items-center gap-2 text-rose-400">
+                                    <span>⚠</span>
+                                    <span>Failed to load {currentTab?.label.toLowerCase()}: {currentError}</span>
+                                </div>
+                                <button onClick={() => refreshAllData(ticker, period)} className="flex items-center gap-2 text-teal-400 hover:text-teal-300 transition-colors text-sm">
+                                    <FaRedo />
                                     Retry
-                                </Button>
-                            }
-                        >
-                            Failed to load {currentTab?.label.toLowerCase()}: {currentError}
-                        </Alert>
+                                </button>
+                            </div>
+                        </div>
                     ) : currentData && currentData.length > 0 ? (
                         <>
-                            {/* Current Ticker and Period Display */}
                             {ticker && (
-                            <Box sx={{ mb: 1 }}>
-                                <Typography 
-                                    variant="body1" 
-                                    color={white}
-                                    sx={{ fontSize: '1rem', mb: 3 }}
-                                >
-                                    Showing <strong>{periodOptions.find(p => p.value === period)?.label}</strong> data for: <strong>{ticker}</strong>
-                                </Typography>
-                                <CurrentComponent data={currentData} />
-                            </Box>
+                                <div className="mb-2">
+                                    <p className="text-white text-sm mb-6">
+                                        Showing <strong>{periodOptions.find(p => p.value === period)?.label}</strong> data for: <strong>{ticker}</strong>
+                                    </p>
+                                    <CurrentComponent data={currentData} />
+                                </div>
                             )}
                         </>
                     ) : (
-                        <Box 
-                            display="flex" 
-                            justifyContent="center" 
-                            alignItems="center" 
-                            minHeight="400px"
-                            sx={{
-                                backgroundColor: 'rgba(20, 30, 20, 0.3)',
-                                borderRadius: '10px',
-                                border: `1px solid ${teal[900]}`,
-                                my: 4,
-                                width: "100%"
-                            }}
-                        >
-                            <Typography color={grey[400]}>
-                                No {currentTab?.label.toLowerCase()} data available for {ticker}
-                            </Typography>
-                        </Box>
+                        <div className="flex justify-center items-center min-h-[400px] bg-zinc-900/30 rounded-xl border border-zinc-800 my-8 w-full">
+                            <p className="text-zinc-400">No {currentTab?.label.toLowerCase()} data available for {ticker}</p>
+                        </div>
                     )}
-                </Container>
-            </Box>
-        </Box>
+                </div>
+            </div>
+        </div>
     );
 };
 
