@@ -356,7 +356,7 @@ export default function DashboardPage() {
           {/* Right Sidebar - Wishlist */}
           {!isSmallScreen && (
             <Box sx={{ 
-              width: "320px", 
+              width: "280px", 
               flexShrink: 0,
               overflow: "auto",
               '&::-webkit-scrollbar': { display: 'none' },
