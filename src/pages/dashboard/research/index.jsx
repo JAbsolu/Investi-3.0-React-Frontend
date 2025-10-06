@@ -234,8 +234,8 @@ const StockDetailsPage = () => {
             {/* Main Content */}
             <div className="flex-1 overflow-auto min-h-screen scrollbar-hide">
                 {/* Header */}
-                <div className="sticky top-0 z-40 transparent backdrop-blur-sm px-4 md:p-6 py-0 my-0">
-                    <div className="flex items-center gap-2 mb-0">
+                <div className={`${!isMobile && 'flex justify-start items-center gap-4'} sticky top-0 z-40 transparent backdrop-blur-sm px-4 md:p-6 py-0 my-0`}>
+                    <div className="flex items-center gap-0 mb-0">
                         {isMobile && (
                             <button 
                                 onClick={() => setSidebarOpen(true)}
@@ -245,7 +245,7 @@ const StockDetailsPage = () => {
                             </button>
                         )}
                         
-                        <div className="flex items-center gap-6 flex-1">
+                        <div className="flex items-center gap-2 mt-3 flex-1">
                            {currentTicker ? (
                              <>
                                <StockLogo /> 
@@ -262,12 +262,12 @@ const StockDetailsPage = () => {
                     </div>
 
                     {/* Search Bar */}
-                    <div className='flex gap-4'>
-                        <div className="relative min-w-[10em] w-[40em] max-w-[90%] self-start mt-4">
+                    <div className='flex gap-2'>
+                        <div className={`relative ${isMobile ? 'w-[19em]' : 'min-w-[25em]'} max-w-[85%] self-start mt-4`}>
                             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-teal-400 text-sm z-10" />
                             <input
                                 type="text"
-                                placeholder="Search ticker (e.g., AAPL, TSLA)..."
+                                placeholder={isMobile ? "Search ticker" : "Search ticker (e.g., AAPL)"}
                                 value={searchTicker}
                                 onChange={(e) => setSearchTicker(e.target.value)}
                                 onKeyDown={handleSearchKeyPress}
@@ -298,7 +298,7 @@ const StockDetailsPage = () => {
                 </div>
 
                 {/* Content */}
-                <div className="px-4 md:p-6 max-w-full">
+                <div className="px-4 md:px-6 pt-0 pb-6 max-w-full">
                     {/* Tabs */}
                     <div className="mb-6 border-b border-zinc-600">
                         <div className="flex overflow-x-auto">
