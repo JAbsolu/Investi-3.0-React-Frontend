@@ -215,8 +215,8 @@ const BalanceSheetView = ({ data }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Assets Section */}
                 <div className="bg-zinc-900/30 rounded-xl overflow-hidden">
-                    <div className="p-6 pb-0">
-                        <h3 className="text-teal-300 text-xl font-bold mb-4">Assets</h3>
+                    <div className="p-4 pb-0">
+                        <h3 className="text-teal-300 text-md font-bold mb-4">Assets</h3>
                     </div>
                     
                     <div className="overflow-x-auto max-h-[600px]">
@@ -290,8 +290,8 @@ const BalanceSheetView = ({ data }) => {
 
                 {/* Liabilities & Equity Section */}
                 <div className="bg-zinc-900/30 rounded-xl overflow-hidden">
-                    <div className="p-6 pb-0">
-                        <h3 className="text-teal-300 text-xl font-bold mb-4">Liabilities & Equity</h3>
+                    <div className="p-4 pb-0">
+                        <h3 className="text-teal-300 text-md font-bold mb-4">Liabilities & Equity</h3>
                     </div>
                     
                     <div className="overflow-x-auto max-h-[600px]">

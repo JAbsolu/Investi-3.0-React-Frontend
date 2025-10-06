@@ -159,8 +159,8 @@ const IncomeStatementView = ({ data }) => {
 
             {/* Detailed Income Statement Table */}
             <div className="bg-zinc-900/30 rounded-xl overflow-hidden">
-                <div className="p-6 pb-0">
-                    <h3 className="text-teal-300 text-xl font-bold mb-4">Detailed Income Statement</h3>
+                <div className="p-4  pb-0">
+                    <h3 className="text-teal-300 text-md font-bold mb-4">Detailed Income Statement</h3>
                 </div>
                 
                 <div className="overflow-x-auto" style={{ maxHeight: isMobile ? 400 : 600 }}>
