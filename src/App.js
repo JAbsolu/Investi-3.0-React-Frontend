@@ -41,21 +41,40 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/signin" element={userIsAuth && isSubscribed ? <DashboardPage /> : <SignIn />} />
-      <Route path="/signup" element={userIsAuth && isSubscribed ? <DashboardPage /> : <Signup />} />
+      <Route path="/signin" element={userIsAuth ? <DashboardPage /> : <SignIn />} />
+      <Route path="/signup" element={userIsAuth ? <DashboardPage /> : <Signup />} />
       <Route path="/features" element={<FeaturesPage />} />
-      <Route path="/dashboard" element={userIsAuth && isSubscribed ? <DashboardPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
-      <Route path="/dashboard/news" element={userIsAuth && isSubscribed ? <News /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
-      <Route path="/dashboard/congress" element={userIsAuth && isSubscribed ? <CongressPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
-      <Route path="/dashboard/movers" element={userIsAuth && isSubscribed ? <MoversPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
-      <Route path="/dashboard/research" element={userIsAuth && isSubscribed ? <StockDetailsPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
-      <Route path="/dashboard/research/:ticker" element={userIsAuth && isSubscribed ? <StockDetailsPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
-      <Route path="/dashboard/statements" element={userIsAuth && isSubscribed ? <StatementsPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
-      <Route path="/dashboard/settings" element={userIsAuth && isSubscribed ? <SettingsPage /> : <SignIn />} />
+      <Route path="/dashboard" element={userIsAuth ? <DashboardPage /> : <SignIn />} />
+      <Route path="/dashboard/news" element={userIsAuth ? <News /> : <SignIn />} />
+      <Route path="/dashboard/congress" element={userIsAuth ? <CongressPage /> : <SignIn />} />
+      <Route path="/dashboard/movers" element={userIsAuth ? <MoversPage /> : <SignIn />} />
+      <Route path="/dashboard/research" element={userIsAuth ? <StockDetailsPage /> : <SignIn />} />
+      <Route path="/dashboard/research/:ticker" element={userIsAuth ? <StockDetailsPage /> : <SignIn />} />
+      <Route path="/dashboard/statements" element={userIsAuth ? <StatementsPage /> : <SignIn />} />
+      <Route path="/dashboard/settings" element={userIsAuth ? <SettingsPage /> : <SignIn />} />
       <Route path="/onboarding" element={userIsAuth ? <PricingPlans /> : <SignIn />} />
-      <Route path="/upgrades" element={userIsAuth && isSubscribed ? <PricingPlans /> : <SignIn />} />
+      <Route path="/upgrades" element={userIsAuth ? <PricingPlans /> : <SignIn />} />
     </Routes>
   );
+
+  // return (
+  //   <Routes>
+  //     <Route path="/" element={<Home />} />
+  //     <Route path="/signin" element={userIsAuth && isSubscribed ? <DashboardPage /> : <SignIn />} />
+  //     <Route path="/signup" element={userIsAuth && isSubscribed ? <DashboardPage /> : <Signup />} />
+  //     <Route path="/features" element={<FeaturesPage />} />
+  //     <Route path="/dashboard" element={userIsAuth && isSubscribed ? <DashboardPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
+  //     <Route path="/dashboard/news" element={userIsAuth && isSubscribed ? <News /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
+  //     <Route path="/dashboard/congress" element={userIsAuth && isSubscribed ? <CongressPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
+  //     <Route path="/dashboard/movers" element={userIsAuth && isSubscribed ? <MoversPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
+  //     <Route path="/dashboard/research" element={userIsAuth && isSubscribed ? <StockDetailsPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
+  //     <Route path="/dashboard/research/:ticker" element={userIsAuth && isSubscribed ? <StockDetailsPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
+  //     <Route path="/dashboard/statements" element={userIsAuth && isSubscribed ? <StatementsPage /> : userIsAuth && !isSubscribed ? <PricingPlans /> : <SignIn />} />
+  //     <Route path="/dashboard/settings" element={userIsAuth && isSubscribed ? <SettingsPage /> : <SignIn />} />
+  //     <Route path="/onboarding" element={userIsAuth ? <PricingPlans /> : <SignIn />} />
+  //     <Route path="/upgrades" element={userIsAuth && isSubscribed ? <PricingPlans /> : <SignIn />} />
+  //   </Routes>
+  // );
 }
 
 export default App;
